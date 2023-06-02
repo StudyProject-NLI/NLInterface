@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SpeechToTextActivity">
+
+    <TextView
+        android:id="@+id/outputTV"
+        android:layout_width="239dp"
+        android:layout_height="137dp"
+        android:layout_marginStart="86dp"
+        android:layout_marginTop="193dp"
+        android:layout_marginEnd="86dp"
+        android:text="@string/placeholder_text"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:hint="Press to Speak"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/sttIV"
+        android:layout_width="139dp"
+        android:layout_height="132dp"
+        android:layout_marginStart="134dp"
+        android:layout_marginEnd="138dp"
+        android:layout_marginBottom="80dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_mic" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

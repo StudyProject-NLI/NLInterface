@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NL Interface</string>
     <string name="action_settings">Settings</string>
-    
+
     <string name="example_activity_text">This is an example of another activity.</string>
     <string name="next_activity_example">Next Activity (Example)</string>
 </resources>

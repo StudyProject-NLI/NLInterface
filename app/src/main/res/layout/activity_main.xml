@@ -5,11 +5,11 @@
     android:layout_height="match_parent">
 
     <Button
-        android:id="@+id/grocerylist"
+        android:id="@+id/grocery_list"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
-        android:text="Grocery List"
+        android:text="@string/grocery_list"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,10 +21,10 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
-        android:text="Find Store"
+        android:text="@string/find_store"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grocerylist"
+        app:layout_constraintTop_toBottomOf="@+id/grocery_list"
         app:layout_constraintVertical_bias=".2"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

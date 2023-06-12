@@ -4,4 +4,7 @@
 
     <string name="example_activity_text">This is an example of another activity.</string>
     <string name="next_activity_example">Next Activity (Example)</string>
+    <string name="placeholder_text">...</string>
+    <string name="stt_button_content">Tap to speak</string>
+    <string name="stt_output_content">Recognized speech will be written here</string>
 </resources>

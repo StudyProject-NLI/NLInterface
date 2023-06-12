@@ -32,6 +32,9 @@
         </activity>
         <activity
             android:name=".activities.GroceryListActivity" />
+        <activity android:name=".activities.NavigationActivity">
+
+        </activity>
 
         <activity
             android:name=".activities.NextActivityExample">

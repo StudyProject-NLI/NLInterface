@@ -30,6 +30,9 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity android:name=".activities.NavigationActivity">
+
+        </activity>
 
         <activity
             android:name=".activities.NextActivityExample">

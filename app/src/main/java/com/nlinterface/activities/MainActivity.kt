@@ -48,13 +48,13 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
-        verifyAudioPermissions()
-
-        val groceryListActivity: Button = findViewById<View>(R.id.grocery_list) as Button
-        groceryListActivity.setOnClickListener { view ->
-            val intent = Intent(view.context, GroceryListActivity::class.java)
+        val navigationActivityButton: Button = findViewById<View>(R.id.navigation) as Button
+        navigationActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, NavigationActivity::class.java)
             view.context.startActivity(intent)
         }
+
+        verifyAudioPermissions()
     }
 
     override fun onRequestPermissionsResult(

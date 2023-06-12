@@ -43,29 +43,11 @@ class MainActivity : AppCompatActivity() {
 
         verifyAudioPermissions()
 
-        val toSpeechToTextV1: Button = findViewById<View>(R.id.next_activity) as Button
-        toSpeechToTextV1.setOnClickListener { view ->
-            val intent = Intent(view.context, SpeechToTextActivity::class.java)
+        val exampleNextActivity: Button = findViewById<View>(R.id.next_activity) as Button
+        exampleNextActivity.setOnClickListener { view ->
+            val intent = Intent(view.context, NextActivityExample::class.java)
             view.context.startActivity(intent)
         }
-
-        // part of Speech-to-Text functionality
-        outputText = findViewById(R.id.outputTV)
-
-        sttTrigger = findViewById(R.id.stt_btn)
-        sttTrigger!!.setOnClickListener {
-            if (isListening) {
-                speechToTextUtility.handleSpeechEnd(outputText!!, sttTrigger!!)
-                isListening = false
-            } else {
-                speechToTextUtility.handleSpeechBegin(outputText!!, sttTrigger!!)
-                isListening = true
-            }
-        }
-
-        speechToTextUtility.createSpeechRecognizer(this, outputText!!)
-        //
-
     }
 
     override fun onRequestPermissionsResult(

@@ -11,6 +11,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.WindowCompat
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
@@ -41,13 +42,19 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        verifyAudioPermissions()
-
-        val exampleNextActivity: Button = findViewById<View>(R.id.next_activity) as Button
-        exampleNextActivity.setOnClickListener { view ->
-            val intent = Intent(view.context, NextActivityExample::class.java)
+        val groceryListButton: Button = findViewById<View>(com.nlinterface.R.id.grocery_list) as Button
+        groceryListButton.setOnClickListener { view ->
+            val intent = Intent(view.context, GroceryListActivity::class.java)
             view.context.startActivity(intent)
         }
+
+        val navigationActivityButton: Button = findViewById<View>(R.id.navigation) as Button
+        navigationActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, NavigationActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
+        verifyAudioPermissions()
     }
 
     override fun onRequestPermissionsResult(

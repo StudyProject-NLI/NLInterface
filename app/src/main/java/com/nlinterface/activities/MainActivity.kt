@@ -48,6 +48,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(view.context, NextActivityExample::class.java)
             view.context.startActivity(intent)
         }
+
+        val settingsActivity: Button = findViewById<View>(R.id.settings) as Button
+        settingsActivity.setOnClickListener { view ->
+            val intent = Intent(view.context, SettingsActivity::class.java)
+            view.context.startActivity(intent)
+        }
     }
 
     override fun onRequestPermissionsResult(

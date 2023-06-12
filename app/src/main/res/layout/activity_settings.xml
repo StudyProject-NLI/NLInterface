@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/header"
+        android:layout_width="148dp"
+        android:layout_height="51dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Settings"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        tools:layout_editor_absoluteX="131dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <Spinner
+        android:id="@+id/language_dropdown"
+        android:layout_width="190dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="73dp"
+        app:layout_constraintStart_toEndOf="@+id/settings_language"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+    <TextView
+        android:id="@+id/settings_language"
+        android:layout_width="118dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="38dp"
+        android:layout_marginTop="73dp"
+        android:layout_marginEnd="133dp"
+        android:text="@string/settings_language_EN"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/language_dropdown"
+        app:layout_constraintHorizontal_bias="0.133"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

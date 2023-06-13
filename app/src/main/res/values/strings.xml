@@ -3,14 +3,75 @@
     <string name="action_settings">Settings</string>
 
     <string name="example_activity_text">This is an example of another activity.</string>
+    <string name="example_activity_text_DE">Dies ist ein Beispiel für eine andere Activity.</string>
+
     <string name="next_activity_example">Next Activity (Example)</string>
+    <string name="next_activity_example_DE">Nächste Activity (Beispiel)</string>
+
     <string name="placeholder_text">...</string>
+
     <string name="stt_button_content">Tap to speak</string>
+    <string name="stt_button_content_DE">Tippe zum Sprechen</string>
+
     <string name="stt_output_content">Recognized speech will be written here</string>
-    <string name="settings_language_EN">Language</string>
-    <string-array name="language_options_EN">
+    <string name="stt_output_content_DE">Gesprochenes wird hier angezeigt werden</string>
+
+    <string name="settings_language">Language</string>
+    <string name="settings_language_DE">Sprache</string>
+
+    <string-array name="language_options">
         <item>English</item>
-        <item>German</item>
+        <item>Deutsch</item>
     </string-array>
+
     <string name="settings">Settings</string>
+    <string name="settings_DE">Einstellungen</string>
+
+    <string name="settings_impairment">Type of visual impairment</string>
+    <string name="settings_impairment_DE">Art von visueller Einschränkung</string>
+
+    <string-array name="impairment_options">
+        <item>blind</item>
+        <item>50% blind</item>
+    </string-array>
+    <string-array name="impairment_options_DE">
+        <item>blind</item>
+        <item>50% blind</item>
+    </string-array>
+
+    <string name="settings_colors">Design</string>
+    <string name="settings_colors_DE">Design</string>
+
+    <string-array name="color_options">
+        <item>default</item>
+        <item>red-green color blindness</item>
+        <item>high contrast</item>
+    </string-array>
+    <string-array name="color_options_DE">
+        <item>Standard</item>
+        <item>Rot-Grün Sehschwäche</item>
+        <item>Hoher Kontrast</item>
+    </string-array>
+
+    <string name="settings_layout">Add layout switch button</string>
+    <string name="settings_layout_DE">2 Layout-Versionen</string>
+
+    <string name="settings_layout_explanation">If ON, each screen of the app will have two versions:
+        a "blind" version that is condensed to its function for accessibility, and a "seeing" version that is more detailed,
+        e.g. for partially blind users or seeing partners of blind users.</string>
+    <string name="settings_layout_explanation_DE">Wenn AN gibt es zwei Versionen für jede Oberfläche:
+        eine "blinde" Version, die für eine einfache Bedienung auf die Funktion beschränkt ist,
+        und eine "sehende" Version, die mehr Details hat, zum Beispiel für Menschen, die nur teilweise blind sind, oder für sehende Partner:innen von blinden Nutzern.</string>
+
+    <string name="settings_voice_command">Speech-to-Text trigger mode</string>
+    <string name="settings_voice_command_DE">Sprache-zu-Text Auslöser</string>
+
+    <string-array name="voice_command_options">
+        <item>via button</item>
+        <item>hands-free</item>
+    </string-array>
+    <string-array name="voice_command_options_DE">
+        <item>Buttonclick</item>
+        <item>Sprachbefehl</item>
+    </string-array>
 </resources>

@@ -3,7 +3,9 @@ package com.nlinterface.activities
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
+import android.provider.Settings.Global
 import android.speech.SpeechRecognizer
 import android.view.View
 import android.widget.Button
@@ -14,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
+import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.SpeechToTextButton
 import com.nlinterface.utility.SpeechToTextUtility
 
@@ -54,6 +57,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(view.context, SettingsActivity::class.java)
             view.context.startActivity(intent)
         }
+
+
     }
 
     override fun onRequestPermissionsResult(

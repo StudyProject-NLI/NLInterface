@@ -5,40 +5,129 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
+    <TextView
         android:id="@+id/header"
         android:layout_width="148dp"
         android:layout_height="51dp"
-        android:ems="10"
-        android:inputType="text"
-        android:text="Settings"
+        android:layout_marginStart="131dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="131dp"
+        android:text="@string/settings"
         android:textAlignment="center"
         android:textSize="24sp"
-        tools:layout_editor_absoluteX="131dp"
-        tools:layout_editor_absoluteY="16dp" />
-
-    <Spinner
-        android:id="@+id/language_dropdown"
-        android:layout_width="190dp"
-        android:layout_height="32dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="73dp"
-        app:layout_constraintStart_toEndOf="@+id/settings_language"
-        app:layout_constraintTop_toBottomOf="@+id/header" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/settings_language"
-        android:layout_width="118dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="38dp"
-        android:layout_marginTop="73dp"
-        android:layout_marginEnd="133dp"
-        android:text="@string/settings_language_EN"
+        android:layout_width="124dp"
+        android:layout_height="31dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="56dp"
+        android:text="@string/settings_language"
         android:textAlignment="center"
         android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/language_dropdown"
-        app:layout_constraintHorizontal_bias="0.133"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header" />
+
+    <Spinner
+        android:id="@+id/language_dropdown"
+        android:layout_width="176dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="25dp"
+        android:background="#F3C27A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
+
+    <TextView
+        android:id="@+id/settings_impairment"
+        android:layout_width="142dp"
+        android:layout_height="61dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/settings_impairment"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_language" />
+
+    <TextView
+        android:id="@+id/settings_colors"
+        android:layout_width="135dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/settings_colors"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_impairment" />
+
+    <Spinner
+        android:id="@+id/colors_dropdown"
+        android:layout_width="174dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="25dp"
+        android:background="#F3C27A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/impairment_dropdown" />
+
+    <Spinner
+        android:id="@+id/impairment_dropdown"
+        android:layout_width="183dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="25dp"
+        android:background="#F3C27A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/language_dropdown" />
+
+    <TextView
+        android:id="@+id/settings_layout"
+        android:layout_width="137dp"
+        android:layout_height="77dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="60dp"
+        android:hint="@string/settings_layout_explanation"
+        android:text="@string/settings_layout"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_colors" />
+
+    <ToggleButton
+        android:id="@+id/layout_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="56dp"
+        android:layout_marginEnd="90dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/colors_dropdown" />
+
+    <TextView
+        android:id="@+id/settings_voice_command"
+        android:layout_width="137dp"
+        android:layout_height="83dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="60dp"
+        android:text="@string/settings_voice_command"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_layout" />
+
+    <Spinner
+        android:id="@+id/voice_command_dropdown"
+        android:layout_width="168dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="88dp"
+        android:layout_marginEnd="28dp"
+        android:background="#F3C27A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_toggle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

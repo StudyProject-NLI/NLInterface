@@ -4,6 +4,7 @@
 
     <string name="grocery_list">Grocery List</string>
     <string name="navigation">Navigation</string>
+    <string name="location">Location</string>
     <string name="add_item">Add Item</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>

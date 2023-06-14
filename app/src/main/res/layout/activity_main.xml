@@ -27,4 +27,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/grocery_list"
         app:layout_constraintVertical_bias=".2"/>
+
+    <Button
+        android:id="@+id/location"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/black"
+        android:text="@string/location"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/navigation"
+        app:layout_constraintVertical_bias=".2"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

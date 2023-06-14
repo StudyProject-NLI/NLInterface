@@ -54,6 +54,12 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
+        val locationActivityButton: Button = findViewById<View>(R.id.location) as Button
+        locationActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, LocationActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
         verifyAudioPermissions()
     }
 

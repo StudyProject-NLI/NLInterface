@@ -4,6 +4,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -32,13 +35,12 @@
         </activity>
         <activity
             android:name=".activities.GroceryListActivity" />
-        <activity android:name=".activities.NavigationActivity">
-
-        </activity>
-
         <activity
-            android:name=".activities.NextActivityExample">
-        </activity>
+            android:name=".activities.NavigationActivity"/>
+        <activity
+            android:name=".activities.NextActivityExample"/>
+        <activity
+            android:name=".LocationActivity"/>
 
     </application>
 

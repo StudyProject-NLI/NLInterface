@@ -25,13 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    // part of Speech-to-Text functionality
-    private var isListening = false
-    private var outputText: TextView? = null
-    private var sttTrigger: SpeechToTextButton? = null
-    private val speechToTextUtility = SpeechToTextUtility()
-    //
-
     companion object {
         // needed to verify the audio permission result
         private const val STT_PERMISSION_REQUEST_CODE = 0
@@ -68,9 +61,9 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Permission granted for using voice commands!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.audio_permission_granted, Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(this, "Please provide microphone permission to use voice commands.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.audio_permission_denied, Toast.LENGTH_LONG).show()
         }
     }
 

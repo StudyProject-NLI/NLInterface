@@ -9,6 +9,7 @@ import android.speech.SpeechRecognizer
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.nlinterface.R
+import java.util.Locale
 
 class SpeechToTextUtility {
     private var speechRecognizer: SpeechRecognizer? = null
@@ -20,7 +21,7 @@ class SpeechToTextUtility {
     }
 
     fun handleSpeechEnd(output: TextView, button: SpeechToTextButton) {
-        output!!.setText(com.nlinterface.R.string.stt_output_content)
+        output!!.setText(R.string.stt_output_content)
         speechRecognizer!!.cancel()
         button!!.setImageResource(com.nlinterface.R.drawable.ic_mic)
     }
@@ -33,22 +34,21 @@ class SpeechToTextUtility {
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray) {}
             override fun onEndOfSpeech() {}
-
             override fun onError(error: Int) {}
 
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
-                    // The results are added in decreasing order of confidence to the list
+                    // results are added in decreasing order of confidence to the list, so choose the first one
                     val result = matches[0]
                     output!!.text = result
                 }
             }
 
+            // handle partial speech results for dynamic speech to text recognition
             override fun onPartialResults(partialResults: Bundle) {
                 val matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
-                    // handle partial speech results
                     val partialResult = matches[0]
                     output!!.text = partialResult
                 }
@@ -62,7 +62,7 @@ class SpeechToTextUtility {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de") // remove this line for english version; TODO: global setting for language
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         return intent
     }
 }

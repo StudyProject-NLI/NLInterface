@@ -16,6 +16,10 @@
     <string name="stt_output_content">Recognized speech will be written here</string>
     <string name="stt_output_content_DE">Gesprochenes wird hier angezeigt werden</string>
 
+    <string name="audio_permission_granted">Permission granted for using voice commands!</string>
+
+    <string name="audio_permission_denied">Please provide microphone permission to use voice commands.</string>
+
     <string name="settings_language">Language</string>
     <string name="settings_language_DE">Sprache</string>
 

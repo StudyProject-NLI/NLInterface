@@ -1,21 +1,19 @@
 package com.nlinterface.activities
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.provider.Settings.Global
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
-import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.WindowCompat
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.GlobalParameters
-import org.w3c.dom.Text
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -36,19 +34,20 @@ class SettingsActivity : AppCompatActivity() {
     private var colorsDropDownAdapter : ArrayAdapter<CharSequence>? = null
 
     private var layoutSettingText : TextView? = null
-    private var layoutToggle : ToggleButton? = null
+    private var layoutSwitch : SwitchCompat? = null
 
     private var voiceCommandSettingText : TextView? = null
     private var voiceCommandDropDown : Spinner? = null
     private var voiceCommandDropDownAdapter : ArrayAdapter<CharSequence>? = null
 
+    // used to change the language of all texts at once
     private var textArray : Array<TextView?>? = null
     private var enStringsArray : Array<String?>? = null
     private var deStringsArray : Array<String?>? = null
-    private var newStringsArray : Array<Array<String?>>? = null
+    private var newStringsArray : Array<Array<String?>>? = null // combination of EN and DE strings
     private var impairmentOptions : Array<Int>? = null
     private var colorOptions : Array<Int>? = null
-    private  var voiceCommandOptions : Array<Int>? = null
+    private var voiceCommandOptions : Array<Int>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -57,6 +56,20 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // get saved data from SharedPreferences or create SharedPreferences
+        // and set the respective GlobalParameters to the saved data
+        val sharedPref : SharedPreferences = this.getSharedPreferences(getString(R.string.settings_preferences_key), Context.MODE_PRIVATE) ?: return
+        val prefLanguage = sharedPref.getString(getString(R.string.settings_language_key), GlobalParameters.Language.EN.toString())
+        GlobalParameters.instance!!.language = GlobalParameters.Language.valueOf(prefLanguage!!)
+        val prefImpairment = sharedPref.getString(getString(R.string.settings_impairment_key), GlobalParameters.VisualImpairment.BLIND.toString())
+        GlobalParameters.instance!!.visualImpairment = GlobalParameters.VisualImpairment.valueOf(prefImpairment!!)
+        val prefColor = sharedPref.getString(getString(R.string.settings_color_key), GlobalParameters.ColorChoice.DEFAULT.toString())
+        GlobalParameters.instance!!.colorChoice = GlobalParameters.ColorChoice.valueOf(prefColor!!)
+        val prefLayout = sharedPref.getBoolean(getString(R.string.settings_layout_key), false)
+        GlobalParameters.instance!!.layoutSwitch = prefLayout
+        val prefVoiceTrigger = sharedPref.getString(getString(R.string.settings_voice_command_key), GlobalParameters.VoiceCommandTrigger.BUTTON.toString())
+        GlobalParameters.instance!!.voiceCommandTrigger = GlobalParameters.VoiceCommandTrigger.valueOf(prefVoiceTrigger!!)
+
         header = findViewById(R.id.header)
         languageSettingText = findViewById(R.id.settings_language)
         impairmentSettingText = findViewById(R.id.settings_impairment)
@@ -64,7 +77,7 @@ class SettingsActivity : AppCompatActivity() {
         layoutSettingText = findViewById(R.id.settings_layout)
         voiceCommandSettingText = findViewById(R.id.settings_voice_command)
 
-        textArray  = arrayOf(header,
+        textArray = arrayOf(header,
             languageSettingText,
             impairmentSettingText,
             colorSettingText,
@@ -95,13 +108,15 @@ class SettingsActivity : AppCompatActivity() {
 
         // language drop down menu
         languageDropDown = findViewById(R.id.language_dropdown)
+        // fill drop down with options (set in strings resource)
         languageDropDownAdapter = ArrayAdapter.createFromResource(this,
             R.array.language_options,
             android.R.layout.simple_spinner_item)
         languageDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         languageDropDown!!.adapter = languageDropDownAdapter
+        // set currently selected item to settings saved in GlobalParameters
+        // setSelection parameter is the index of the dropdown item to be selected, language.ordinal gets the index of the saved language in the language enumerator
         languageDropDown!!.setSelection(GlobalParameters.instance!!.language.ordinal)
-        //languageDropDown!!.setSelection(0, false)
 
         // visual impairment drop down menu
         impairmentDropDown = findViewById(R.id.impairment_dropdown)
@@ -111,7 +126,6 @@ class SettingsActivity : AppCompatActivity() {
         impairmentDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         impairmentDropDown!!.adapter = impairmentDropDownAdapter
         impairmentDropDown!!.setSelection(GlobalParameters.instance!!.visualImpairment.ordinal)
-        //impairmentDropDown!!.setSelection(0, false)
         var previousImpairmentSelection = impairmentDropDown!!.selectedItemPosition
 
         // color drop down menu
@@ -122,13 +136,12 @@ class SettingsActivity : AppCompatActivity() {
         colorsDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         colorsDropDown!!.adapter = colorsDropDownAdapter
         colorsDropDown!!.setSelection(GlobalParameters.instance!!.colorChoice.ordinal)
-        //colorsDropDown!!.setSelection(0, false)
         var previousColorSelection = colorsDropDown!!.selectedItemPosition
 
-        // layout change toggle
-        layoutToggle = findViewById(R.id.layout_toggle)
-        layoutToggle!!.isChecked = GlobalParameters.instance!!.layoutSwitch == true
-        var previousLayoutToggleState = layoutToggle!!.isChecked
+        // layout change switch
+        layoutSwitch = findViewById(R.id.layout_switch)
+        layoutSwitch!!.isChecked = GlobalParameters.instance!!.layoutSwitch == true
+        var previousLayoutSwitchState = layoutSwitch!!.isChecked
 
         // voice command drop down menu
         voiceCommandDropDown = findViewById(R.id.voice_command_dropdown)
@@ -140,8 +153,6 @@ class SettingsActivity : AppCompatActivity() {
         voiceCommandDropDown!!.setSelection(GlobalParameters.instance!!.voiceCommandTrigger.ordinal)
         var previousVoiceCommandSelection = voiceCommandDropDown!!.selectedItemPosition
 
-        //val languages = resources.getStringArray(R.array.language_options)
-
         // on language changed
         languageDropDown!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -150,33 +161,36 @@ class SettingsActivity : AppCompatActivity() {
                 position: Int,
                 id: Long
             ) {
+                // save selected language globally
                 GlobalParameters.instance!!.language = GlobalParameters.Language.values()[position]
+
+                // change all texts to the strings of the selected language (position == 0: EN, position == 1: DE)
                 GlobalParameters.instance!!.changeTextLanguage(textArray!!, newStringsArray!![position])
+
+                // update dropdown menus
                 impairmentDropDownAdapter = ArrayAdapter.createFromResource(this@SettingsActivity,
                     impairmentOptions!![position],
                     android.R.layout.simple_spinner_item)
+                impairmentDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                impairmentDropDown!!.adapter = impairmentDropDownAdapter
+                // make sure that the same item as before the language change is selected
+                impairmentDropDown!!.setSelection(previousImpairmentSelection)
 
                 colorsDropDownAdapter = ArrayAdapter.createFromResource(this@SettingsActivity,
                     colorOptions!![position],
                     android.R.layout.simple_spinner_item)
-
-                voiceCommandDropDownAdapter = ArrayAdapter.createFromResource(this@SettingsActivity,
-                    voiceCommandOptions!![position],
-                    android.R.layout.simple_spinner_item)
-
-                impairmentDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                impairmentDropDown!!.adapter = impairmentDropDownAdapter
-                impairmentDropDown!!.setSelection(previousImpairmentSelection)
-
                 colorsDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 colorsDropDown!!.adapter = colorsDropDownAdapter
                 colorsDropDown!!.setSelection(previousColorSelection)
 
-                layoutToggle!!.isChecked = previousLayoutToggleState
-
+                voiceCommandDropDownAdapter = ArrayAdapter.createFromResource(this@SettingsActivity,
+                    voiceCommandOptions!![position],
+                    android.R.layout.simple_spinner_item)
                 voiceCommandDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 voiceCommandDropDown!!.adapter = voiceCommandDropDownAdapter
                 voiceCommandDropDown!!.setSelection(previousVoiceCommandSelection)
+
+                layoutSwitch!!.isChecked = previousLayoutSwitchState
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -191,6 +205,7 @@ class SettingsActivity : AppCompatActivity() {
                 id: Long
             ) {
                 previousImpairmentSelection = impairmentDropDown!!.selectedItemPosition
+                // update globally saved parameters
                 GlobalParameters.instance!!.visualImpairment = GlobalParameters.VisualImpairment.values()[position]
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -210,14 +225,14 @@ class SettingsActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // TODO: on toggle state changed
-        layoutToggle!!.setOnCheckedChangeListener { _, isChecked ->
+        // TODO: on switch state changed
+        layoutSwitch!!.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                previousLayoutToggleState = true
+                previousLayoutSwitchState = true
                 GlobalParameters.instance!!.layoutSwitch = true
                 // change layout to 2 versions
             } else {
-                previousLayoutToggleState = false
+                previousLayoutSwitchState = false
                 GlobalParameters.instance!!.layoutSwitch = false
                 // change layout to normal version
             }
@@ -239,7 +254,24 @@ class SettingsActivity : AppCompatActivity() {
 
     }
 
-
+    // save data to SharedPreferences
+    override fun onPause() {
+        super.onPause()
+        val sharedPref = this.getSharedPreferences(getString(R.string.settings_preferences_key), Context.MODE_PRIVATE) ?: return
+        with(sharedPref.edit()) {
+            putString(getString(R.string.settings_language_key),
+                GlobalParameters.instance!!.language.toString())
+            putString(getString(R.string.settings_impairment_key),
+                GlobalParameters.instance!!.visualImpairment.toString())
+            putString(getString(R.string.settings_color_key),
+                GlobalParameters.instance!!.colorChoice.toString())
+            putBoolean(getString(R.string.settings_layout_key),
+                GlobalParameters.instance!!.layoutSwitch)
+            putString(getString(R.string.settings_voice_command_key),
+                GlobalParameters.instance!!.voiceCommandTrigger.toString())
+            apply()
+        }
+    }
 
 
     }

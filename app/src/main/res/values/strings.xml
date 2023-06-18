@@ -10,6 +10,13 @@
 
     <string name="placeholder_text">...</string>
 
+    <string name="settings_preferences_key">SETTINGS_KEY</string>
+    <string name="settings_language_key">LANGUAGE_KEY</string>
+    <string name="settings_impairment_key">IMPAIRMENT_KEY</string>
+    <string name="settings_color_key">COLOR_KEY</string>
+    <string name="settings_layout_key">LAYOUT_KEY</string>
+    <string name="settings_voice_command_key">VOICE_COMMAND_KEY</string>
+
     <string name="stt_button_content">Tap to speak</string>
     <string name="stt_button_content_DE">Tippe zum Sprechen</string>
 
@@ -36,11 +43,13 @@
 
     <string-array name="impairment_options">
         <item>blind</item>
-        <item>50% blind</item>
+        <item>partially blind</item>
+        <item>color blind</item>
     </string-array>
     <string-array name="impairment_options_DE">
         <item>blind</item>
-        <item>50% blind</item>
+        <item>sehbehindert</item>
+        <item>farbenblind</item>
     </string-array>
 
     <string name="settings_colors">Design</string>
@@ -58,7 +67,7 @@
     </string-array>
 
     <string name="settings_layout">Add layout switch button</string>
-    <string name="settings_layout_DE">2 Layout-Versionen</string>
+    <string name="settings_layout_DE">2 Layout Versionen</string>
 
     <string name="settings_layout_explanation">If ON, each screen of the app will have two versions:
         a "blind" version that is condensed to its function for accessibility, and a "seeing" version that is more detailed,

@@ -9,6 +9,7 @@ open class GlobalParameters protected constructor() {
     var layoutSwitch : Boolean = false
     var voiceCommandTrigger: VoiceCommandTrigger = VoiceCommandTrigger.BUTTON
 
+    // order of the items needs to be the same as in the respective dropdown menus
     enum class Language {
         EN,
         DE
@@ -16,7 +17,8 @@ open class GlobalParameters protected constructor() {
 
     enum class VisualImpairment {
         BLIND,
-        FIFTY_PERCENT
+        PARTIALLY,
+        COLOR
     }
 
     enum class ColorChoice {
@@ -30,6 +32,7 @@ open class GlobalParameters protected constructor() {
         VOICE
     }
 
+    // make it a Singleton
     companion object {
         private var mInstance: GlobalParameters? = null
 

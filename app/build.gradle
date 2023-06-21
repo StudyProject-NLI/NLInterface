@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -49,4 +50,7 @@ dependencies {
 
     // Set up the location feature dependency
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+    // GSON dependency
+    implementation 'com.google.code.gson:gson:2.8.5'
 }

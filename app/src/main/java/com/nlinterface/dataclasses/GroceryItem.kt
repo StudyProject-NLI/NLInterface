@@ -1,7 +1,12 @@
 package com.nlinterface.dataclasses
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-data class GroceryItem(val itemName: String) {
-
-    var inCart: Int = 0
+@Parcelize
+data class GroceryItem(
+    val itemName: String,
+    val id: Int,
+    var inCart: Boolean
+    ): Parcelable {
 
 }

@@ -17,10 +17,11 @@ import com.nlinterface.R
 import com.nlinterface.adapters.GroceryListAdapter
 import com.nlinterface.databinding.ActivityGroceryListBinding
 import com.nlinterface.dataclasses.GroceryItem
+import com.nlinterface.interfaces.GroceryListCallback
 import com.nlinterface.viewmodels.GroceryListViewModel
 
 
-class GroceryListActivity : AppCompatActivity() {
+class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
     private lateinit var binding: ActivityGroceryListBinding
     private lateinit var groceryItemList: ArrayList<GroceryItem>
@@ -42,7 +43,7 @@ class GroceryListActivity : AppCompatActivity() {
         val rvGroceryList = findViewById<View>(R.id.grocery_list_rv) as RecyclerView
         groceryItemList = viewModel.groceryList
 
-        adapter = GroceryListAdapter(groceryItemList)
+        adapter = GroceryListAdapter(groceryItemList, this)
         rvGroceryList.adapter = adapter
         rvGroceryList.layoutManager = LinearLayoutManager(this)
 
@@ -95,6 +96,12 @@ class GroceryListActivity : AppCompatActivity() {
             builder.create()
         }
         alertDialog?.show()
+    }
+
+    override fun onLongClick(item: GroceryItem) {
+        val index = groceryItemList.indexOf(item)
+        viewModel.deleteGroceryItem(item)
+        adapter?.notifyItemRemoved(index)
     }
 
 }

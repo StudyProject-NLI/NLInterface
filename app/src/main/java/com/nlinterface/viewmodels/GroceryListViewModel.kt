@@ -10,7 +10,9 @@ import java.io.BufferedReader
 import java.io.File
 
 
-class GroceryListViewModel(application: Application) : AndroidViewModel(application) {
+class GroceryListViewModel (
+    application: Application
+) : AndroidViewModel(application) {
 
     private val context = application
     private val groceryListFileName = "GroceryList.json"

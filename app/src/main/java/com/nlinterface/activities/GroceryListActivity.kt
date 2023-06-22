@@ -1,13 +1,13 @@
 package com.nlinterface.activities
 
 import android.app.AlertDialog
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
@@ -18,6 +18,8 @@ import com.nlinterface.adapters.GroceryListAdapter
 import com.nlinterface.databinding.ActivityGroceryListBinding
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.interfaces.GroceryListCallback
+import com.nlinterface.utility.setViewRelativeHeight
+import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.GroceryListViewModel
 
 
@@ -53,10 +55,8 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             onAddItemButtonClick()
         }
 
-        val voiceActivationButton = findViewById<View>(R.id.grocery_list_bt) as ImageButton
-        val width = resources.displayMetrics.widthPixels
-        val height = resources.displayMetrics.heightPixels / 3
-        voiceActivationButton.layoutParams = ConstraintLayout.LayoutParams(width, height)
+        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
 
         voiceActivationButton.setOnClickListener {
             onAddVoiceActivationButtonClick()

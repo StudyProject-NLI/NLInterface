@@ -6,6 +6,22 @@
     android:layout_height="match_parent"
     android:id="@+id/activity_grocery_list_cl">
 
+    <include
+        android:id="@+id/include"
+        layout="@layout/voice_activation_button" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/grocery_list_rv"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/add_item_bt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/include" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/add_item_bt"
         android:layout_width="match_parent"
@@ -21,20 +37,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1" />
-
-    <include layout="@layout/voice_activation_button"
-        android:id="@+id/voice_activation_bt" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/grocery_list_rv"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:overScrollMode="never"
-        android:paddingBottom="20dp"
-        android:clipToPadding="false"
-        app:layout_constraintBottom_toTopOf="@+id/add_item_bt"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/voice_activation_bt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

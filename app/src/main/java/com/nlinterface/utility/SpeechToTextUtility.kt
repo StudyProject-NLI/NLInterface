@@ -3,15 +3,25 @@ package com.nlinterface.utility
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings.Global.getString
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.view.View
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import com.nlinterface.R
+import com.nlinterface.activities.GroceryListActivity
+import com.nlinterface.activities.MainActivity
+import org.w3c.dom.Text
 
 class SpeechToTextUtility {
     private var speechRecognizer: SpeechRecognizer? = null
+    var commandsList: MutableList<String>? = null
+    var currentContext: Context? = null
 
     fun handleSpeechBegin(output: TextView, button: SpeechToTextButton) {
         output!!.setText(com.nlinterface.R.string.placeholder_text)
@@ -26,6 +36,7 @@ class SpeechToTextUtility {
     }
 
     fun createSpeechRecognizer(context: Context, output: TextView) {
+        currentContext = context
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle) {}
@@ -42,6 +53,7 @@ class SpeechToTextUtility {
                     // The results are added in decreasing order of confidence to the list
                     val result = matches[0]
                     output!!.text = result
+                    handleCommand(result, output)
                 }
             }
 
@@ -64,6 +76,16 @@ class SpeechToTextUtility {
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de") // remove this line for english version; TODO: global setting for language
         return intent
+    }
+
+
+    private fun handleCommand(command: String, output: TextView) {
+        if (commandsList!!.contains(command)) {
+            val intent = Intent(currentContext!!, GroceryListActivity::class.java)
+            currentContext!!.startActivity(intent)
+        } else {
+            output.text = "$command cannot be recognized"
+        }
     }
 }
 

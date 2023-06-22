@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -61,6 +62,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         verifyAudioPermissions()
+        initCommands()
+
+        outputText = findViewById(R.id.outputTV)
+
+        sttTrigger = findViewById(R.id.stt_btn)
+        sttTrigger!!.setOnClickListener {
+            if (isListening) {
+                speechToTextUtility.handleSpeechEnd(outputText!!, sttTrigger!!)
+                isListening = false
+            } else {
+                speechToTextUtility.handleSpeechBegin(outputText!!, sttTrigger!!)
+                isListening = true
+            }
+        }
+
+        speechToTextUtility.createSpeechRecognizer(this, outputText!!)
     }
 
     override fun onRequestPermissionsResult(
@@ -84,6 +101,11 @@ class MainActivity : AppCompatActivity() {
                 STT_PERMISSION_REQUEST_CODE
             )
         }
+    }
+
+    private fun initCommands() {
+        speechToTextUtility.commandsList = ArrayList()
+        speechToTextUtility.commandsList!!.add(getString(R.string.goto_grocerylist_command))
     }
 
 }

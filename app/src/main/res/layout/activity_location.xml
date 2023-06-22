@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="4dp"
+    android:background="@color/white"
+    tools:context="activities.LocationActivity">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="70dp"
+        android:background="#15434d"
+        android:padding="5dp"
+        android:text="Click to get your current location"
+        android:textColor="#fff"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:text="Get GPS Location"
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:background="#15434d"
+        android:padding="5dp"
+        />
+
+    <Button
+        android:text="Get location"
+        android:id="@+id/getLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="157dp"
+        android:layout_marginBottom="522dp"
+        android:backgroundTint="#487680"
+        android:textColor="#fff"
+        android:textSize="18dp"/>
+
+    <Button
+        android:id="@+id/googleMapsLocationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="522dp"
+        android:layout_marginBottom="157dp"
+        android:backgroundTint="#487680"
+        android:text="Show on Google Maps"
+        android:textColor="#fff"
+        android:textSize="18dp" />
+
+</RelativeLayout>

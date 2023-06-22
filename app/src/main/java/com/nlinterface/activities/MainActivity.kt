@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -13,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.WindowCompat
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
@@ -37,11 +39,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        verifyAudioPermissions()
+        val groceryListButton: Button = findViewById<View>(com.nlinterface.R.id.grocery_list) as Button
+        groceryListButton.setOnClickListener { view ->
+            val intent = Intent(view.context, GroceryListActivity::class.java)
+            view.context.startActivity(intent)
+        }
 
-        val exampleNextActivity: Button = findViewById<View>(R.id.next_activity) as Button
-        exampleNextActivity.setOnClickListener { view ->
-            val intent = Intent(view.context, NextActivityExample::class.java)
+        val navigationActivityButton: Button = findViewById<View>(R.id.navigation) as Button
+        navigationActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, NavigationActivity::class.java)
             view.context.startActivity(intent)
         }
 
@@ -52,6 +58,30 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
+        val locationActivityButton: Button = findViewById<View>(R.id.location) as Button
+        locationActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, LocationActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
+        verifyAudioPermissions()
+        initCommands()
+
+        outputText = findViewById(R.id.outputTV)
+
+        sttTrigger = findViewById(R.id.stt_btn)
+        sttTrigger!!.setOnClickListener {
+            if (isListening) {
+                speechToTextUtility.handleSpeechEnd(outputText!!, sttTrigger!!)
+                isListening = false
+            } else {
+                speechToTextUtility.handleSpeechBegin(outputText!!, sttTrigger!!)
+                isListening = true
+            }
+        }
+
+        speechToTextUtility.createSpeechRecognizer(this, outputText!!)
     }
 
     override fun onRequestPermissionsResult(
@@ -75,6 +105,11 @@ class MainActivity : AppCompatActivity() {
                 STT_PERMISSION_REQUEST_CODE
             )
         }
+    }
+
+    private fun initCommands() {
+        speechToTextUtility.commandsList = ArrayList()
+        speechToTextUtility.commandsList!!.add(getString(R.string.goto_grocerylist_command))
     }
 
 }

@@ -33,7 +33,7 @@ class SpeechToTextUtility {
     fun handleSpeechEnd(output: TextView, button: SpeechToTextButton) {
         output!!.setText(R.string.stt_output_content)
         speechRecognizer!!.cancel()
-        button!!.setImageResource(com.nlinterface.R.drawable.ic_mic)
+        button!!.setImageResource(com.nlinterface.R.drawable.ic_mic_white)
     }
 
     fun createSpeechRecognizer(context: Context, output: TextView) {

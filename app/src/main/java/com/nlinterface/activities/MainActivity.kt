@@ -1,24 +1,18 @@
 package com.nlinterface.activities
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Bundle
-import android.provider.Settings.Global
-import android.speech.SpeechRecognizer
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.WindowCompat
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
-import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.SpeechToTextButton
 import com.nlinterface.utility.SpeechToTextUtility
 
@@ -26,6 +20,11 @@ import com.nlinterface.utility.SpeechToTextUtility
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    private var isListening = false
+    private var outputText: TextView? = null
+    private var sttTrigger: SpeechToTextButton? = null
+    private val speechToTextUtility = SpeechToTextUtility()
 
     companion object {
         // needed to verify the audio permission result
@@ -51,12 +50,11 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
-        val settingsActivity: Button = findViewById<View>(R.id.settings) as Button
-        settingsActivity.setOnClickListener { view ->
+        val settingsActivityButton: Button = findViewById<View>(R.id.settings) as Button
+        settingsActivityButton.setOnClickListener { view ->
             val intent = Intent(view.context, SettingsActivity::class.java)
             view.context.startActivity(intent)
         }
-
 
 
         val locationActivityButton: Button = findViewById<View>(R.id.location) as Button

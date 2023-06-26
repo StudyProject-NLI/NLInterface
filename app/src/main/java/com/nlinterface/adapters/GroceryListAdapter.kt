@@ -7,8 +7,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.nlinterface.R
 import com.nlinterface.dataclasses.GroceryItem
+import com.nlinterface.interfaces.GroceryListCallback
 
-class GroceryListAdapter(private val groceryItemList: ArrayList<GroceryItem>) : RecyclerView.Adapter<GroceryListAdapter.ViewHolder>() {
+class GroceryListAdapter(
+    private val data: ArrayList<GroceryItem>,
+    private val groceryListCallback: GroceryListCallback
+) : RecyclerView.Adapter<GroceryListAdapter.ViewHolder>() {
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
 
@@ -25,13 +29,18 @@ class GroceryListAdapter(private val groceryItemList: ArrayList<GroceryItem>) : 
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val groceryItem: GroceryItem = groceryItemList[position]
+        val groceryItem: GroceryItem = data[position]
         // Set item views based on your views and data model
         val textView = holder.groceryItemView
         textView.text = groceryItem.itemName
+
+        textView.setOnLongClickListener {
+            groceryListCallback.onLongClick(data[position])
+            true
+        }
     }
 
     override fun getItemCount(): Int {
-        return groceryItemList.size
+        return data.size
     }
 }

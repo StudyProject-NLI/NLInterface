@@ -6,40 +6,36 @@
     android:layout_height="match_parent"
     android:id="@+id/activity_grocery_list_cl">
 
-    <Button
-        android:id="@+id/add_item_bt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/add_item"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias=".9"
-        app:layout_constraintVertical_bias=".95"/>
+    <include
+        android:id="@+id/include"
+        layout="@layout/voice_activation_button" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/grocery_list_rv"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginVertical="15dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/add_item_bt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grocery_list_tv" />
+        app:layout_constraintTop_toBottomOf="@+id/include" />
 
-    <TextView
-        android:id="@+id/grocery_list_tv"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_item_bt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="@string/grocery_list"
-        android:textSize="22dp"
-        android:layout_marginVertical="15dp"
+        android:backgroundTint="@color/red"
+        android:insetBottom="0dp"
+        android:insetTop="0dp"
+        android:textSize="35dp"
+        android:text="@string/add_item"
+        app:cornerRadius="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias=".0"/>
+        app:layout_constraintVertical_bias="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,9 +4,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.content.res.Resources.Theme
 import android.os.LocaleList
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import com.nlinterface.R
 import com.nlinterface.activities.SettingsActivity
 import java.util.Locale
@@ -19,6 +21,7 @@ open class GlobalParameters protected constructor() {
     var layoutSwitch : Boolean = false
     var voiceCommandTrigger: VoiceCommandTrigger = VoiceCommandTrigger.BUTTON
     var keepScreenOnSwitch : Boolean = false
+    var themeChoice: ThemeChoice = ThemeChoice.SYSTEM_DEFAULT
 
     lateinit var locale: Locale
 
@@ -43,6 +46,12 @@ open class GlobalParameters protected constructor() {
     enum class VoiceCommandTrigger {
         BUTTON,
         VOICE
+    }
+
+    enum class ThemeChoice {
+        SYSTEM_DEFAULT,
+        LIGHT,
+        DARK
     }
 
     // make it a Singleton
@@ -98,6 +107,26 @@ open class GlobalParameters protected constructor() {
 
         val prefKeepScreenOn = sharedPref.getBoolean(context.resources.getString(R.string.settings_keep_screen_on_key), false)
         GlobalParameters.instance!!.keepScreenOnSwitch = prefKeepScreenOn
+
+        val prefTheme = sharedPref.getString(
+            context.resources.getString(R.string.settings_theme_key),
+            GlobalParameters.ThemeChoice.SYSTEM_DEFAULT.toString()
+        )
+        GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.valueOf(prefTheme!!)
+    }
+    
+    fun updateTheme() {
+        when (instance!!.themeChoice) {
+            ThemeChoice.SYSTEM_DEFAULT -> AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            )
+            ThemeChoice.LIGHT -> AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_NO
+            )
+            ThemeChoice.DARK -> AppCompatDelegate.setDefaultNightMode(
+                AppCompatDelegate.MODE_NIGHT_YES
+            )
+        }
     }
 
 

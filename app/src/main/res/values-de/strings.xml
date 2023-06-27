@@ -35,7 +35,7 @@
         <item>sehbehindert</item>
         <item>farbenblind</item>
     </string-array>
-    <string name="settings_colors">Design</string>
+    <string name="settings_colors">Farbschema</string>
     <string-array name="color_options">
         <item>Standard</item>
         <item>Rot-Grün Sehschwäche</item>
@@ -51,5 +51,11 @@
         <item>Sprachbefehl</item>
     </string-array>
     <string name="settings_keep_screen_on">Bildschirm anlassen</string>
+    <string name="settings_theme">Design</string>
+    <string-array name="theme_options">
+        <item>Standard</item>
+        <item>hell</item>
+        <item>dunkel</item>
+    </string-array>
 
 </resources>

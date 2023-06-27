@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.Manifest
+import android.app.UiModeManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -14,6 +15,7 @@ import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import com.nlinterface.R
@@ -39,6 +41,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         GlobalParameters.instance!!.loadPreferences(this)
+
+        // process theme settings
+        GlobalParameters.instance!!.updateTheme()
 
         // process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch) {

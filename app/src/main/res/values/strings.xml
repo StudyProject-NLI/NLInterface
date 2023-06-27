@@ -22,6 +22,7 @@
     <string name="settings_layout_key" translatable="false">LAYOUT_KEY</string>
     <string name="settings_voice_command_key" translatable="false">VOICE_COMMAND_KEY</string>
     <string name="settings_keep_screen_on_key" translatable="false">KEEP_SCREEN_ON_KEY</string>
+    <string name="settings_theme_key" translatable="false">THEME_KEY</string>
 
     <string name="stt_button_content">Tap to speak</string>
 
@@ -45,7 +46,7 @@
         <item>color blind</item>
     </string-array>
 
-    <string name="settings_colors">Design</string>
+    <string name="settings_colors">Colors</string>
     <string-array name="color_options">
         <item>default</item>
         <item>red-green color blindness</item>
@@ -64,6 +65,13 @@
     </string-array>
 
     <string name="settings_keep_screen_on">Keep screen on</string>
+
+    <string name="settings_theme">Theme</string>
+    <string-array name="theme_options">
+        <item>system default</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
 
     <string name="goto_grocerylist_command">Go to grocery list</string>
 </resources>

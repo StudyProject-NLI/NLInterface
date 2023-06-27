@@ -1,8 +1,11 @@
 package com.nlinterface.activities
 
+import android.app.UiModeManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.provider.Settings.Global
 import android.view.View
 import android.view.WindowManager
@@ -11,9 +14,16 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.graphics.component1
 import androidx.core.view.WindowCompat
+import androidx.core.view.get
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.GlobalParameters
@@ -46,6 +56,10 @@ class SettingsActivity : AppCompatActivity() {
     private var keepScreenOnSettingText: TextView? = null
     private var keepScreenOnSwitch: SwitchCompat? = null
 
+    private var themeSettingText: TextView? = null
+    private var themeDropDown: Spinner? = null
+    private var themeDropDownAdapter: ArrayAdapter<CharSequence>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -67,6 +81,7 @@ class SettingsActivity : AppCompatActivity() {
         layoutSettingText = findViewById(R.id.settings_layout)
         voiceCommandSettingText = findViewById(R.id.settings_voice_command)
         keepScreenOnSettingText = findViewById(R.id.settings_keep_screen_on)
+        themeSettingText = findViewById(R.id.settings_theme)
     }
 
     override fun onStart() {
@@ -84,7 +99,7 @@ class SettingsActivity : AppCompatActivity() {
         languageDropDown!!.adapter = languageDropDownAdapter
         // set currently selected item to settings saved in GlobalParameters
         // setSelection parameter is the index of the dropdown item to be selected, language.ordinal gets the index of the saved language in the language enumerator
-        languageDropDown!!.setSelection(GlobalParameters.instance!!.language.ordinal)
+        languageDropDown!!.setSelection(GlobalParameters.instance!!.language.ordinal, false)
         var previousLanguageSelection = languageDropDown!!.selectedItemPosition
 
         // visual impairment drop down menu
@@ -99,7 +114,7 @@ class SettingsActivity : AppCompatActivity() {
         )
         impairmentDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         impairmentDropDown!!.adapter = impairmentDropDownAdapter
-        impairmentDropDown!!.setSelection(GlobalParameters.instance!!.visualImpairment.ordinal)
+        impairmentDropDown!!.setSelection(GlobalParameters.instance!!.visualImpairment.ordinal, false)
         var previousImpairmentSelection = impairmentDropDown!!.selectedItemPosition
 
         // color drop down menu
@@ -111,7 +126,7 @@ class SettingsActivity : AppCompatActivity() {
         )
         colorsDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         colorsDropDown!!.adapter = colorsDropDownAdapter
-        colorsDropDown!!.setSelection(GlobalParameters.instance!!.colorChoice.ordinal)
+        colorsDropDown!!.setSelection(GlobalParameters.instance!!.colorChoice.ordinal, false)
         var previousColorSelection = colorsDropDown!!.selectedItemPosition
 
         // layout change switch
@@ -128,13 +143,25 @@ class SettingsActivity : AppCompatActivity() {
         )
         voiceCommandDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         voiceCommandDropDown!!.adapter = voiceCommandDropDownAdapter
-        voiceCommandDropDown!!.setSelection(GlobalParameters.instance!!.voiceCommandTrigger.ordinal)
+        voiceCommandDropDown!!.setSelection(GlobalParameters.instance!!.voiceCommandTrigger.ordinal, false)
         var previousVoiceCommandSelection = voiceCommandDropDown!!.selectedItemPosition
 
         // keep screen on switch
         keepScreenOnSwitch = findViewById(R.id.keep_screen_on_switch)
         keepScreenOnSwitch!!.isChecked = GlobalParameters.instance!!.keepScreenOnSwitch == true
         var previousKeepScreenOnSwitchState = keepScreenOnSwitch!!.isChecked
+
+        // theme drop down menu
+        themeDropDown = findViewById(R.id.theme_dropdown)
+        themeDropDownAdapter = ArrayAdapter.createFromResource(
+            this@SettingsActivity,
+            R.array.theme_options,
+            android.R.layout.simple_spinner_item
+        )
+        themeDropDownAdapter!!.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        themeDropDown!!.adapter = themeDropDownAdapter
+        themeDropDown!!.setSelection(GlobalParameters.instance!!.themeChoice.ordinal, false)
+        var previousThemeSelection = themeDropDown!!.selectedItemPosition
 
 
         // on language changed
@@ -148,15 +175,17 @@ class SettingsActivity : AppCompatActivity() {
                 // save selected language globally
                 GlobalParameters.instance!!.language = GlobalParameters.Language.values()[position]
 
-                impairmentDropDown!!.setSelection(previousImpairmentSelection)
+                impairmentDropDown!!.setSelection(previousImpairmentSelection, false)
 
-                colorsDropDown!!.setSelection(previousColorSelection)
+                colorsDropDown!!.setSelection(previousColorSelection, false)
 
-                voiceCommandDropDown!!.setSelection(previousVoiceCommandSelection)
+                voiceCommandDropDown!!.setSelection(previousVoiceCommandSelection, false)
 
                 layoutSwitch!!.isChecked = previousLayoutSwitchState
 
                 keepScreenOnSwitch!!.isChecked = previousKeepScreenOnSwitchState
+
+                themeDropDown!!.setSelection(previousThemeSelection, false)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -225,20 +254,39 @@ class SettingsActivity : AppCompatActivity() {
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
 
-        // TODO: on keep screen on switch state changed
+        // on keep screen on switch state changed
         keepScreenOnSwitch!!.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 previousKeepScreenOnSwitchState = true
                 GlobalParameters.instance!!.keepScreenOnSwitch = true
-                // keep screen on
             } else {
                 previousKeepScreenOnSwitchState = false
                 GlobalParameters.instance!!.keepScreenOnSwitch = false
-                // don't keep screen on
             }
         }
 
+        // on theme changed
+        themeDropDown!!.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    previousThemeSelection = themeDropDown!!.selectedItemPosition
+                    GlobalParameters.instance!!.themeChoice =
+                            GlobalParameters.ThemeChoice.values()[position]
+                    GlobalParameters.instance!!.updateTheme()
+
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+
     }
+
+
 
     // save data to SharedPreferences
     override fun onPause() {
@@ -271,6 +319,10 @@ class SettingsActivity : AppCompatActivity() {
             putBoolean(
                 getString(R.string.settings_keep_screen_on_key),
                 GlobalParameters.instance!!.keepScreenOnSwitch
+            )
+            putString(
+                getString(R.string.settings_theme_key),
+                GlobalParameters.instance!!.themeChoice.toString()
             )
             apply()
         }

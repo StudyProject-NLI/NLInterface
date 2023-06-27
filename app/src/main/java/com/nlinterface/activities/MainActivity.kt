@@ -5,8 +5,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
+import android.provider.Settings.Global
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -35,6 +37,15 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        GlobalParameters.instance!!.loadPreferences(this)
+
+        // process keep screen on settings
+        if (GlobalParameters.instance!!.keepScreenOnSwitch) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
         val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
         groceryListButton.setOnClickListener { view ->

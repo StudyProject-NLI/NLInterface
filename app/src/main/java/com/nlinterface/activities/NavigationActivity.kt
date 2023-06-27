@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.nlinterface.R.*
+import com.nlinterface.utility.GlobalParameters
 
 
 class NavigationActivity : AppCompatActivity() {
@@ -19,6 +21,13 @@ class NavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.navigation_activity)
+
+        // process keep screen on settings
+        if (GlobalParameters.instance!!.keepScreenOnSwitch) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
         addressEditText = findViewById(id.addressEditText)
         openMapsButton = findViewById(id.openMapsButton)

@@ -5,10 +5,12 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.provider.Settings.Global
 import android.view.View
+import android.view.WindowManager
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.WindowCompat
@@ -41,6 +43,9 @@ class SettingsActivity : AppCompatActivity() {
     private var voiceCommandDropDown: Spinner? = null
     private var voiceCommandDropDownAdapter: ArrayAdapter<CharSequence>? = null
 
+    private var keepScreenOnSettingText: TextView? = null
+    private var keepScreenOnSwitch: SwitchCompat? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -48,36 +53,12 @@ class SettingsActivity : AppCompatActivity() {
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // get saved data from SharedPreferences or create SharedPreferences
-        // and set the respective GlobalParameters to the saved data
-        val sharedPref: SharedPreferences = this.getSharedPreferences(
-            getString(R.string.settings_preferences_key),
-            Context.MODE_PRIVATE
-        ) ?: return
-        val prefLanguage = sharedPref.getString(
-            getString(R.string.settings_language_key),
-            GlobalParameters.Language.EN.toString()
-        )
-        GlobalParameters.instance!!.language = GlobalParameters.Language.valueOf(prefLanguage!!)
-        val prefImpairment = sharedPref.getString(
-            getString(R.string.settings_impairment_key),
-            GlobalParameters.VisualImpairment.BLIND.toString()
-        )
-        GlobalParameters.instance!!.visualImpairment =
-            GlobalParameters.VisualImpairment.valueOf(prefImpairment!!)
-        val prefColor = sharedPref.getString(
-            getString(R.string.settings_color_key),
-            GlobalParameters.ColorChoice.DEFAULT.toString()
-        )
-        GlobalParameters.instance!!.colorChoice = GlobalParameters.ColorChoice.valueOf(prefColor!!)
-        val prefLayout = sharedPref.getBoolean(getString(R.string.settings_layout_key), false)
-        GlobalParameters.instance!!.layoutSwitch = prefLayout
-        val prefVoiceTrigger = sharedPref.getString(
-            getString(R.string.settings_voice_command_key),
-            GlobalParameters.VoiceCommandTrigger.BUTTON.toString()
-        )
-        GlobalParameters.instance!!.voiceCommandTrigger =
-            GlobalParameters.VoiceCommandTrigger.valueOf(prefVoiceTrigger!!)
+        // process keep screen on settings
+        if (GlobalParameters.instance!!.keepScreenOnSwitch) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
         header = findViewById(R.id.header)
         languageSettingText = findViewById(R.id.settings_language)
@@ -85,6 +66,7 @@ class SettingsActivity : AppCompatActivity() {
         colorSettingText = findViewById(R.id.settings_colors)
         layoutSettingText = findViewById(R.id.settings_layout)
         voiceCommandSettingText = findViewById(R.id.settings_voice_command)
+        keepScreenOnSettingText = findViewById(R.id.settings_keep_screen_on)
     }
 
     override fun onStart() {
@@ -149,6 +131,11 @@ class SettingsActivity : AppCompatActivity() {
         voiceCommandDropDown!!.setSelection(GlobalParameters.instance!!.voiceCommandTrigger.ordinal)
         var previousVoiceCommandSelection = voiceCommandDropDown!!.selectedItemPosition
 
+        // keep screen on switch
+        keepScreenOnSwitch = findViewById(R.id.keep_screen_on_switch)
+        keepScreenOnSwitch!!.isChecked = GlobalParameters.instance!!.keepScreenOnSwitch == true
+        var previousKeepScreenOnSwitchState = keepScreenOnSwitch!!.isChecked
+
 
         // on language changed
         languageDropDown!!.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -168,6 +155,8 @@ class SettingsActivity : AppCompatActivity() {
                 voiceCommandDropDown!!.setSelection(previousVoiceCommandSelection)
 
                 layoutSwitch!!.isChecked = previousLayoutSwitchState
+
+                keepScreenOnSwitch!!.isChecked = previousKeepScreenOnSwitchState
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -206,7 +195,7 @@ class SettingsActivity : AppCompatActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        // TODO: on switch state changed
+        // TODO: on layout change switch state changed
         layoutSwitch!!.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 previousLayoutSwitchState = true
@@ -235,6 +224,19 @@ class SettingsActivity : AppCompatActivity() {
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
+
+        // TODO: on keep screen on switch state changed
+        keepScreenOnSwitch!!.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                previousKeepScreenOnSwitchState = true
+                GlobalParameters.instance!!.keepScreenOnSwitch = true
+                // keep screen on
+            } else {
+                previousKeepScreenOnSwitchState = false
+                GlobalParameters.instance!!.keepScreenOnSwitch = false
+                // don't keep screen on
+            }
+        }
 
     }
 
@@ -265,6 +267,10 @@ class SettingsActivity : AppCompatActivity() {
             putString(
                 getString(R.string.settings_voice_command_key),
                 GlobalParameters.instance!!.voiceCommandTrigger.toString()
+            )
+            putBoolean(
+                getString(R.string.settings_keep_screen_on_key),
+                GlobalParameters.instance!!.keepScreenOnSwitch
             )
             apply()
         }

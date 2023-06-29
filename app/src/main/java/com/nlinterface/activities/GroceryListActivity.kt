@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.nlinterface.R
@@ -20,6 +21,7 @@ import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.interfaces.GroceryListCallback
 import com.nlinterface.utility.setViewRelativeHeight
 import com.nlinterface.utility.setViewRelativeSize
+import com.nlinterface.utility.setViewRelativeWidth
 import com.nlinterface.viewmodels.GroceryListViewModel
 
 
@@ -61,6 +63,48 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         voiceActivationButton.setOnClickListener {
             onAddVoiceActivationButtonClick()
         }
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {return false}
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val groceryItem: GroceryItem =
+                    groceryItemList[viewHolder.adapterPosition]
+
+                val index = viewHolder.adapterPosition
+
+                viewModel.deleteGroceryItem(groceryItem)
+
+                adapter.notifyItemRemoved(index)
+            }
+        }).attachToRecyclerView(rvGroceryList)
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {return false}
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val groceryItem: GroceryItem =
+                    groceryItemList[viewHolder.adapterPosition]
+
+                val index = viewHolder.adapterPosition
+
+                viewModel.deleteGroceryItem(groceryItem)
+
+                adapter.notifyItemRemoved(index)
+            }
+        }).attachToRecyclerView(rvGroceryList)
     }
 
     override fun onDestroy() {
@@ -97,11 +141,11 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         }
         alertDialog?.show()
     }
-
+    
     override fun onLongClick(item: GroceryItem) {
         val index = groceryItemList.indexOf(item)
-        viewModel.deleteGroceryItem(item)
-        adapter?.notifyItemRemoved(index)
+        viewModel.placeGroceryItemInCart(item)
+        adapter.notifyItemChanged(index)
     }
 
 }

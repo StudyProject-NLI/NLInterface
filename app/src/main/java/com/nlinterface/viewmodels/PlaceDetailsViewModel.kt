@@ -12,7 +12,6 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.nlinterface.BuildConfig
-import com.nlinterface.dataclasses.PlaceItem
 import kotlinx.coroutines.CompletionHandler
 
 class PlaceDetailsViewModel(application: Application) : AndroidViewModel(application) {

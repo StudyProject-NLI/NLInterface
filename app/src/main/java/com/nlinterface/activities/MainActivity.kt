@@ -14,6 +14,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.internal.ApiKey
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
+import com.nlinterface.BuildConfig
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.*
@@ -49,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         val navigationActivityButton: Button = findViewById<View>(R.id.navigation_bt) as Button
         navigationActivityButton.setOnClickListener { view ->
-            val intent = Intent(view.context, NavigationActivity::class.java)
+            val intent = Intent(view.context, PlaceDetailsActivity::class.java)
             view.context.startActivity(intent)
         }
 

@@ -23,7 +23,7 @@ class NextActivityExample : AppCompatActivity() {
         setContentView(binding.root)
 
         // process keep screen on settings
-        if (GlobalParameters.instance!!.keepScreenOnSwitch) {
+        if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

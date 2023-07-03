@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -20,164 +21,77 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:layout_width="209dp"
-        android:layout_height="632dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="24dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header">
-
-        <TextView
-            android:id="@+id/settings_language"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="60dp"
-            android:autoSizeTextType="uniform"
-            android:text="@string/settings_language"
-            android:textAlignment="viewStart"
-            android:textSize="24sp" />
-
-        <TextView
-            android:id="@+id/settings_impairment"
-            android:layout_width="142dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="40dp"
-            android:autoSizeTextType="uniform"
-            android:text="@string/settings_impairment"
-            android:textAlignment="viewStart"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/settings_colors"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="40dp"
-            android:autoSizeTextType="uniform"
-            android:text="@string/settings_colors"
-            android:textAlignment="viewStart"
-            android:textSize="24sp" />
-
-        <TextView
-            android:id="@+id/settings_layout"
-            android:layout_width="154dp"
-            android:layout_height="61dp"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="40dp"
-            android:autoSizeTextType="uniform"
-            android:hint="@string/settings_layout_explanation"
-            android:text="@string/settings_layout"
-            android:textAlignment="viewStart"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/settings_voice_command"
-            android:layout_width="150dp"
-            android:layout_height="49dp"
-            android:layout_marginStart="26dp"
-            android:layout_marginTop="40dp"
-            android:autoSizeTextType="uniform"
-            android:text="@string/settings_voice_command"
-            android:textAlignment="viewStart"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/settings_keep_screen_on"
-            android:layout_width="150dp"
-            android:layout_height="49dp"
-            android:layout_marginStart="26dp"
-            android:layout_marginTop="40dp"
-            android:autoSizeTextType="uniform"
-            android:text="@string/settings_keep_screen_on"
-            android:textAlignment="viewStart"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/settings_theme"
-            android:layout_width="150dp"
-            android:layout_height="49dp"
-            android:layout_marginStart="26dp"
-            android:layout_marginTop="20dp"
-            android:autoSizeTextType="uniform"
-            android:text="@string/settings_theme"
-            android:textAlignment="viewStart"
-            android:textSize="20sp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="194dp"
-        android:layout_height="619dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="4dp"
-        android:orientation="vertical"
+    <Button
+        android:id="@+id/settings_impairment"
+        android:layout_width="313dp"
+        android:layout_height="58dp"
+        android:layout_marginStart="49dp"
+        android:layout_marginTop="74dp"
+        android:layout_marginEnd="49dp"
+        android:text="@string/settings_impairment"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header" />
 
-        <Spinner
-            android:id="@+id/language_dropdown"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="56dp"
-            android:layout_marginEnd="25dp"
-            android:background="#F3C27A"
-            android:labelFor="@id/settings_language" />
+    <Button
+        android:id="@+id/settings_colors"
+        android:layout_width="148dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="154dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="154dp"
+        android:text="@string/settings_colors"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_impairment" />
 
-        <Spinner
-            android:id="@+id/impairment_dropdown"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="25dp"
-            android:background="#F3C27A"
-            android:labelFor="@id/settings_impairment" />
+    <Button
+        android:id="@+id/settings_layout"
+        android:layout_width="211dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="100dp"
+        android:text="@string/settings_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_colors" />
 
-        <Spinner
-            android:id="@+id/colors_dropdown"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="38dp"
-            android:layout_marginEnd="25dp"
-            android:background="#F3C27A"
-            android:labelFor="@id/settings_colors" />
+    <Button
+        android:id="@+id/settings_voice_command"
+        android:layout_width="233dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="95dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="95dp"
+        android:text="@string/settings_voice_command"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_layout" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/layout_switch"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="35dp"
-            android:layout_marginEnd="25dp"
-            android:labelFor="@id/settings_layout" />
+    <Button
+        android:id="@+id/settings_keep_screen_on"
+        android:layout_width="158dp"
+        android:layout_height="63dp"
+        android:layout_marginStart="130dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="130dp"
+        android:text="@string/settings_keep_screen_on"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.571"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_voice_command" />
 
-        <Spinner
-            android:id="@+id/voice_command_dropdown"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="25dp"
-            android:background="#F3C27A"
-            android:labelFor="@id/settings_voice_command" />
-
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/keep_screen_on_switch"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="35dp"
-            android:layout_marginEnd="25dp"
-            android:labelFor="@id/settings_layout" />
-
-        <Spinner
-            android:id="@+id/theme_dropdown"
-            android:layout_width="150dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginEnd="25dp"
-            android:background="#F3C27A"
-            android:labelFor="@id/settings_theme" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/settings_theme"
+        android:layout_width="115dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="149dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="149dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_keep_screen_on" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

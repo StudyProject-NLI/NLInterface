@@ -1,23 +1,18 @@
 package com.nlinterface.activities
 
 import android.Manifest
-import android.app.UiModeManager
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.os.Bundle
-import android.provider.Settings.Global
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
-import androidx.core.view.WindowCompat
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.*
@@ -40,17 +35,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         GlobalParameters.instance!!.loadPreferences(this)
-
-        // process theme settings
-        GlobalParameters.instance!!.updateTheme()
-
-        // process keep screen on settings
-        if (GlobalParameters.instance!!.keepScreenOnSwitch) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
 
         val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
         groceryListButton.setOnClickListener { view ->
@@ -78,6 +64,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         verifyAudioPermissions()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        // process keep screen on settings
+        if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
+        // process theme settings
+        GlobalParameters.instance!!.updateTheme()
     }
 
     override fun onRequestPermissionsResult(

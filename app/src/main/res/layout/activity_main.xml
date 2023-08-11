@@ -49,6 +49,21 @@
             app:layout_constraintTop_toBottomOf="@+id/grocery_list_bt"
             app:strokeWidth="0dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/motor_module_bt_bt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:paddingVertical="25dp"
+            android:text="@string/motor_module"
+            android:textSize="45sp"
+            app:cornerRadius="13dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/navigation_bt"
+            app:strokeWidth="0dp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

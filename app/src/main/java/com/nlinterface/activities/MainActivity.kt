@@ -53,6 +53,12 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
+        val MotorModuleButton: Button = findViewById<View>(R.id.motor_module_bt) as Button
+        navigationActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, NavigationActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
         val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
 

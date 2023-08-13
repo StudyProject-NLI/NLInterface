@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="grocery_list">Grocery List</string>
+    <string name="motor_module">Motor Module</string>
     <string name="navigation">Navigation</string>
     <string name="location">Location</string>
     <string name="add_item">Add Item</string>
@@ -74,4 +75,12 @@
         <item>light theme</item>
         <item>dark theme</item>
     </string-array>
+    <string name="enter_angle">Enter angle</string>
+    <string name="calculate">Calculate</string>
+    <string name="enter_address" />
+    <string name="open_in_maps" />
+    <string name="open_maps">Open Maps</string>
+    <string name="save_location">Save Location</string>
+    <string name="open_saved_locations">Open Saved Locations</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -57,11 +57,12 @@ class MainActivity : AppCompatActivity() {
             onAddVoiceActivationButtonClick()
         }
 
-        val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
+        //TODO: main activity layout needs to be adjusted to show more buttons
+        /*val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
         settingsActivityButton.setOnClickListener { view ->
             val intent = Intent(view.context, SettingsActivity::class.java)
             view.context.startActivity(intent)
-        }
+        }*/
 
         verifyAudioPermissions()
     }

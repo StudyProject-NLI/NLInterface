@@ -18,17 +18,17 @@ class SettingsActivity : AppCompatActivity() {
 
     private var header: TextView? = null
 
-    private lateinit var impairmentOptions: MutableList<String>
-    private var impairmentButton: Button? = null
+    //private lateinit var impairmentOptions: MutableList<String>
+    //private var impairmentButton: Button? = null
 
-    private lateinit var colorOptions: MutableList<String>
-    private var colorButton: Button? = null
+    //private lateinit var colorOptions: MutableList<String>
+    //private var colorButton: Button? = null
 
-    private lateinit var layoutSwitchOptions: MutableList<String>
-    private var layoutSwitchButton: Button? = null
+    //private lateinit var layoutSwitchOptions: MutableList<String>
+    //private var layoutSwitchButton: Button? = null
 
-    private lateinit var voiceCommandOptions: MutableList<String>
-    private var voiceCommandSwitchButton: Button? = null
+    //private lateinit var voiceCommandOptions: MutableList<String>
+    //private var voiceCommandSwitchButton: Button? = null
 
     private lateinit var keepScreenOnOptions: MutableList<String>
     private var keepScreenOnButton: Button? = null
@@ -51,7 +51,7 @@ class SettingsActivity : AppCompatActivity() {
 
         header = findViewById(R.id.header)
 
-        impairmentOptions = mutableListOf()
+        /*impairmentOptions = mutableListOf()
         resources.getStringArray(R.array.impairment_options).forEach { option ->
             impairmentOptions.add(option)
         }
@@ -63,21 +63,21 @@ class SettingsActivity : AppCompatActivity() {
             colorOptions.add(option)
         }
         colorButton = findViewById(R.id.settings_colors)
-        colorButton!!.text = colorOptions[GlobalParameters.instance!!.colorChoice.ordinal]
+        colorButton!!.text = colorOptions[GlobalParameters.instance!!.colorChoice.ordinal]*/
 
-        layoutSwitchOptions = mutableListOf()
+        /*layoutSwitchOptions = mutableListOf()
         resources.getStringArray(R.array.layout_switch_options).forEach { option ->
             layoutSwitchOptions.add(option)
         }
         layoutSwitchButton = findViewById(R.id.settings_layout)
-        layoutSwitchButton!!.text = layoutSwitchOptions[GlobalParameters.instance!!.layoutSwitch.ordinal]
+        layoutSwitchButton!!.text = layoutSwitchOptions[GlobalParameters.instance!!.layoutSwitch.ordinal]*/
 
-        voiceCommandOptions = mutableListOf()
+        /*voiceCommandOptions = mutableListOf()
         resources.getStringArray(R.array.voice_command_options).forEach { option ->
             voiceCommandOptions.add(option)
         }
         voiceCommandSwitchButton = findViewById(R.id.settings_voice_command)
-        voiceCommandSwitchButton!!.text = voiceCommandOptions[GlobalParameters.instance!!.voiceCommandTrigger.ordinal]
+        voiceCommandSwitchButton!!.text = voiceCommandOptions[GlobalParameters.instance!!.voiceCommandTrigger.ordinal]*/
 
         keepScreenOnOptions = mutableListOf()
         resources.getStringArray(R.array.keep_screen_on_options).forEach { option ->
@@ -101,45 +101,45 @@ class SettingsActivity : AppCompatActivity() {
         // check if last option was reached before -> YES: set to first option, NO: set to next option
         // update the button text to the new selection
         // TODO: implement actual change
-        impairmentButton!!.setOnClickListener {
+        /*impairmentButton!!.setOnClickListener {
             if (GlobalParameters.instance!!.visualImpairment.ordinal == GlobalParameters.VisualImpairment.values().size - 1) {
                 GlobalParameters.instance!!.visualImpairment = GlobalParameters.VisualImpairment.values()[0]
             } else {
                 GlobalParameters.instance!!.visualImpairment = GlobalParameters.VisualImpairment.values()[GlobalParameters.instance!!.visualImpairment.ordinal + 1]
             }
             impairmentButton!!.text = impairmentOptions[GlobalParameters.instance!!.visualImpairment.ordinal]
-        }
+        }*/
 
 
         // TODO: implement actual change
-        colorButton!!.setOnClickListener {
+        /*colorButton!!.setOnClickListener {
             if (GlobalParameters.instance!!.colorChoice.ordinal == GlobalParameters.ColorChoice.values().size - 1) {
                 GlobalParameters.instance!!.colorChoice = GlobalParameters.ColorChoice.values()[0]
             } else {
                 GlobalParameters.instance!!.colorChoice = GlobalParameters.ColorChoice.values()[GlobalParameters.instance!!.colorChoice.ordinal + 1]
             }
             colorButton!!.text = colorOptions[GlobalParameters.instance!!.colorChoice.ordinal]
-        }
+        }*/
 
         // TODO: implement actual change
-        layoutSwitchButton!!.setOnClickListener {
+        /*layoutSwitchButton!!.setOnClickListener {
             if (GlobalParameters.instance!!.layoutSwitch.ordinal == GlobalParameters.LayoutSwitch.values().size - 1) {
                 GlobalParameters.instance!!.layoutSwitch = GlobalParameters.LayoutSwitch.values()[0]
             } else {
                 GlobalParameters.instance!!.layoutSwitch = GlobalParameters.LayoutSwitch.values()[GlobalParameters.instance!!.layoutSwitch.ordinal + 1]
             }
             layoutSwitchButton!!.text = layoutSwitchOptions[GlobalParameters.instance!!.layoutSwitch.ordinal]
-        }
+        }*/
 
         // TODO: implement actual change
-        voiceCommandSwitchButton!!.setOnClickListener {
+        /*voiceCommandSwitchButton!!.setOnClickListener {
             if (GlobalParameters.instance!!.voiceCommandTrigger.ordinal == GlobalParameters.VoiceCommandTrigger.values().size - 1) {
                 GlobalParameters.instance!!.voiceCommandTrigger = GlobalParameters.VoiceCommandTrigger.values()[0]
             } else {
                 GlobalParameters.instance!!.voiceCommandTrigger = GlobalParameters.VoiceCommandTrigger.values()[GlobalParameters.instance!!.voiceCommandTrigger.ordinal + 1]
             }
             voiceCommandSwitchButton!!.text = voiceCommandOptions[GlobalParameters.instance!!.voiceCommandTrigger.ordinal]
-        }
+        }*/
 
         keepScreenOnButton!!.setOnClickListener {
             if (GlobalParameters.instance!!.keepScreenOnSwitch.ordinal == GlobalParameters.KeepScreenOn.values().size - 1) {
@@ -169,22 +169,22 @@ class SettingsActivity : AppCompatActivity() {
             Context.MODE_PRIVATE
         ) ?: return
         with(sharedPref.edit()) {
-            putString(
+            /*putString(
                 getString(R.string.settings_impairment_key),
                 GlobalParameters.instance!!.visualImpairment.toString()
-            )
-            putString(
+            )*/
+            /*putString(
                 getString(R.string.settings_color_key),
                 GlobalParameters.instance!!.colorChoice.toString()
-            )
-            putString(
+            )*/
+            /*putString(
                 getString(R.string.settings_layout_key),
                 GlobalParameters.instance!!.layoutSwitch.toString()
-            )
-            putString(
+            )*/
+            /*putString(
                 getString(R.string.settings_voice_command_key),
                 GlobalParameters.instance!!.voiceCommandTrigger.toString()
-            )
+            )*/
             putString(
                 getString(R.string.settings_keep_screen_on_key),
                 GlobalParameters.instance!!.keepScreenOnSwitch.toString()

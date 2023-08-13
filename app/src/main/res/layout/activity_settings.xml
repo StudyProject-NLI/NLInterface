@@ -22,66 +22,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/settings_impairment"
-        android:layout_width="313dp"
-        android:layout_height="58dp"
-        android:layout_marginStart="49dp"
-        android:layout_marginTop="74dp"
-        android:layout_marginEnd="49dp"
-        android:text="@string/settings_impairment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header" />
-
-    <Button
-        android:id="@+id/settings_colors"
-        android:layout_width="148dp"
-        android:layout_height="56dp"
-        android:layout_marginStart="154dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="154dp"
-        android:text="@string/settings_colors"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.488"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_impairment" />
-
-    <Button
-        android:id="@+id/settings_layout"
-        android:layout_width="211dp"
-        android:layout_height="53dp"
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="100dp"
-        android:text="@string/settings_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_colors" />
-
-    <Button
-        android:id="@+id/settings_voice_command"
-        android:layout_width="233dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="95dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="95dp"
-        android:text="@string/settings_voice_command"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_layout" />
-
-    <Button
         android:id="@+id/settings_keep_screen_on"
         android:layout_width="158dp"
         android:layout_height="63dp"
         android:layout_marginStart="130dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="228dp"
         android:layout_marginEnd="130dp"
         android:text="@string/settings_keep_screen_on"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.571"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/settings_voice_command" />
+        app:layout_constraintTop_toBottomOf="@+id/header" />
 
     <Button
         android:id="@+id/settings_theme"
@@ -90,6 +40,8 @@
         android:layout_marginStart="149dp"
         android:layout_marginTop="28dp"
         android:layout_marginEnd="149dp"
+        android:layout_marginBottom="250dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/settings_keep_screen_on" />

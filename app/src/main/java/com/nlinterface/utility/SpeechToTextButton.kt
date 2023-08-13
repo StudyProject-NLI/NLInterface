@@ -25,7 +25,7 @@ class SpeechToTextButton : androidx.appcompat.widget.AppCompatImageView {
     }
 
     private fun init() {
-        setBackgroundColor(ContextCompat.getColor(context, R.color.holo_orange_light))
-        setImageResource(com.nlinterface.R.drawable.ic_mic)
+        setBackgroundColor(ContextCompat.getColor(context, R.color.black))
+        setImageResource(com.nlinterface.R.drawable.ic_mic_white)
     }
 }

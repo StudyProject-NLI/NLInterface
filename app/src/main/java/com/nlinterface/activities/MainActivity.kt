@@ -2,18 +2,17 @@ package com.nlinterface.activities
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.view.WindowCompat
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.*
@@ -23,12 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    // part of Speech-to-Text functionality
-    private var isListening = false
-    private var outputText: TextView? = null
-    private var sttTrigger: SpeechToTextButton? = null
-    private val speechToTextUtility = SpeechToTextUtility()
-    //
+    private lateinit var voiceActivationButton: ImageButton
 
     companion object {
         // needed to verify the audio permission result
@@ -40,6 +34,9 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+        GlobalParameters.instance!!.loadPreferences(this)
 
         val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
         groceryListButton.setOnClickListener { view ->
@@ -53,11 +50,11 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
-        val MotorModuleButton: Button = findViewById<View>(R.id.motor_module_bt) as Button
+        /*val MotorModuleButton: Button = findViewById<View>(R.id.motor_module_bt) as Button
         navigationActivityButton.setOnClickListener { view ->
             val intent = Intent(view.context, NavigationActivity::class.java)
             view.context.startActivity(intent)
-        }
+        }*/
 
         val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
@@ -66,7 +63,28 @@ class MainActivity : AppCompatActivity() {
             onAddVoiceActivationButtonClick()
         }
 
+        //TODO: main activity layout needs to be adjusted to show more buttons
+        /*val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
+        settingsActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, SettingsActivity::class.java)
+            view.context.startActivity(intent)
+        }*/
+
         verifyAudioPermissions()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        // process keep screen on settings
+        if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
+        // process theme settings
+        GlobalParameters.instance!!.updateTheme()
     }
 
     override fun onRequestPermissionsResult(
@@ -76,9 +94,9 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, "Permission granted for using voice commands!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.audio_permission_granted, Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(this, "Please provide microphone permission to use voice commands.", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.audio_permission_denied, Toast.LENGTH_LONG).show()
         }
     }
 

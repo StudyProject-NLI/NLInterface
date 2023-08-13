@@ -41,6 +41,8 @@
             android:name=".activities.NextActivityExample"/>
         <activity
             android:name=".activities.LocationActivity"/>
+        <activity
+            android:name=".activities.SettingsActivity"/>
 
     </application>
 

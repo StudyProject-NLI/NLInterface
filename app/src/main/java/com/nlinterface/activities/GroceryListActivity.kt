@@ -5,6 +5,7 @@ import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -18,6 +19,8 @@ import com.nlinterface.adapters.GroceryListAdapter
 import com.nlinterface.databinding.ActivityGroceryListBinding
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.interfaces.GroceryListCallback
+import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.setViewRelativeHeight
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.GroceryListViewModel
@@ -31,8 +34,17 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     private lateinit var adapter: GroceryListAdapter
     private lateinit var viewModel: GroceryListViewModel
 
+    private lateinit var voiceActivationButton: ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // process keep screen on settings
+        if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
 
         viewModel = ViewModelProvider(this)[GroceryListViewModel::class.java]
         viewModel.fetchGroceryList()

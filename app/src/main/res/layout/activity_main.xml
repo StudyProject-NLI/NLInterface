@@ -14,6 +14,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/voice_activation_lo"
         android:layout_marginHorizontal="40dp"
@@ -23,13 +24,14 @@
             android:id="@+id/grocery_list_bt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="72dp"
             android:backgroundTint="@color/black"
             android:paddingVertical="25dp"
             android:text="@string/grocery_list"
             android:textSize="45sp"
             app:cornerRadius="13dp"
-            app:layout_constraintBottom_toTopOf="@+id/navigation_bt"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeWidth="0dp" />
@@ -45,23 +47,10 @@
             app:cornerRadius="13dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/grocery_list_bt"
-            app:strokeWidth="0dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/motor_module_bt_bt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/black"
-            android:paddingVertical="25dp"
-            android:text="@string/motor_module"
-            android:textSize="45sp"
-            app:cornerRadius="13dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/navigation_bt"
+            app:layout_constraintVertical_bias="0.183"
             app:strokeWidth="0dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

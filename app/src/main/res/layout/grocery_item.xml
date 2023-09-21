@@ -22,12 +22,17 @@
         <TextView
             android:id="@+id/grocery_item_tv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="60dp"
             android:textColor="@color/white"
             android:paddingVertical="5dp"
             android:paddingHorizontal="25dp"
             android:text="Item"
-            android:textSize="35sp" />
+            android:textSize="35sp"
+            android:gravity="center"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeMaxTextSize="100sp"
+            app:autoSizeStepGranularity="2sp"/>
 
     </com.google.android.material.card.MaterialCardView>
 

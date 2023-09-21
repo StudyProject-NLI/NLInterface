@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
-        val navigationActivityButton: Button = findViewById<View>(R.id.navigation_bt) as Button
-        navigationActivityButton.setOnClickListener { view ->
+        val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
+        placeDetailsButton.setOnClickListener { view ->
             val intent = Intent(view.context, PlaceDetailsActivity::class.java)
             view.context.startActivity(intent)
         }

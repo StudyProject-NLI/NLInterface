@@ -4,6 +4,7 @@
     <string name="grocery_list">Einkaufsliste</string>
     <string name="navigation">Navigation</string>
     <string name="location">Ortung</string>
+    <string name="place_details">Ort Details</string>
 
     <string name="add_item">Artikel hinzufügen</string>
     <string name="add">Hinzufügen</string>

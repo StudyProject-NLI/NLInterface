@@ -6,6 +6,7 @@
     <string name="motor_module">Motor Module</string>
     <string name="navigation">Navigation</string>
     <string name="location">Location</string>
+    <string name="place_details">Place Details</string>
     <string name="add_item">Add Item</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>

@@ -1,32 +1,33 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<!-- new_activity.xml -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:orientation="vertical">
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/addressEditText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        tools:context=".MainActivity">
+        android:layout_height="wrap_content"
+        android:hint="Enter address" />
 
-        <EditText
-            android:id="@+id/addressEditText"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="enter_address"
-            android:inputType="textPostalAddress" />
+    <Button
+        android:id="@+id/openMapsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="open_maps" />
 
-        <Button
-            android:id="@+id/openMapsButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:text="open_in_maps" />
+    <Button
+        android:id="@+id/saveLocationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="save_location" />
 
-    </LinearLayout>
+    <!-- Add the new button to open saved locations -->
+    <Button
+        android:id="@+id/openSavedLocationsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="open_saved_locations" />
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

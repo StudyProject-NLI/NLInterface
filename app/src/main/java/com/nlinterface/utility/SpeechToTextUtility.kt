@@ -3,56 +3,70 @@ package com.nlinterface.utility
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings.Global.getString
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import com.nlinterface.R
+import java.util.Locale
+import com.nlinterface.activities.GroceryListActivity
+import com.nlinterface.activities.MainActivity
+import org.w3c.dom.Text
 
 class SpeechToTextUtility {
     private var speechRecognizer: SpeechRecognizer? = null
+    var commandsList: MutableList<String>? = null
 
-    fun handleSpeechBegin(output: TextView, button: SpeechToTextButton) {
-        output!!.setText(com.nlinterface.R.string.placeholder_text)
+    // make it a Singleton
+    companion object {
+        private var mInstance: SpeechToTextUtility? = null
+
+        @get:Synchronized
+        val instance: SpeechToTextUtility?
+            get() {
+                if (null == mInstance) {
+                    mInstance = SpeechToTextUtility()
+                }
+                return mInstance
+            }
+    }
+
+    fun handleSpeechBegin(button: ImageButton) {
+        button.setImageResource(R.drawable.ic_mic_green)
         speechRecognizer!!.startListening(createIntent())
-        button!!.setImageResource(com.nlinterface.R.drawable.ic_mic_green)
     }
 
-    fun handleSpeechEnd(output: TextView, button: SpeechToTextButton) {
-        output!!.setText(com.nlinterface.R.string.stt_output_content)
-        speechRecognizer!!.cancel()
-        button!!.setImageResource(com.nlinterface.R.drawable.ic_mic)
-    }
-
-    fun createSpeechRecognizer(context: Context, output: TextView) {
+    fun createSpeechRecognizer(context: Context, button: ImageButton) {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle) {}
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray) {}
-            override fun onEndOfSpeech() {}
-
+            override fun onEndOfSpeech() {
+                button!!.setImageResource(R.drawable.ic_mic_white)
+            }
             override fun onError(error: Int) {}
 
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
-                    // The results are added in decreasing order of confidence to the list
+                    // results are added in decreasing order of confidence to the list, so choose the first one
                     val result = matches[0]
-                    output!!.text = result
+                    button!!.setImageResource(R.drawable.ic_mic_white)
+                    Toast.makeText(context, result, Toast.LENGTH_LONG).show()
                 }
             }
 
-            override fun onPartialResults(partialResults: Bundle) {
-                val matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (matches != null && matches.size > 0) {
-                    // handle partial speech results
-                    val partialResult = matches[0]
-                    output!!.text = partialResult
-                }
-            }
+            // handle partial speech results for dynamic speech to text recognition
+            override fun onPartialResults(partialResults: Bundle) {}
 
             override fun onEvent(eventType: Int, params: Bundle) {}
         })
@@ -62,7 +76,7 @@ class SpeechToTextUtility {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "de") // remove this line for english version; TODO: global setting for language
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
         return intent
     }
 }

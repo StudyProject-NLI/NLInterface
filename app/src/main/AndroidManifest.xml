@@ -47,6 +47,8 @@
             android:name=".activities.LocationActivity"/>
         <activity
             android:name=".activities.PlaceDetailsActivity" />
+        <activity
+            android:name=".activities.SettingsActivity"/>
 
     </application>
 

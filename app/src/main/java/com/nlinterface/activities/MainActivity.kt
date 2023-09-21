@@ -13,14 +13,6 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.view.WindowCompat
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.internal.ApiKey
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.api.net.FetchPlaceRequest
-import com.google.android.libraries.places.api.net.FetchPlaceResponse
-import com.nlinterface.BuildConfig
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.*
@@ -71,12 +63,11 @@ class MainActivity : AppCompatActivity() {
             onAddVoiceActivationButtonClick()
         }
 
-        //TODO: main activity layout needs to be adjusted to show more buttons
-        /*val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
+        val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
         settingsActivityButton.setOnClickListener { view ->
             val intent = Intent(view.context, SettingsActivity::class.java)
             view.context.startActivity(intent)
-        }*/
+        }
 
         verifyAudioPermissions()
     }

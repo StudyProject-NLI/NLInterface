@@ -50,11 +50,11 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
-        /*val MotorModuleButton: Button = findViewById<View>(R.id.motor_module_bt) as Button
-        navigationActivityButton.setOnClickListener { view ->
-            val intent = Intent(view.context, NavigationActivity::class.java)
-            view.context.startActivity(intent)
-        }*/
+        val buttonClickMe: Button = findViewById<View>(R.id.motor_module_bt) as Button
+        buttonClickMe.setOnClickListener {
+            val intent = Intent(this, MotorModule::class.java)
+            startActivity(intent)
+        }
 
         val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             onAddVoiceActivationButtonClick()
         }
 
-        //TODO: main activity layout needs to be adjusted to show more buttons
+
         /*val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
         settingsActivityButton.setOnClickListener { view ->
             val intent = Intent(view.context, SettingsActivity::class.java)

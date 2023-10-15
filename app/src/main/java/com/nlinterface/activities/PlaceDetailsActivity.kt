@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.common.api.Status
@@ -19,6 +20,7 @@ import com.nlinterface.R
 import com.nlinterface.adapters.GroceryListAdapter
 import com.nlinterface.adapters.PlaceDetailsAdapter
 import com.nlinterface.databinding.ActivityPlaceDetailsBinding
+import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
 import com.nlinterface.utility.setViewRelativeSize
@@ -69,13 +71,49 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
                 viewModel.onError(status)
             }
             override fun onPlaceSelected(place: Place) {
-                viewModel.onPlaceSelected(place) { if (it) loadInformation() }
+                viewModel.onPlaceSelected(place) { if (it) adapter.notifyItemInserted(placeDetailsItemList.size - 1) }
             }
         })
-    }
 
-    private fun loadInformation() {
-        adapter.notifyItemInserted(placeDetailsItemList.size - 1)
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.LEFT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {return false}
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val placeDetailsItem: PlaceDetailsItem =
+                    placeDetailsItemList[viewHolder.adapterPosition]
+
+                val index = viewHolder.adapterPosition
+
+                viewModel.deletePlaceDetailsItem(placeDetailsItem)
+                adapter.notifyItemRemoved(index)
+            }
+        }).attachToRecyclerView(rvPlaceDetails)
+
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0, ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {return false}
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val placeDetailsItem: PlaceDetailsItem =
+                    placeDetailsItemList[viewHolder.adapterPosition]
+
+                val index = viewHolder.adapterPosition
+
+                viewModel.deletePlaceDetailsItem(placeDetailsItem)
+                adapter.notifyItemRemoved(index)
+            }
+        }).attachToRecyclerView(rvPlaceDetails)
     }
 
     override fun onDestroy() {

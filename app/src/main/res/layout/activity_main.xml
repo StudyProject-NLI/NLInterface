@@ -10,79 +10,117 @@
         android:id="@+id/voice_activation_lo"
         layout="@layout/voice_activation_button" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/grocery_list_bt"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginHorizontal="40dp"
-        android:layout_marginVertical="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/voice_activation_lo"
-        app:layout_constraintVertical_bias="1.0">
+        android:backgroundTint="@color/black"
+        android:paddingVertical="10dp"
+        android:text="@string/grocery_list"
+        android:textSize="45sp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="100sp"
+        app:autoSizeStepGranularity="2sp"
+        app:cornerRadius="13dp"
+        app:layout_constraintEnd_toEndOf="@id/v_guide2"
+        app:layout_constraintStart_toStartOf="@id/v_guide1"
+        app:layout_constraintTop_toTopOf="@id/h_guide1"
+        app:layout_constraintBottom_toBottomOf="@id/h_guide2"
+        app:strokeWidth="0dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/grocery_list_bt"
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-            android:layout_marginTop="35dp"
-            android:backgroundTint="@color/black"
-            android:paddingVertical="10dp"
-            android:text="@string/grocery_list"
-            android:textSize="45sp"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMinTextSize="12sp"
-            app:autoSizeMaxTextSize="100sp"
-            app:autoSizeStepGranularity="2sp"
-            app:cornerRadius="13dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeWidth="0dp" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/place_details_bt"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:backgroundTint="@color/black"
+        android:paddingVertical="10dp"
+        android:text="@string/place_details"
+        android:textSize="45sp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="100sp"
+        app:autoSizeStepGranularity="2sp"
+        app:cornerRadius="13dp"
+        app:layout_constraintEnd_toEndOf="@id/v_guide2"
+        app:layout_constraintStart_toStartOf="@id/v_guide1"
+        app:layout_constraintTop_toTopOf="@id/h_guide3"
+        app:layout_constraintBottom_toBottomOf="@id/h_guide4"
+        app:strokeWidth="0dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/place_details_bt"
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp"
-            android:backgroundTint="@color/black"
-            android:paddingVertical="10dp"
-            android:text="@string/place_details"
-            android:textSize="45sp"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMinTextSize="12sp"
-            app:autoSizeMaxTextSize="100sp"
-            app:autoSizeStepGranularity="2sp"
-            app:cornerRadius="13dp"
-            app:layout_constraintBottom_toTopOf="@+id/settings_bt"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/grocery_list_bt"
-            app:strokeWidth="0dp" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/settings_bt"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:backgroundTint="@color/black"
+        android:paddingVertical="10dp"
+        android:text="@string/settings"
+        android:textSize="45sp"
+        app:autoSizeTextType="uniform"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="100sp"
+        app:autoSizeStepGranularity="2sp"
+        app:cornerRadius="13dp"
+        app:layout_constraintEnd_toEndOf="@id/v_guide2"
+        app:layout_constraintStart_toStartOf="@id/v_guide1"
+        app:layout_constraintTop_toTopOf="@id/h_guide5"
+        app:layout_constraintBottom_toBottomOf="@id/h_guide6"
+        app:strokeWidth="0dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/settings_bt"
-            android:layout_width="match_parent"
-            android:layout_height="85dp"
-            android:layout_marginBottom="35dp"
-            android:backgroundTint="@color/black"
-            android:paddingVertical="10dp"
-            android:text="@string/settings"
-            android:textSize="45sp"
-            app:autoSizeTextType="uniform"
-            app:autoSizeMinTextSize="12sp"
-            app:autoSizeMaxTextSize="100sp"
-            app:autoSizeStepGranularity="2sp"
-            app:cornerRadius="13dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:strokeWidth="0dp" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/h_guide1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.39" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/h_guide2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.53" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/h_guide3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.595" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/h_guide4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.735" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/h_guide5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.80" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/h_guide6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.94" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/v_guide1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/v_guide2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

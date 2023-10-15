@@ -41,15 +41,21 @@ class PlaceDetailsAdapter (
 
         val storeNameTextView = holder.placeDetailsItemStoreNameTextView
         val openingHoursTextView = holder.placeDetailsItemOpeningHoursTextView
+
+        Log.println(Log.DEBUG, "openinghours", placeDetailsItem.openingHours.toString())
         val favoriteImageView = holder.placeDetailsItemFavoriteImageView
 
         val res = holder.itemView.resources
 
         storeNameTextView.text = placeDetailsItem.storeName
 
-        val dayOfWeek = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2) % 7
-        val regex = "\\ .+\\ ".toRegex()
+        val dayOfWeek = Math.floorMod(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2, 7)
+
+        val regex = "(?<=: \\[?)(\\w:?–? ?ö?)+( ?–?\\d?:?)+".toRegex()
+        //val regex = "(?<=:\\s\\[)[\\d:– ]*(?=.*\\])|(?<=:\\s)[^\\[\\n]*".toRegex()
+        Log.println(Log.DEBUG, "regex", regex.toString())
         val openingHoursText = regex.find(placeDetailsItem.openingHours[dayOfWeek])?.value
+        Log.println(Log.DEBUG, "openinghourstext", openingHoursText.toString())
         openingHoursTextView.text = openingHoursText
 
         if (placeDetailsItem.favorite) {
@@ -58,8 +64,8 @@ class PlaceDetailsAdapter (
 
         favoriteImageView.setOnClickListener {
             placeDetailsItemCallback.onClick(data[position])
-            true
         }
+
     }
 
     override fun getItemCount(): Int {

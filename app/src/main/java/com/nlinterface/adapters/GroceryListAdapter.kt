@@ -51,7 +51,7 @@ class GroceryListAdapter(
         cardView.layoutParams.width = LayoutParams.WRAP_CONTENT
 
         cardView.setOnLongClickListener {
-            groceryListCallback.onLongClick(data[position])
+            groceryListCallback.onLongClick(data[holder.adapterPosition])
             true
         }
     }

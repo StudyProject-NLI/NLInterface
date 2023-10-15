@@ -65,17 +65,17 @@
         <item>hands-free voice command</item>
     </string-array>
 
-    <string name="settings_keep_screen_on">Keep screen on</string>
+    <string name="settings_keep_screen_on">Keep Screen On</string>
     <string-array name="keep_screen_on_options">
-        <item>keep screen always on</item>
-        <item>do not keep screen always on</item>
+        <item>Keep Screen Always On</item>
+        <item>Do Not Keep Screen Always On</item>
     </string-array>
 
     <string name="settings_theme">Theme</string>
     <string-array name="theme_options">
-        <item>system default theme</item>
-        <item>light theme</item>
-        <item>dark theme</item>
+        <item>System Default Theme</item>
+        <item>Light Theme</item>
+        <item>Dark Theme</item>
     </string-array>
     <string name="enter_angle">Enter angle</string>
     <string name="calculate">Calculate</string>

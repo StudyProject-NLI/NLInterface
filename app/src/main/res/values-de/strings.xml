@@ -51,12 +51,16 @@
         <item>Button</item>
         <item>Sprachbefehl</item>
     </string-array>
-    <string name="settings_keep_screen_on">Bildschirm anlassen</string>
+    <string name="settings_keep_screen_on">Bilderschirm Anlassen</string>
+    <string-array name="keep_screen_on_options">
+        <item>Bildschirm Immer Anlasssen</item>
+        <item>Bildschirm Nicht Immer Anlassen</item>
+    </string-array>
     <string name="settings_theme">Design</string>
     <string-array name="theme_options">
-        <item>Standard</item>
-        <item>hell</item>
-        <item>dunkel</item>
+        <item>Standard Design</item>
+        <item>Helles Design</item>
+        <item>Dunkeles Design</item>
     </string-array>
 
 </resources>

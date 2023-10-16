@@ -54,7 +54,7 @@
             app:strokeWidth="0dp" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/motor_module_bt_bt"
+            android:id="@+id/motor_module_bt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/black"
@@ -72,3 +72,5 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+
+</androidx.constraintlayout.widget.ConstraintLayout>

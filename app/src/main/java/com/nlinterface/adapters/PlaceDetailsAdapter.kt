@@ -63,7 +63,8 @@ class PlaceDetailsAdapter (
         }
 
         favoriteImageView.setOnClickListener {
-            placeDetailsItemCallback.onClick(data[position])
+            placeDetailsItemCallback.onClick(data[holder.adapterPosition])
+            true
         }
 
     }

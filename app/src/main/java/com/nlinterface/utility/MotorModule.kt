@@ -1,4 +1,4 @@
-package com.nlinterface.activities
+package com.nlinterface.utility
 
 import android.os.Bundle
 import android.widget.Button

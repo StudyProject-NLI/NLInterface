@@ -13,6 +13,9 @@
     <string name="add_new_grocery_item">Add a New Grocery Item</string>
     <string name="example_activity_text">This is an example of another activity.</string>
 
+    <string name="search">Search</string>
+    <string name="search_for_grocery_store">Search for Grocery Store</string>
+
     <string name="next_activity_example">Next Activity (Example)</string>
 
     <string name="placeholder_text">...</string>

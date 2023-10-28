@@ -1,7 +1,6 @@
 package com.nlinterface.activities
 
 import android.app.AlertDialog
-import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -21,10 +20,7 @@ import com.nlinterface.databinding.ActivityGroceryListBinding
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.interfaces.GroceryListCallback
 import com.nlinterface.utility.GlobalParameters
-import com.nlinterface.utility.SpeechToTextUtility
-import com.nlinterface.utility.setViewRelativeHeight
 import com.nlinterface.utility.setViewRelativeSize
-import com.nlinterface.utility.setViewRelativeWidth
 import com.nlinterface.viewmodels.GroceryListViewModel
 
 
@@ -132,12 +128,12 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
         val alertDialog: AlertDialog? = this?.let {
             val builder = AlertDialog.Builder(it)
-            val view = layoutInflater.inflate(R.layout.add_item_dialog, null)
+            val view = layoutInflater.inflate(R.layout.edit_text_dialog, null)
             builder.setView(view)
             builder.apply {
                 setPositiveButton(R.string.add) { _, _ ->
 
-                    val addItemEt = view.findViewById<EditText>(R.id.add_item_et)
+                    val addItemEt = view.findViewById<EditText>(R.id.et)
                     val newItemName = addItemEt.text.toString()
 
                     viewModel.addGroceryItem(newItemName)

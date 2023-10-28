@@ -16,6 +16,9 @@
 
     <string name="placeholder_text">...</string>
 
+    <string name="search">Suche</string>
+    <string name="search_for_grocery_store">Suche nach Supermarkt</string>
+
     <string name="stt_button_content">Tippe zum Sprechen</string>
     <string name="stt_output_content">Erkannte Sprache wird hier zu sehen sein</string>
 

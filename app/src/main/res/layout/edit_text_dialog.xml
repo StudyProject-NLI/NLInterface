@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/add_item_dialog">
+    android:id="@+id/edit_text_dialog">
 
     <EditText
-        android:id="@+id/add_item_et"
+        android:id="@+id/et"
         android:layout_width="150dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toBottomOf="parent"

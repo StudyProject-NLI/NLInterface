@@ -43,8 +43,6 @@
             android:name=".activities.PlaceDetailsActivity" />
         <activity
             android:name=".activities.SettingsActivity"/>
-        <activity
-            android:name=".activities.MotorModule"/>
 
     </application>
 

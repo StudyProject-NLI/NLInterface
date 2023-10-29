@@ -12,6 +12,7 @@
         android:layout_marginTop="15dp"
         android:layout_marginBottom="5dp"
         android:backgroundTint="@color/grey_light"
+        android:textColor="@color/black"
         android:cursorVisible="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

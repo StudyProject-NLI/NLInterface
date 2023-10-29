@@ -88,4 +88,5 @@
     <string name="save_location">Save Location</string>
     <string name="open_saved_locations">Open Saved Locations</string>
     <string name="delete">Delete</string>
+    <string name="click_me">Click Me</string>
 </resources>

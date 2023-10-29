@@ -1,6 +1,7 @@
 package com.nlinterface.utility
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -14,9 +15,9 @@ class MotorModule: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_motor_module)
 
-        angleInput = findViewById(R.id.angleInput)
+        angleInput = findViewById<EditText>(R.id.angleInput)
         calculateButton = findViewById(R.id.calculateButton)
         directionText = findViewById(R.id.directionText)
 

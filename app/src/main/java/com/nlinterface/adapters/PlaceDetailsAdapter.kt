@@ -59,14 +59,14 @@ class PlaceDetailsAdapter (
         openingHoursTextView.text = openingHoursText
 
         if (placeDetailsItem.favorite) {
-            favoriteImageView.setImageResource(R.drawable.ic_baseline_star_24)
+            holder.placeDetailsItemFavoriteImageView.setImageResource(R.drawable.ic_baseline_star_24)
+        } else {
+            holder.placeDetailsItemFavoriteImageView.setImageResource(R.drawable.ic_baseline_star_border_24)
         }
 
         favoriteImageView.setOnClickListener {
             placeDetailsItemCallback.onClick(data[holder.adapterPosition])
-            true
         }
-
     }
 
     override fun getItemCount(): Int {

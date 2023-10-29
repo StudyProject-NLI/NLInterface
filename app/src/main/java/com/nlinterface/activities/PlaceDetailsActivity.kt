@@ -1,12 +1,9 @@
 package com.nlinterface.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.ImageButton
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -15,17 +12,14 @@ import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import com.google.android.material.button.MaterialButton
 import com.nlinterface.R
-import com.nlinterface.adapters.GroceryListAdapter
 import com.nlinterface.adapters.PlaceDetailsAdapter
 import com.nlinterface.databinding.ActivityPlaceDetailsBinding
-import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
 import com.nlinterface.utility.setViewRelativeSize
-import com.nlinterface.viewmodels.GroceryListViewModel
 import com.nlinterface.viewmodels.PlaceDetailsViewModel
+
 
 class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
 

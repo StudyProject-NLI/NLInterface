@@ -45,6 +45,8 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         rvPlaceDetails.adapter = adapter
         rvPlaceDetails.layoutManager = LinearLayoutManager(this)
 
+        rvPlaceDetails.itemAnimator?.changeDuration = 0
+
         val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
 

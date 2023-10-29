@@ -19,10 +19,12 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: gradle
-      - name: Clean Gradle
-        run: ./gradlew clean
+      - name: Create local gradle properties files
+        run: touch local.properties
+      - name: Add Google Maps API Key
+        run: echo "MAPS_API_KEY=${{secrets.MAPS_API_KEY}}" >> local.properties
       - name: Build debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew build
       - name: Upload APK
         uses: actions/upload-artifact@v3.1.3
         with:

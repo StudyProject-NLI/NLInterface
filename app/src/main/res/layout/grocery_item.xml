@@ -10,7 +10,8 @@
         android:id="@+id/grocery_item_cv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/black"
+        android:backgroundTint="@null"
+        app:cardBackgroundColor="?colorPrimary"
         app:layout_constraintBottom_toBottomOf="@id/h_guide2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +27,7 @@
             android:paddingHorizontal="25dp"
             android:paddingVertical="5dp"
             android:text="Item"
-            android:textColor="@color/white"
+            android:textColor="?android:textColorPrimary"
             android:textSize="35sp" />
 <!--        app:autoSizeTextType="uniform"
             app:autoSizeMaxTextSize="100sp"

@@ -19,8 +19,8 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: gradle
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
       - name: Upload APK
         uses: actions/upload-artifact@v3.1.3
         with:

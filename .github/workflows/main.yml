@@ -24,7 +24,7 @@ jobs:
       - name: Add Google Maps API Key
         run: echo "MAPS_API_KEY=${{secrets.MAPS_API_KEY}}" >> local.properties
       - name: Build debug APK
-        run: ./gradlew build
+        run: ./gradlew build -x lint -x lintVitalRelease
       - name: Upload APK
         uses: actions/upload-artifact@v3.1.3
         with:

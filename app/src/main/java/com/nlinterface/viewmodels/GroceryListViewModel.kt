@@ -47,6 +47,10 @@ class GroceryListViewModel (
         groceryList.remove(groceryItem)
     }
 
+    fun placeGroceryItemInCart(groceryItem: GroceryItem) {
+        groceryItem.inCart = !groceryItem.inCart
+    }
+
     fun storeGroceryList() {
         val jsonString : String = gson.toJson(groceryList)
         groceryListFile.writeText(jsonString)

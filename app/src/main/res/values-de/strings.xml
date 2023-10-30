@@ -4,6 +4,7 @@
     <string name="grocery_list">Einkaufsliste</string>
     <string name="navigation">Navigation</string>
     <string name="location">Ortung</string>
+    <string name="place_details">Ort Details</string>
 
     <string name="add_item">Artikel hinzufügen</string>
     <string name="add">Hinzufügen</string>
@@ -14,6 +15,9 @@
     <string name="next_activity_example">Nächste Aktivität (Beispiel)</string>
 
     <string name="placeholder_text">...</string>
+
+    <string name="search">Suche</string>
+    <string name="search_for_grocery_store">Suche nach Supermarkt</string>
 
     <string name="stt_button_content">Tippe zum Sprechen</string>
     <string name="stt_output_content">Erkannte Sprache wird hier zu sehen sein</string>
@@ -50,12 +54,16 @@
         <item>Button</item>
         <item>Sprachbefehl</item>
     </string-array>
-    <string name="settings_keep_screen_on">Bildschirm anlassen</string>
+    <string name="settings_keep_screen_on">Bilderschirm Anlassen</string>
+    <string-array name="keep_screen_on_options">
+        <item>Bildschirm Immer Anlasssen</item>
+        <item>Bildschirm Nicht Immer Anlassen</item>
+    </string-array>
     <string name="settings_theme">Design</string>
     <string-array name="theme_options">
-        <item>Standard</item>
-        <item>hell</item>
-        <item>dunkel</item>
+        <item>Standard Design</item>
+        <item>Helles Design</item>
+        <item>Dunkeles Design</item>
     </string-array>
 
 </resources>

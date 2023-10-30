@@ -3,14 +3,17 @@ package com.nlinterface.activities
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings.Global
+import android.view.View
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.setViewRelativeSize
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -49,7 +52,8 @@ class SettingsActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
 
-        header = findViewById(R.id.header)
+        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
 
         /*impairmentOptions = mutableListOf()
         resources.getStringArray(R.array.impairment_options).forEach { option ->

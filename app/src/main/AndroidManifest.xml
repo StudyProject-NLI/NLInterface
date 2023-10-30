@@ -18,6 +18,10 @@
         android:theme="@style/Theme.NLInterface"
         tools:targetApi="31">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
         <activity
             android:name=".activities.MainActivity"
             android:exported="true"
@@ -36,15 +40,9 @@
         <activity
             android:name=".activities.GroceryListActivity" />
         <activity
-            android:name=".activities.NavigationActivity"/>
-        <activity
-            android:name=".activities.NextActivityExample"/>
-        <activity
-            android:name=".activities.LocationActivity"/>
+            android:name=".activities.PlaceDetailsActivity" />
         <activity
             android:name=".activities.SettingsActivity"/>
-        <activity
-            android:name=".activities.MotorModule"/>
 
     </application>
 

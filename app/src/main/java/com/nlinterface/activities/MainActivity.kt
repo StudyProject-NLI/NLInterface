@@ -44,16 +44,10 @@ class MainActivity : AppCompatActivity() {
             view.context.startActivity(intent)
         }
 
-        val navigationActivityButton: Button = findViewById<View>(R.id.navigation_bt) as Button
-        navigationActivityButton.setOnClickListener { view ->
-            val intent = Intent(view.context, NavigationActivity::class.java)
+        val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
+        placeDetailsButton.setOnClickListener { view ->
+            val intent = Intent(view.context, PlaceDetailsActivity::class.java)
             view.context.startActivity(intent)
-        }
-
-        val buttonClickMe: Button = findViewById<View>(R.id.motor_module_bt) as Button
-        buttonClickMe.setOnClickListener {
-            val intent = Intent(this, MotorModule::class.java)
-            startActivity(intent)
         }
 
         val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
@@ -63,12 +57,11 @@ class MainActivity : AppCompatActivity() {
             onAddVoiceActivationButtonClick()
         }
 
-
-        /*val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
+        val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
         settingsActivityButton.setOnClickListener { view ->
             val intent = Intent(view.context, SettingsActivity::class.java)
             view.context.startActivity(intent)
-        }*/
+        }
 
         verifyAudioPermissions()
     }

@@ -1,7 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.NLInterface" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.NLInterface" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorSecondary">@color/black</item>
+        <item name="colorTertiary">@color/red</item>
+        <item name="colorAccent">@color/grey_dark</item>
+
+        <item name="android:backgroundTint">@color/black</item>
+
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/white</item>
+        <item name="editTextBackground">@color/grey_light</item>
+        <item name="editTextColor">@color/white</item>
+
+        <item name="textAllCaps">false</item>
     </style>
+
+    <style name="Theme.NLInterface" parent="Base.Theme.NLInterface" />
 </resources>

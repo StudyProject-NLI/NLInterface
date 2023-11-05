@@ -2,7 +2,7 @@
 
 This is the code repository for the Android app developed in the studyproject Sensory augmentation and grasping movements.
 
-![Debug APK Builds](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![Debug APK Builds](https://github.com/StudyProject-NLI/NLInterface/actions/workflows/main.yml)
 
 # Building the app locally
 Requirements:

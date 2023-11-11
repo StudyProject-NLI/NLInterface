@@ -4,28 +4,25 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import java.util.Locale
 
-class TextToSpeechUtility {
+class TextToSpeechUtility(context: Context, listener: OnInitListener)
+    : TextToSpeech(context, listener) {
 
-    private var textToSpeechEngine: TextToSpeech? = null
-    fun createTTSEngine(context: Context, language: Locale = Locale.UK) {
-        textToSpeechEngine = TextToSpeech(context
-        ) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                textToSpeechEngine?.language = language
-            }
-        }
+    private var textToSpeechEngine: TextToSpeech = TextToSpeech(context, listener)
+
+    fun setLocale(locale: Locale = Locale.US) {
+        textToSpeechEngine.language = locale
     }
 
     fun say(text: String) {
-        textToSpeechEngine?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts1")
+        textToSpeechEngine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts1")
     }
 
     fun onPause() {
-        textToSpeechEngine?.stop()
+        textToSpeechEngine.stop()
     }
 
     fun onDestroy() {
-        textToSpeechEngine?.shutdown()
+        textToSpeechEngine.shutdown()
     }
 }
 

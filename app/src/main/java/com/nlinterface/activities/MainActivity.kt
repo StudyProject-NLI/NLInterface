@@ -2,10 +2,8 @@ package com.nlinterface.activities
 
 import android.Manifest
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -22,8 +20,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var voiceActivationButton: ImageButton
-
     companion object {
         // needed to verify the audio permission result
         private const val STT_PERMISSION_REQUEST_CODE = 0
@@ -35,35 +31,11 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         GlobalParameters.instance!!.loadPreferences(this)
 
-        val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
-        groceryListButton.setOnClickListener { view ->
-            val intent = Intent(view.context, GroceryListActivity::class.java)
-            view.context.startActivity(intent)
-        }
-
-        val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
-        placeDetailsButton.setOnClickListener { view ->
-            val intent = Intent(view.context, PlaceDetailsActivity::class.java)
-            view.context.startActivity(intent)
-        }
-
-        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        voiceActivationButton.setOnClickListener {
-            onAddVoiceActivationButtonClick()
-        }
-
-        val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
-        settingsActivityButton.setOnClickListener { view ->
-            val intent = Intent(view.context, SettingsActivity::class.java)
-            view.context.startActivity(intent)
-        }
-
         verifyAudioPermissions()
+
+        configureUI()
     }
 
     override fun onStart() {
@@ -78,6 +50,40 @@ class MainActivity : AppCompatActivity() {
 
         // process theme settings
         GlobalParameters.instance!!.updateTheme()
+    }
+
+    private fun configureUI() {
+
+        // set up button to navigate to GroceryListActivity
+        val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
+        groceryListButton.setOnClickListener { view ->
+            val intent = Intent(view.context, GroceryListActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
+        // set up button to navigate to PlaceDetailsActivity
+        val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
+        placeDetailsButton.setOnClickListener { view ->
+            val intent = Intent(view.context, PlaceDetailsActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
+        // set up button to navigate to SettingsActivity
+        val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
+        settingsActivityButton.setOnClickListener { view ->
+            val intent = Intent(view.context, SettingsActivity::class.java)
+            view.context.startActivity(intent)
+        }
+
+        // set up voice Activation Button listener
+        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        voiceActivationButton.setOnClickListener {
+            onVoiceActivationButtonClick()
+        }
+
+        // resize Voice Activation Button to 1/3 of display size
+        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
+
     }
 
     override fun onRequestPermissionsResult(
@@ -103,8 +109,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onAddVoiceActivationButtonClick() {
-        Log.println(Log.ASSERT, "MainActivity: onAddVoiceActivationButtonClick", "Button CLicked")
+    private fun onVoiceActivationButtonClick() {
+        // TODO
     }
-
 }

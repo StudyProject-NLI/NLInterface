@@ -15,38 +15,13 @@ import java.util.Locale
 
 
 open class GlobalParameters protected constructor() {
-    var visualImpairment: VisualImpairment = VisualImpairment.BLIND
-    var colorChoice: ColorChoice = ColorChoice.DEFAULT
-    var layoutSwitch : LayoutSwitch = LayoutSwitch.OFF
-    var voiceCommandTrigger: VoiceCommandTrigger = VoiceCommandTrigger.BUTTON
+
     var keepScreenOnSwitch : KeepScreenOn = KeepScreenOn.NO
     var themeChoice: ThemeChoice = ThemeChoice.SYSTEM_DEFAULT
 
     lateinit var locale: Locale
 
     // order of the items needs to be the same as in the respective dropdown menus
-
-    enum class VisualImpairment {
-        BLIND,
-        PARTIALLY,
-        COLOR
-    }
-
-    enum class ColorChoice {
-        DEFAULT,
-        RED_GREEN,
-        HIGH_CONTRAST
-    }
-
-    enum class LayoutSwitch {
-        OFF,
-        ON
-    }
-
-    enum class VoiceCommandTrigger {
-        BUTTON,
-        VOICE
-    }
 
     enum class KeepScreenOn{
         NO,
@@ -81,41 +56,16 @@ open class GlobalParameters protected constructor() {
             Context.MODE_PRIVATE
         ) ?: return
 
-        val prefImpairment = sharedPref.getString(
-            context.resources.getString(R.string.settings_impairment_key),
-            GlobalParameters.VisualImpairment.BLIND.toString()
-        )
-        GlobalParameters.instance!!.visualImpairment =
-            GlobalParameters.VisualImpairment.valueOf(prefImpairment!!)
-
-        val prefColor = sharedPref.getString(
-            context.resources.getString(R.string.settings_color_key),
-            GlobalParameters.ColorChoice.DEFAULT.toString()
-        )
-        GlobalParameters.instance!!.colorChoice = GlobalParameters.ColorChoice.valueOf(prefColor!!)
-
-        val prefLayout = sharedPref.getString(
-            context.resources.getString(R.string.settings_layout_key),
-            GlobalParameters.LayoutSwitch.OFF.toString())
-        GlobalParameters.instance!!.layoutSwitch = GlobalParameters.LayoutSwitch.valueOf(prefLayout!!)
-
-        val prefVoiceTrigger = sharedPref.getString(
-            context.resources.getString(R.string.settings_voice_command_key),
-            GlobalParameters.VoiceCommandTrigger.BUTTON.toString()
-        )
-        GlobalParameters.instance!!.voiceCommandTrigger =
-            GlobalParameters.VoiceCommandTrigger.valueOf(prefVoiceTrigger!!)
-
         val prefKeepScreenOn = sharedPref.getString(
             context.resources.getString(R.string.settings_keep_screen_on_key),
-            GlobalParameters.KeepScreenOn.NO.toString())
-        GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.valueOf(prefKeepScreenOn!!)
+            KeepScreenOn.NO.toString())
+        instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.valueOf(prefKeepScreenOn!!)
 
         val prefTheme = sharedPref.getString(
             context.resources.getString(R.string.settings_theme_key),
-            GlobalParameters.ThemeChoice.SYSTEM_DEFAULT.toString()
+            ThemeChoice.SYSTEM_DEFAULT.toString()
         )
-        GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.valueOf(prefTheme!!)
+        instance!!.themeChoice = GlobalParameters.ThemeChoice.valueOf(prefTheme!!)
     }
     
     fun updateTheme() {

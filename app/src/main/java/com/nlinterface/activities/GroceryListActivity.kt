@@ -1,7 +1,6 @@
 package com.nlinterface.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -9,13 +8,11 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.dialog.MaterialDialogs
 import com.nlinterface.R
 import com.nlinterface.adapters.GroceryListAdapter
 import com.nlinterface.databinding.ActivityGroceryListBinding
@@ -30,14 +27,18 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
     private lateinit var binding: ActivityGroceryListBinding
     private lateinit var groceryItemList: ArrayList<GroceryItem>
-    private lateinit var layout: ConstraintLayout
     private lateinit var adapter: GroceryListAdapter
     private lateinit var viewModel: GroceryListViewModel
 
-    private lateinit var voiceActivationButton: ImageButton
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityGroceryListBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        viewModel = ViewModelProvider(this)[GroceryListViewModel::class.java]
+
+        viewModel.fetchGroceryList()
 
         // process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
@@ -46,13 +47,30 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
 
-        viewModel = ViewModelProvider(this)[GroceryListViewModel::class.java]
-        viewModel.fetchGroceryList()
+        configureUI()
+    }
 
-        binding = ActivityGroceryListBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        this.layout = findViewById(R.id.activity_grocery_list_cl)
+    private fun configureUI() {
 
+        // set up add item button listener
+        val addItemButton: Button = findViewById<View>(R.id.add_item_bt) as Button
+        addItemButton.setOnClickListener {
+            onAddItemButtonClick()
+        }
+
+        // set up voice activation button listener
+        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        voiceActivationButton.setOnClickListener {
+            onVoiceActivationButtonClick()
+        }
+
+        // resize Voice Activation Button to 1/3 of display size
+        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
+
+        configureRecyclerView()
+    }
+
+    private fun configureRecyclerView() {
         // RecyclerView
         val rvGroceryList = findViewById<View>(R.id.grocery_list_rv) as RecyclerView
         groceryItemList = viewModel.groceryList
@@ -60,19 +78,6 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         adapter = GroceryListAdapter(groceryItemList, this)
         rvGroceryList.adapter = adapter
         rvGroceryList.layoutManager = LinearLayoutManager(this)
-
-        // Add Item Button Listener
-        val addItemButton: Button = findViewById<View>(R.id.add_item_bt) as Button
-        addItemButton.setOnClickListener {
-            onAddItemButtonClick()
-        }
-
-        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        voiceActivationButton.setOnClickListener {
-            onAddVoiceActivationButtonClick()
-        }
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT
@@ -122,8 +127,8 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewModel.storeGroceryList()
     }
 
-    private fun onAddVoiceActivationButtonClick() {
-        Log.println(Log.ASSERT, "GroceryListActivity: onAddVoiceActivationButtonClick", "Button CLicked")
+    private fun onVoiceActivationButtonClick() {
+        // TODO
     }
 
     private fun onAddItemButtonClick() {

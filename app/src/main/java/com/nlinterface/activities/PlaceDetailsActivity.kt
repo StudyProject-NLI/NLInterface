@@ -31,12 +31,34 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[PlaceDetailsViewModel::class.java]
-        viewModel.initPlaceClient(this)
-        viewModel.fetchPlaceDetailsItemList()
-
         binding = ActivityPlaceDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewModel = ViewModelProvider(this)[PlaceDetailsViewModel::class.java]
+        viewModel.initPlaceClient(this)
+
+        viewModel.fetchPlaceDetailsItemList()
+
+        configureUI()
+        configureAutocompleteFragment()
+
+    }
+
+    private fun configureUI() {
+
+        // set up voice activation button listener
+        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        voiceActivationButton.setOnClickListener {
+            onVoiceActivationButtonClick()
+        }
+
+        // resize Voice Activation Button to 1/3 of display size
+        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
+
+        configureRecyclerView()
+    }
+
+    private fun configureRecyclerView() {
 
         val rvPlaceDetails = findViewById<View>(R.id.place_details_rv) as RecyclerView
         placeDetailsItemList = viewModel.placeDetailsItemList
@@ -46,30 +68,6 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         rvPlaceDetails.layoutManager = LinearLayoutManager(this)
 
         rvPlaceDetails.itemAnimator?.changeDuration = 0
-
-        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        voiceActivationButton.setOnClickListener {} // TODO
-
-        // Initialize the AutocompleteSupportFragment.
-        val autocompleteFragment =
-            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment)
-                    as AutocompleteSupportFragment
-
-        // Specify the types of place data to return.
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID))
-        autocompleteFragment.setTypesFilter(listOf("supermarket"))
-
-        // Set up a PlaceSelectionListener to handle the response.
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onError(status: Status) {
-                viewModel.onError(status)
-            }
-            override fun onPlaceSelected(place: Place) {
-                viewModel.onPlaceSelected(place) { if (it) adapter.notifyItemInserted(placeDetailsItemList.size - 1) }
-            }
-        })
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
             0, ItemTouchHelper.LEFT
@@ -110,6 +108,30 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
                 adapter.notifyItemRemoved(index)
             }
         }).attachToRecyclerView(rvPlaceDetails)
+
+    }
+
+    private fun configureAutocompleteFragment() {
+
+        // Initialize the AutocompleteSupportFragment.
+        val autocompleteFragment =
+            supportFragmentManager.findFragmentById(R.id.autocomplete_fragment)
+                    as AutocompleteSupportFragment
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID))
+        autocompleteFragment.setTypesFilter(listOf("supermarket"))
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onError(status: Status) {
+                viewModel.onError(status)
+            }
+            override fun onPlaceSelected(place: Place) {
+                viewModel.onPlaceSelected(place) { if (it) adapter.notifyItemInserted(placeDetailsItemList.size - 1) }
+            }
+        })
+
     }
 
     override fun onDestroy() {
@@ -121,5 +143,9 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         val index = placeDetailsItemList.indexOf(item)
         viewModel.changeFavorite(item)
         adapter.notifyItemChanged(index)
+    }
+
+    private fun onVoiceActivationButtonClick() {
+        // TODO
     }
 }

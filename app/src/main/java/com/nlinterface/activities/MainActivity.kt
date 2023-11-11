@@ -44,13 +44,7 @@ class MainActivity : AppCompatActivity(), OnInitListener {
 
         GlobalParameters.instance!!.loadPreferences(this)
 
-        val ttsInitializedObserver = Observer<Boolean> { _ ->
-            say("Main Activity")
-        }
-
-        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
-
-        tts = TextToSpeechUtility(this, this)
+        initTTS()
 
         verifyAudioPermissions()
 
@@ -128,6 +122,17 @@ class MainActivity : AppCompatActivity(), OnInitListener {
                 STT_PERMISSION_REQUEST_CODE
             )
         }
+    }
+
+    private fun initTTS() {
+
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            say("Main Activity")
+        }
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+        tts = TextToSpeechUtility(this, this)
+
     }
 
     private fun say(text: String) {

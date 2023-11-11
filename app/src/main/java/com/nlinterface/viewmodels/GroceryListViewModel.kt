@@ -3,6 +3,7 @@ package com.nlinterface.viewmodels
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nlinterface.dataclasses.GroceryItem
@@ -18,7 +19,11 @@ class GroceryListViewModel (
     private val groceryListFileName = "GroceryList.json"
     private val groceryListFile: File = File(context.filesDir, groceryListFileName)
     var groceryList: ArrayList<GroceryItem> = ArrayList<GroceryItem>()
-    var gson = Gson()
+    private var gson = Gson()
+
+    val ttsInitialized: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
 
     fun fetchGroceryList() {
 
@@ -47,8 +52,10 @@ class GroceryListViewModel (
         groceryList.remove(groceryItem)
     }
 
-    fun placeGroceryItemInCart(groceryItem: GroceryItem) {
+    fun placeGroceryItemInCart(groceryItem: GroceryItem): Boolean {
         groceryItem.inCart = !groceryItem.inCart
+
+        return groceryItem.inCart
     }
 
     fun storeGroceryList() {

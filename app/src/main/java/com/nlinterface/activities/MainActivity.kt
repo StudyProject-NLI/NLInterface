@@ -135,9 +135,9 @@ class MainActivity : AppCompatActivity(), OnInitListener {
 
     }
 
-    private fun say(text: String) {
+    private fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
         if (viewModel.ttsInitialized.value == true) {
-            tts.say(text)
+            tts.say(text, queueMode)
         }
     }
 

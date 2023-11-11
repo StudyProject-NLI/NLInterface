@@ -13,8 +13,8 @@ class TextToSpeechUtility(context: Context, listener: OnInitListener)
         textToSpeechEngine.language = locale
     }
 
-    fun say(text: String) {
-        textToSpeechEngine.speak(text, TextToSpeech.QUEUE_FLUSH, null, "tts1")
+    fun say(text: String, queueMode: Int) {
+        textToSpeechEngine.speak(text, queueMode, null, "tts1")
     }
 
     fun onPause() {

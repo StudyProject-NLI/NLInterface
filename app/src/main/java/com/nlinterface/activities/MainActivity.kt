@@ -4,6 +4,9 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.speech.tts.TextToSpeech.OnInitListener
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -11,14 +14,20 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.*
+import com.nlinterface.viewmodels.MainActivityViewModel
+import java.util.Locale
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnInitListener {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var tts: TextToSpeechUtility
+    private lateinit var viewModel:MainActivityViewModel
 
     companion object {
         // needed to verify the audio permission result
@@ -31,7 +40,17 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
+
         GlobalParameters.instance!!.loadPreferences(this)
+
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            say("Main Activity")
+        }
+
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+        tts = TextToSpeechUtility(this, this)
 
         verifyAudioPermissions()
 
@@ -40,6 +59,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+
+        say("Main Activity")
 
         // process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
@@ -109,7 +130,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun say(text: String) {
+        if (viewModel.ttsInitialized.value == true) {
+            tts.say(text)
+        }
+    }
+
+    private fun readMenuOptions() {
+        say("Grocery List, Place Details, Settings")
+    }
+
     private fun onVoiceActivationButtonClick() {
-        // TODO
+        readMenuOptions()
+    }
+
+    override fun onInit(status: Int) {
+
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLocale(Locale.US)
+            viewModel.ttsInitialized.value = true
+        } else {
+            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
+        }
+
     }
 }

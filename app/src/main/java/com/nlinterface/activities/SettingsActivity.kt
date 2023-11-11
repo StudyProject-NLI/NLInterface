@@ -2,22 +2,29 @@ package com.nlinterface.activities
 
 import android.content.Context
 import android.os.Bundle
-import android.provider.Settings.Global
+import android.speech.tts.TextToSpeech
+import android.speech.tts.TextToSpeech.OnInitListener
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.setViewRelativeSize
+import com.nlinterface.viewmodels.MainViewModel
+import com.nlinterface.viewmodels.SettingsViewModel
+import java.util.Locale
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : AppCompatActivity(), OnInitListener {
 
     private lateinit var binding: ActivitySettingsBinding
+    private lateinit var viewModel: SettingsViewModel
 
     private lateinit var keepScreenOnOptions: MutableList<String>
     private var keepScreenOnButton: Button? = null
@@ -25,11 +32,15 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var themeOptions: MutableList<String>
     private var themeButton: Button? = null
 
+    private lateinit var tts: TextToSpeechUtility
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
 
         //process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
@@ -47,6 +58,8 @@ class SettingsActivity : AppCompatActivity() {
         resources.getStringArray(R.array.theme_options).forEach { option ->
             themeOptions.add(option)
         }
+
+        initTTS()
 
         configureUI()
     }
@@ -72,23 +85,37 @@ class SettingsActivity : AppCompatActivity() {
         super.onStart()
 
         keepScreenOnButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.keepScreenOnSwitch.ordinal == GlobalParameters.KeepScreenOn.values().size - 1) {
-                GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[0]
-            } else {
-                GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal + 1]
-            }
-            keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+            onKeepScreenOnButtonClick()
         }
 
         themeButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.themeChoice.ordinal == GlobalParameters.ThemeChoice.values().size - 1) {
-                GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[0]
-            } else {
-                GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[GlobalParameters.instance!!.themeChoice.ordinal + 1]
-            }
-            themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
-            //GlobalParameters.instance!!.updateTheme()
+            onThemeButtonClick()
         }
+    }
+
+    private fun onThemeButtonClick() {
+
+        if (GlobalParameters.instance!!.themeChoice.ordinal == GlobalParameters.ThemeChoice.values().size - 1) {
+            GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[0]
+        } else {
+            GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[GlobalParameters.instance!!.themeChoice.ordinal + 1]
+        }
+        themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
+        //GlobalParameters.instance!!.updateTheme()
+
+        say("New Theme Setting is ${themeButton!!.text}. Switch back to Main Activity to implement change.")
+    }
+
+    private fun onKeepScreenOnButtonClick() {
+
+        if (GlobalParameters.instance!!.keepScreenOnSwitch.ordinal == GlobalParameters.KeepScreenOn.values().size - 1) {
+            GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[0]
+        } else {
+            GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal + 1]
+        }
+        keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+
+        say("New Screen Setting is ${keepScreenOnButton!!.text}")
     }
 
     // save data to SharedPreferences
@@ -111,8 +138,55 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun initTTS() {
+
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            say("Settings Activity")
+        }
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+        tts = TextToSpeechUtility(this, this)
+
+    }
+
+    private fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
+        if (viewModel.ttsInitialized.value == true) {
+            tts.say(text, queueMode)
+        }
+    }
+
     private fun onVoiceActivationButtonClick() {
-        // TODO
+        say("Current Settings, Screen Setting, Theme Setting", TextToSpeech.QUEUE_ADD)
+        say("Reading all current settings", TextToSpeech.QUEUE_ADD)
+        readSettings(all = true)
+        say("Reading current screen setting", TextToSpeech.QUEUE_ADD)
+        readSettings(screen = true)
+        say("Reading current theme setting", TextToSpeech.QUEUE_ADD)
+        readSettings(theme = true)
+    }
+
+    private fun readSettings(all: Boolean = false, screen: Boolean = false, theme: Boolean = false) {
+
+    var text = ""
+
+        if (all || screen) {
+            text = text.plus("${keepScreenOnButton?.text}")
+        }
+        if (all || theme) {
+            text = text.plus("${themeButton?.text}")
+        }
+    say(text, TextToSpeech.QUEUE_ADD)
+    }
+
+    override fun onInit(status: Int) {
+
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLocale(Locale.US)
+            viewModel.ttsInitialized.value = true
+        } else {
+            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
+        }
+
     }
 
 }

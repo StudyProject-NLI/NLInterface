@@ -19,7 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.*
-import com.nlinterface.viewmodels.MainActivityViewModel
+import com.nlinterface.viewmodels.MainViewModel
 import java.util.Locale
 
 
@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(), OnInitListener {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var tts: TextToSpeechUtility
-    private lateinit var viewModel:MainActivityViewModel
+    private lateinit var viewModel: MainViewModel
 
     companion object {
         // needed to verify the audio permission result
@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity(), OnInitListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel = ViewModelProvider(this)[MainActivityViewModel::class.java]
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         GlobalParameters.instance!!.loadPreferences(this)
 

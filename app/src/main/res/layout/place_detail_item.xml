@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/materialCardView"
+        android:id="@+id/place_details_cv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@null"
@@ -20,7 +20,7 @@
         card_view:cardCornerRadius="13dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cv"
+            android:id="@+id/cl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="20dp">

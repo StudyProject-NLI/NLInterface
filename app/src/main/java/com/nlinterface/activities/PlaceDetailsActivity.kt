@@ -1,9 +1,13 @@
 package com.nlinterface.activities
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.speech.tts.TextToSpeech.OnInitListener
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,16 +21,20 @@ import com.nlinterface.adapters.PlaceDetailsAdapter
 import com.nlinterface.databinding.ActivityPlaceDetailsBinding
 import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
+import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.PlaceDetailsViewModel
+import java.util.Locale
 
 
-class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
+class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnInitListener {
 
     private lateinit var binding: ActivityPlaceDetailsBinding
     private lateinit var viewModel: PlaceDetailsViewModel
     private lateinit var placeDetailsItemList: ArrayList<PlaceDetailsItem>
     private lateinit var adapter: PlaceDetailsAdapter
+
+    private lateinit var tts: TextToSpeechUtility
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +46,8 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         viewModel.initPlaceClient(this)
 
         viewModel.fetchPlaceDetailsItemList()
+
+        initTTS()
 
         configureUI()
         configureAutocompleteFragment()
@@ -86,6 +96,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
 
                 viewModel.deletePlaceDetailsItem(placeDetailsItem)
                 adapter.notifyItemRemoved(index)
+                say("Deleted ${placeDetailsItem.storeName} from list")
             }
         }).attachToRecyclerView(rvPlaceDetails)
 
@@ -106,6 +117,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
 
                 viewModel.deletePlaceDetailsItem(placeDetailsItem)
                 adapter.notifyItemRemoved(index)
+                say("Deleted ${placeDetailsItem.storeName} from list")
             }
         }).attachToRecyclerView(rvPlaceDetails)
 
@@ -134,18 +146,75 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
 
     }
 
+    private fun initTTS() {
+
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            say("Place Details Activity")
+        }
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+        tts = TextToSpeechUtility(this, this)
+
+    }
+
+    private fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
+        if (viewModel.ttsInitialized.value == true) {
+            tts.say(text, queueMode)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         viewModel.storePlaceDetailsItemList()
     }
 
-    override fun onClick(item: PlaceDetailsItem) {
+    override fun onCardClick(item: PlaceDetailsItem) {
+        say(item.storeName)
+    }
+
+    override fun onFavoriteClick(item: PlaceDetailsItem) {
         val index = placeDetailsItemList.indexOf(item)
-        viewModel.changeFavorite(item)
+        val favorite = viewModel.changeFavorite(item)
         adapter.notifyItemChanged(index)
+
+        if (favorite) {
+            say("Added ${item.storeName} to favorites.")
+        } else {
+            say("Deleted ${item.storeName} from favorites.")
+        }
     }
 
     private fun onVoiceActivationButtonClick() {
-        // TODO
+        say("Search for new Store, Read Saved Stores, Read Favorite Stores", TextToSpeech.QUEUE_ADD)
+        say("Reading all Stores.", TextToSpeech.QUEUE_ADD)
+        readStores(all = true)
+        say("Reading Favorite Stores.", TextToSpeech.QUEUE_ADD)
+        readStores(favorite = true)
+    }
+
+    private fun readStores(all: Boolean = false, favorite: Boolean = false) {
+
+        var text = ""
+
+        for (item in placeDetailsItemList) {
+            if (all) {
+                text = text.plus(item.storeName).plus(item.openingHours)
+            } else if (favorite && item.favorite) {
+                text = text.plus(item.storeName).plus(item.openingHours)
+            }
+        }
+
+        say(text, TextToSpeech.QUEUE_ADD)
+    }
+
+    override fun onInit(status: Int) {
+
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLocale(Locale.US)
+            viewModel.ttsInitialized.value = true
+        } else {
+            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
+        }
+
     }
 }

@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
@@ -29,7 +30,11 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
     private val placeDetailsItemListFileName = "PlaceDetailsItemList.json"
     private val placeDetailsItemListFile: File = File(context.filesDir, placeDetailsItemListFileName)
     var placeDetailsItemList: ArrayList<PlaceDetailsItem> = ArrayList<PlaceDetailsItem> ()
-    var gson = Gson()
+    private var gson = Gson()
+
+    val ttsInitialized: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
 
     fun fetchPlaceDetailsItemList() {
 
@@ -99,8 +104,10 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
         placeDetailsItemListFile.writeText(jsonString)
     }
 
-    fun changeFavorite(item: PlaceDetailsItem) {
+    fun changeFavorite(item: PlaceDetailsItem): Boolean {
         item.favorite = !item.favorite
+
+        return item.favorite
     }
 
     fun deletePlaceDetailsItem(placeDetailsItem: PlaceDetailsItem): ArrayList<PlaceDetailsItem> {

@@ -6,14 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.nlinterface.R
 import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
-import com.nlinterface.utility.setViewRelativeSize
-import com.nlinterface.utility.setViewRelativeWidth
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.Calendar
 
 class PlaceDetailsAdapter (
@@ -26,6 +23,7 @@ class PlaceDetailsAdapter (
         val placeDetailsItemStoreNameTextView: TextView = itemView.findViewById(R.id.place_details_store_name_tv)
         val placeDetailsItemOpeningHoursTextView: TextView = itemView.findViewById(R.id.place_details_opening_hours_tv)
         val placeDetailsItemFavoriteImageView: ImageView = itemView.findViewById(R.id.place_details_favorite_iv)
+        val placeDetailsItemCardView: CardView = itemView.findViewById(R.id.place_details_cv)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -44,6 +42,7 @@ class PlaceDetailsAdapter (
 
         Log.println(Log.DEBUG, "openinghours", placeDetailsItem.openingHours.toString())
         val favoriteImageView = holder.placeDetailsItemFavoriteImageView
+        val cardView = holder.placeDetailsItemCardView
 
         val res = holder.itemView.resources
 
@@ -65,8 +64,14 @@ class PlaceDetailsAdapter (
         }
 
         favoriteImageView.setOnClickListener {
-            placeDetailsItemCallback.onClick(data[holder.adapterPosition])
+            placeDetailsItemCallback.onFavoriteClick(data[holder.adapterPosition])
         }
+
+        cardView.setOnClickListener {
+            placeDetailsItemCallback.onCardClick(data[holder.adapterPosition])
+        }
+
+
     }
 
     override fun getItemCount(): Int {

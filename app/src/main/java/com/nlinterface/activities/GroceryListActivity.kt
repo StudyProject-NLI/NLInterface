@@ -107,7 +107,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
 
                 adapter.notifyItemRemoved(index)
 
-                say("Deleted ${groceryItem.itemName} from list.")
+                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list))
             }
         }).attachToRecyclerView(rvGroceryList)
 
@@ -130,7 +130,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
 
                 adapter.notifyItemRemoved(index)
 
-                say("Deleted ${groceryItem.itemName} from list.")
+                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list))
             }
         }).attachToRecyclerView(rvGroceryList)
     }
@@ -143,7 +143,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
     private fun initTTS() {
 
         val ttsInitializedObserver = Observer<Boolean> { _ ->
-            say("Grocery List Activity")
+            say(resources.getString(R.string.grocery_list))
         }
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
 
@@ -158,16 +158,16 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
     }
 
     private fun listActionOptions() {
-        say("Add Items, Read Items on List, Read Items in Cart, Read All Items", TextToSpeech.QUEUE_ADD)
-        say("Reading all Items", TextToSpeech.QUEUE_ADD)
-        readItems(all = true)
-        say("Reading only Items in Cart", TextToSpeech.QUEUE_ADD)
-        readItems(inCart = true)
-        say("Reading only Items still on List", TextToSpeech.QUEUE_ADD)
-        readItems(onList = true)
+
+        say(resources.getString(R.string.add_item) +
+                resources.getString(R.string.list_all_grocery_items) +
+                resources.getString(R.string.list_all_items_in_cart) +
+                resources.getString(R.string.list_all_items_not_in_cart),
+                TextToSpeech.QUEUE_ADD)
+
     }
 
-    private fun readItems(all: Boolean = false, inCart: Boolean = false, onList: Boolean = false) {
+    private fun listItems(all: Boolean = false, inCart: Boolean = false, onList: Boolean = false) {
 
         var text = ""
 
@@ -207,11 +207,11 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
                     viewModel.addGroceryItem(newItemName)
                     adapter.notifyItemInserted(groceryItemList.size - 1)
 
-                    say("Added $newItemName to List.")
+                    say(resources.getString(R.string.added_ITEMNAME_to_list))
                 }
 
                 setNegativeButton(R.string.cancel) { _, _ ->
-                    say("Cancelled adding items.")
+                    say(resources.getString(R.string.cancelled_adding_item))
                 }
             }
             // Set other dialog properties
@@ -221,7 +221,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
         }
         alertDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         alertDialog.show()
-        say("Type which item you would like to add.")
+        say(resources.getString(R.string.enter_item_to_add))
     }
 
     override fun onLongClick(item: GroceryItem) {
@@ -230,9 +230,9 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
         adapter.notifyItemChanged(index)
 
         if (inCart) {
-            say("Placed ${item.itemName} into cart.")
+            say(resources.getString(R.string.placed_ITEMNAME_into_cart))
         } else {
-            say("Removed ${item.itemName} from cart.")
+            say(resources.getString(R.string.removed_ITEMNAME_from_cart))
         }
     }
 
@@ -243,7 +243,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
     override fun onInit(status: Int) {
 
         if (status == TextToSpeech.SUCCESS) {
-            tts.setLocale(Locale.US)
+            tts.setLocale(Locale.getDefault())
             viewModel.ttsInitialized.value = true
         } else {
             Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")

@@ -103,7 +103,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
         //GlobalParameters.instance!!.updateTheme()
 
-        say("New Theme Setting is ${themeButton!!.text}. Switch back to Main Activity to implement change.")
+        say(resources.getString(R.string.new_theme_setting))
     }
 
     private fun onKeepScreenOnButtonClick() {
@@ -115,7 +115,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         }
         keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
 
-        say("New Screen Setting is ${keepScreenOnButton!!.text}")
+        say(resources.getString(R.string.new_screen_setting))
     }
 
     // save data to SharedPreferences
@@ -141,7 +141,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
     private fun initTTS() {
 
         val ttsInitializedObserver = Observer<Boolean> { _ ->
-            say("Settings Activity")
+            say(resources.getString(R.string.settings))
         }
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
 
@@ -156,13 +156,12 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
     }
 
     private fun onVoiceActivationButtonClick() {
-        say("Current Settings, Screen Setting, Theme Setting", TextToSpeech.QUEUE_ADD)
-        say("Reading all current settings", TextToSpeech.QUEUE_ADD)
-        readSettings(all = true)
-        say("Reading current screen setting", TextToSpeech.QUEUE_ADD)
-        readSettings(screen = true)
-        say("Reading current theme setting", TextToSpeech.QUEUE_ADD)
-        readSettings(theme = true)
+
+        say(resources.getString(R.string.list_all_settings) +
+                resources.getString(R.string.read_screen_setting) +
+                resources.getString(R.string.read_theme_setting),
+                TextToSpeech.QUEUE_ADD)
+
     }
 
     private fun readSettings(all: Boolean = false, screen: Boolean = false, theme: Boolean = false) {
@@ -181,7 +180,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
     override fun onInit(status: Int) {
 
         if (status == TextToSpeech.SUCCESS) {
-            tts.setLocale(Locale.US)
+            tts.setLocale(Locale.getDefault())
             viewModel.ttsInitialized.value = true
         } else {
             Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")

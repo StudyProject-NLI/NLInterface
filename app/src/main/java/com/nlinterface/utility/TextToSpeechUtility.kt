@@ -9,7 +9,7 @@ class TextToSpeechUtility(context: Context, listener: OnInitListener)
 
     private var textToSpeechEngine: TextToSpeech = TextToSpeech(context, listener)
 
-    fun setLocale(locale: Locale = Locale.US) {
+    fun setLocale(locale: Locale = Locale.getDefault()) {
         textToSpeechEngine.language = locale
     }
 

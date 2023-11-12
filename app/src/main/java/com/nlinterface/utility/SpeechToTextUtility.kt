@@ -20,7 +20,11 @@ class SpeechToTextUtility {
         speechRecognizer!!.startListening(createIntent())
     }
 
-    fun createSpeechRecognizer(context: Context, onResult: (results: Bundle) -> Unit) {
+    fun cancelListening() {
+        speechRecognizer!!.cancel()
+    }
+
+    fun createSpeechRecognizer(context: Context, onResults: (results: Bundle) -> Unit, onEndOfSpeech: () -> Unit) {
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
@@ -29,11 +33,11 @@ class SpeechToTextUtility {
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray) {}
-            override fun onEndOfSpeech() {}
+            override fun onEndOfSpeech() {onEndOfSpeech}
             override fun onError(p0: Int) {}
             override fun onPartialResults(partialResults: Bundle) {}
             override fun onEvent(eventType: Int, params: Bundle) {}
-            override fun onResults(results: Bundle) { onResult(results) }
+            override fun onResults(results: Bundle) {onResults(results) }
         })
     }
 

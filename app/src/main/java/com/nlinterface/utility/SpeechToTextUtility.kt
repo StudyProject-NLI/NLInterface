@@ -3,26 +3,19 @@ package com.nlinterface.utility
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings.Global.getString
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.MutableLiveData
 import com.nlinterface.R
 import java.util.Locale
-import com.nlinterface.activities.GroceryListActivity
-import com.nlinterface.activities.MainActivity
-import org.w3c.dom.Text
+
 
 class SpeechToTextUtility {
+
     private var speechRecognizer: SpeechRecognizer? = null
-    var commandsList: MutableList<String>? = null
+    var resultText: MutableLiveData<String> = MutableLiveData<String>()
 
     // make it a Singleton
     companion object {
@@ -38,37 +31,34 @@ class SpeechToTextUtility {
             }
     }
 
-    fun handleSpeechBegin(button: ImageButton) {
-        button.setImageResource(R.drawable.ic_mic_green)
+    fun handleSpeechBegin() {
         speechRecognizer!!.startListening(createIntent())
     }
 
     fun createSpeechRecognizer(context: Context, button: ImageButton) {
+
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+
             override fun onReadyForSpeech(params: Bundle) {}
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray) {}
-            override fun onEndOfSpeech() {
-                button!!.setImageResource(R.drawable.ic_mic_white)
-            }
-            override fun onError(error: Int) {}
+            override fun onEndOfSpeech() {}
+            override fun onError(p0: Int) {}
+            override fun onPartialResults(partialResults: Bundle) {}
+            override fun onEvent(eventType: Int, params: Bundle) {}
 
             override fun onResults(results: Bundle) {
                 val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list, so choose the first one
                     val result = matches[0]
-                    button!!.setImageResource(R.drawable.ic_mic_white)
-                    Toast.makeText(context, result, Toast.LENGTH_LONG).show()
+                    //button!!.setImageResource(R.drawable.ic_mic_white)
+                    resultText.value = result
                 }
             }
-
-            // handle partial speech results for dynamic speech to text recognition
-            override fun onPartialResults(partialResults: Bundle) {}
-
-            override fun onEvent(eventType: Int, params: Bundle) {}
         })
     }
 

@@ -25,9 +25,12 @@ import java.util.Locale
 
 class MainActivity : AppCompatActivity(), OnInitListener {
 
+    private var isListening = false
     private lateinit var binding: ActivityMainBinding
     private lateinit var tts: TextToSpeechUtility
+    private val stt = SpeechToTextUtility()
     private lateinit var viewModel: MainViewModel
+    private lateinit var voiceActivationButton: ImageButton
 
     companion object {
         // needed to verify the audio permission result
@@ -49,6 +52,40 @@ class MainActivity : AppCompatActivity(), OnInitListener {
         verifyAudioPermissions()
 
         configureUI()
+
+        initSTT()
+    }
+
+    private fun initSTT() {
+        stt.createSpeechRecognizer(this, voiceActivationButton)
+
+        val sttResultObserver = Observer<String> { _ ->
+            handleSTTResult()
+        }
+        stt.resultText.observe(this, sttResultObserver)
+    }
+
+    private fun handleSTTResult() {
+
+        when (stt.resultText.value) {
+
+            "Einkaufsliste" -> {
+                val intent = Intent(this, GroceryListActivity::class.java)
+                this.startActivity(intent)
+            }
+            "Ort Details" -> {
+                val intent = Intent(this, PlaceDetailsActivity::class.java)
+                this.startActivity(intent)
+            }
+            "Einstellungen" -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                this.startActivity(intent)
+            }
+
+        }
+
+        isListening = false
+        voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
     }
 
     override fun onStart() {
@@ -91,7 +128,7 @@ class MainActivity : AppCompatActivity(), OnInitListener {
         }
 
         // set up voice Activation Button listener
-        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         voiceActivationButton.setOnClickListener {
             onVoiceActivationButtonClick()
         }
@@ -146,7 +183,11 @@ class MainActivity : AppCompatActivity(), OnInitListener {
     }
 
     private fun onVoiceActivationButtonClick() {
-        readMenuOptions()
+        if (!isListening) {
+            stt.handleSpeechBegin()
+            voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
+            isListening = true
+        }
     }
 
     override fun onInit(status: Int) {

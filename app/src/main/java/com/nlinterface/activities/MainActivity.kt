@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.Manifest
+import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -23,12 +24,9 @@ import com.nlinterface.viewmodels.MainViewModel
 import java.util.Locale
 
 
-class MainActivity : AppCompatActivity(), OnInitListener {
+class MainActivity : AppCompatActivity() {
 
-    private var isListening = false
     private lateinit var binding: ActivityMainBinding
-    private lateinit var tts: TextToSpeechUtility
-    private val stt = SpeechToTextUtility()
     private lateinit var viewModel: MainViewModel
     private lateinit var voiceActivationButton: ImageButton
 
@@ -47,51 +45,21 @@ class MainActivity : AppCompatActivity(), OnInitListener {
 
         GlobalParameters.instance!!.loadPreferences(this)
 
-        initTTS()
+        viewModel.initTTS()
 
         verifyAudioPermissions()
 
         configureUI()
 
-        initSTT()
-    }
+        configureVoiceControl()
 
-    private fun initSTT() {
-        stt.createSpeechRecognizer(this, voiceActivationButton)
-
-        val sttResultObserver = Observer<String> { _ ->
-            handleSTTResult()
-        }
-        stt.resultText.observe(this, sttResultObserver)
-    }
-
-    private fun handleSTTResult() {
-
-        when (stt.resultText.value) {
-
-            "Einkaufsliste" -> {
-                val intent = Intent(this, GroceryListActivity::class.java)
-                this.startActivity(intent)
-            }
-            "Ort Details" -> {
-                val intent = Intent(this, PlaceDetailsActivity::class.java)
-                this.startActivity(intent)
-            }
-            "Einstellungen" -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                this.startActivity(intent)
-            }
-
-        }
-
-        isListening = false
-        voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
+        viewModel.initSTT()
     }
 
     override fun onStart() {
         super.onStart()
 
-        say("Main Activity")
+        viewModel.say(resources.getString(R.string.main_activity))
 
         // process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
@@ -102,6 +70,62 @@ class MainActivity : AppCompatActivity(), OnInitListener {
 
         // process theme settings
         GlobalParameters.instance!!.updateTheme()
+    }
+
+    private fun configureVoiceControl() {
+
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            viewModel.say(resources.getString(R.string.main_activity))
+        }
+
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+        val sttIsListeningObserver = Observer<Boolean> { isListening ->
+            if (isListening) {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
+            } else {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
+            }
+        }
+
+        viewModel.isListening.observe(this, sttIsListeningObserver)
+
+        val commandObserver = Observer<ArrayList<String>> {command ->
+            executeCommand(command)
+        }
+
+        viewModel.command.observe(this, commandObserver)
+    }
+
+    private fun executeCommand(command: ArrayList<String>?) {
+
+        if (command != null && command.size == 3) {
+            if (command[0] == "GOTO") {
+                navToActivity(command[1])
+            } else {
+                viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
+            }
+        }
+    }
+
+    private fun navToActivity(activity: String) {
+
+        when (activity) {
+
+            "GL" -> {
+                val intent = Intent(this, GroceryListActivity::class.java)
+                this.startActivity(intent)
+            }
+            "PD" -> {
+                val intent = Intent(this, PlaceDetailsActivity::class.java)
+                this.startActivity(intent)
+            }
+            "S" -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                this.startActivity(intent)
+            }
+
+        }
     }
 
     private fun configureUI() {
@@ -161,43 +185,20 @@ class MainActivity : AppCompatActivity(), OnInitListener {
         }
     }
 
-    private fun initTTS() {
-
-        val ttsInitializedObserver = Observer<Boolean> { _ ->
-            say("Main Activity")
-        }
-        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
-
-        tts = TextToSpeechUtility(this, this)
-
-    }
-
-    private fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
-        if (viewModel.ttsInitialized.value == true) {
-            tts.say(text, queueMode)
-        }
-    }
-
     private fun readMenuOptions() {
-        say("Grocery List, Place Details, Settings")
+        viewModel.say(
+            resources.getString(R.string.grocery_list) +
+            resources.getString(R.string.place_details) +
+            resources.getString(R.string.settings)
+        )
     }
 
     private fun onVoiceActivationButtonClick() {
-        if (!isListening) {
-            stt.handleSpeechBegin()
-            voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            isListening = true
-        }
-    }
-
-    override fun onInit(status: Int) {
-
-        if (status == TextToSpeech.SUCCESS) {
-            tts.setLocale(Locale.US)
-            viewModel.ttsInitialized.value = true
+        if (viewModel.isListening.value == false) {
+            viewModel.handleSpeechBegin()
         } else {
-            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
+            viewModel.cancelListening()
         }
-
     }
+
 }

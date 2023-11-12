@@ -15,30 +15,14 @@ import java.util.Locale
 class SpeechToTextUtility {
 
     private var speechRecognizer: SpeechRecognizer? = null
-    var resultText: MutableLiveData<String> = MutableLiveData<String>()
-
-    // make it a Singleton
-    companion object {
-        private var mInstance: SpeechToTextUtility? = null
-
-        @get:Synchronized
-        val instance: SpeechToTextUtility?
-            get() {
-                if (null == mInstance) {
-                    mInstance = SpeechToTextUtility()
-                }
-                return mInstance
-            }
-    }
 
     fun handleSpeechBegin() {
         speechRecognizer!!.startListening(createIntent())
     }
 
-    fun createSpeechRecognizer(context: Context, button: ImageButton) {
+    fun createSpeechRecognizer(context: Context, onResult: (results: Bundle) -> Unit) {
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
-
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
 
             override fun onReadyForSpeech(params: Bundle) {}
@@ -49,16 +33,7 @@ class SpeechToTextUtility {
             override fun onError(p0: Int) {}
             override fun onPartialResults(partialResults: Bundle) {}
             override fun onEvent(eventType: Int, params: Bundle) {}
-
-            override fun onResults(results: Bundle) {
-                val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (matches != null && matches.size > 0) {
-                    // results are added in decreasing order of confidence to the list, so choose the first one
-                    val result = matches[0]
-                    //button!!.setImageResource(R.drawable.ic_mic_white)
-                    resultText.value = result
-                }
-            }
+            override fun onResults(results: Bundle) { onResult(results) }
         })
     }
 

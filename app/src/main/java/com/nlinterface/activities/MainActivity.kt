@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun executeCommand(command: ArrayList<String>?) {
 
-        if (command != null && command.size == 3) {
+        if ((command != null) && (command.size == 3)) {
             if (command[0] == "GOTO") {
                 navToActivity(command[1])
             } else {
@@ -110,22 +110,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun navToActivity(activity: String) {
 
+        Log.println(Log.DEBUG, "navToActivity", activity)
+
         when (activity) {
 
-            "GL" -> {
+            ActivityType.MAIN.toString() -> {
+                viewModel.say(resources.getString(R.string.main_menu))
+            }
+
+            ActivityType.GROCERYLIST.toString() -> {
                 val intent = Intent(this, GroceryListActivity::class.java)
                 this.startActivity(intent)
             }
-            "PD" -> {
+            ActivityType.PLACEDETAILS.toString() -> {
                 val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)
             }
-            "S" -> {
+            ActivityType.SETTINGS.toString() -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 this.startActivity(intent)
             }
 
         }
+
     }
 
     private fun configureUI() {

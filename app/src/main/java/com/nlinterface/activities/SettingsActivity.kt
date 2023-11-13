@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
+import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.setViewRelativeSize
@@ -189,7 +190,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun executeCommand(command: ArrayList<String>?) {
 
-        if (command != null && command.size == 3) {
+        if ((command != null) && (command.size == 3)) {
             if (command[0] == "GOTO") {
                 navToActivity(command[1])
             } else {
@@ -201,18 +202,24 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun navToActivity(activity: String) {
 
+        Log.println(Log.DEBUG, "navToActivity", activity)
+
         when (activity) {
 
-            "MM" -> {
+            ActivityType.SETTINGS.toString() -> {
+                viewModel.say(resources.getString(R.string.settings))
+            }
+
+            ActivityType.MAIN.toString() -> {
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }
-            "PD" -> {
-                val intent = Intent(this, PlaceDetailsActivity::class.java)
+            ActivityType.GROCERYLIST.toString() -> {
+                val intent = Intent(this, GroceryListActivity::class.java)
                 this.startActivity(intent)
             }
-            "GL" -> {
-                val intent = Intent(this, GroceryListActivity::class.java)
+            ActivityType.PLACEDETAILS.toString() -> {
+                val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)
             }
 

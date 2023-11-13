@@ -15,6 +15,7 @@ import com.nlinterface.R
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
+import com.nlinterface.utility.VoiceCommandHelper
 import java.io.BufferedReader
 import java.io.File
 import java.util.Locale
@@ -128,33 +129,12 @@ class GroceryListViewModel (
             })
     }
 
-    private fun handleSpeechResult(s: String?) {
+    private fun handleSpeechResult(s: String) {
 
-        val string = s?.lowercase()
-        val cmd = ArrayList<String>()
+        Log.println(Log.DEBUG, "handleSpeechResult", s)
+        val voiceCommandHelper = VoiceCommandHelper()
+        _command.value = voiceCommandHelper.decodeVoiceCommand(s)
 
-        if (string != null) {
-            if (string.contains(Regex("go to"))) {
-                cmd.add("GOTO")
-                if (string.contains(Regex("main menu"))) {
-                    cmd.add("MM")
-                } else if (string.contains(Regex("place details"))) {
-                    cmd.add("PD")
-                } else if (string.contains(Regex("settings"))) {
-                    cmd.add("S")
-                } else {
-                    cmd.add("")
-                }
-            } else if (string.contains(Regex("add"))) {
-                cmd.add("ADD")
-            } else {
-                cmd.add("")
-            }
-
-            cmd.add("")
-
-            _command.value = cmd
-        }
     }
 
     fun handleSpeechBegin() {

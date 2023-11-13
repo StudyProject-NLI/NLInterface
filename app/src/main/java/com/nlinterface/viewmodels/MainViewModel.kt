@@ -15,6 +15,7 @@ import com.nlinterface.activities.PlaceDetailsActivity
 import com.nlinterface.activities.SettingsActivity
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
+import com.nlinterface.utility.VoiceCommandHelper
 import java.util.Locale
 
 class MainViewModel(
@@ -80,30 +81,12 @@ class MainViewModel(
         })
     }
 
-    private fun handleSpeechResult(s: String?) {
+    private fun handleSpeechResult(s: String) {
 
-        val string = s?.lowercase()
-        val cmd = ArrayList<String>()
+        Log.println(Log.DEBUG, "handleSpeechResult", s)
+        val voiceCommandHelper = VoiceCommandHelper()
+        _command.value = voiceCommandHelper.decodeVoiceCommand(s)
 
-        if (string != null) {
-            if (string.contains(Regex("go to grocery list"))) {
-                cmd.add("GOTO")
-                cmd.add("GL")
-            } else if (string.contains(Regex("go to place details"))) {
-                cmd.add("GOTO")
-                cmd.add("PD")
-            } else if (string.contains(Regex("go to settings"))) {
-                cmd.add("GOTO")
-                cmd.add("S")
-            } else {
-                cmd.add("")
-                cmd.add("")
-            }
-
-            cmd.add("")
-
-            _command.value = cmd
-        }
     }
 
     fun handleSpeechBegin() {

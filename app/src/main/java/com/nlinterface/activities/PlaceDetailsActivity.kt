@@ -22,6 +22,7 @@ import com.nlinterface.adapters.PlaceDetailsAdapter
 import com.nlinterface.databinding.ActivityPlaceDetailsBinding
 import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
+import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.PlaceDetailsViewModel
@@ -96,15 +97,19 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
 
         when (activity) {
 
-            "MM" -> {
+            ActivityType.PLACEDETAILS.toString() -> {
+                viewModel.say(resources.getString(R.string.place_details))
+            }
+
+            ActivityType.MAIN.toString() -> {
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }
-            "GL" -> {
+            ActivityType.GROCERYLIST.toString() -> {
                 val intent = Intent(this, GroceryListActivity::class.java)
                 this.startActivity(intent)
             }
-            "S" -> {
+            ActivityType.SETTINGS.toString() -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 this.startActivity(intent)
             }

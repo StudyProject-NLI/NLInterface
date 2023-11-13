@@ -23,6 +23,7 @@ import com.nlinterface.adapters.GroceryListAdapter
 import com.nlinterface.databinding.ActivityGroceryListBinding
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.interfaces.GroceryListCallback
+import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.setViewRelativeSize
@@ -184,17 +185,23 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
     private fun navToActivity(activity: String) {
 
+        Log.println(Log.DEBUG, "navToActivity", activity)
+
         when (activity) {
 
-            "MM" -> {
+            ActivityType.GROCERYLIST.toString() -> {
+                viewModel.say(resources.getString(R.string.grocery_list))
+            }
+
+            ActivityType.MAIN.toString() -> {
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }
-            "PD" -> {
+            ActivityType.PLACEDETAILS.toString() -> {
                 val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)
             }
-            "S" -> {
+            ActivityType.SETTINGS.toString() -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 this.startActivity(intent)
             }

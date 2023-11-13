@@ -56,6 +56,7 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
 
     private fun addPlaceDetailsItem(placeID: String, storeName: String, openingHours: List<String>): ArrayList<PlaceDetailsItem> {
         placeDetailsItemList.add(PlaceDetailsItem(placeID, storeName, openingHours, false))
+        storePlaceDetailsItemList()
         return placeDetailsItemList
     }
 
@@ -106,12 +107,15 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
 
     fun changeFavorite(item: PlaceDetailsItem): Boolean {
         item.favorite = !item.favorite
+        storePlaceDetailsItemList()
 
         return item.favorite
     }
 
     fun deletePlaceDetailsItem(placeDetailsItem: PlaceDetailsItem): ArrayList<PlaceDetailsItem> {
         placeDetailsItemList.remove(placeDetailsItem)
+        storePlaceDetailsItemList()
+
         return placeDetailsItemList
     }
 

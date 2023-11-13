@@ -45,14 +45,17 @@ class GroceryListViewModel (
 
     fun addGroceryItem(itemName: String): ArrayList<GroceryItem> {
         groceryList.add(GroceryItem(itemName, groceryList.size, false))
+        storeGroceryList()
         return groceryList
     }
 
     fun deleteGroceryItem(groceryItem: GroceryItem) {
+        storeGroceryList()
         groceryList.remove(groceryItem)
     }
 
     fun placeGroceryItemInCart(groceryItem: GroceryItem): Boolean {
+        storeGroceryList()
         groceryItem.inCart = !groceryItem.inCart
 
         return groceryItem.inCart

@@ -1,5 +1,6 @@
 package com.nlinterface.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
@@ -33,6 +34,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
     private lateinit var viewModel: PlaceDetailsViewModel
     private lateinit var placeDetailsItemList: ArrayList<PlaceDetailsItem>
     private lateinit var adapter: PlaceDetailsAdapter
+    private lateinit var voiceActivationButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +48,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         viewModel.fetchPlaceDetailsItemList()
 
         viewModel.initTTS()
+        viewModel.initSTT()
 
         configureUI()
         configureAutocompleteFragment()
@@ -59,12 +62,60 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         }
 
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+        val sttIsListeningObserver = Observer<Boolean> { isListening ->
+            if (isListening) {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
+            } else {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
+            }
+        }
+
+        viewModel.isListening.observe(this, sttIsListeningObserver)
+
+        val commandObserver = Observer<ArrayList<String>> {command ->
+            executeCommand(command)
+        }
+
+        viewModel.command.observe(this, commandObserver)
+    }
+
+    private fun executeCommand(command: ArrayList<String>?) {
+
+        if (command != null && command.size == 3) {
+            if (command[0] == "GOTO") {
+                navToActivity(command[1])
+            } else {
+                viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
+            }
+        }
+
+    }
+
+    private fun navToActivity(activity: String) {
+
+        when (activity) {
+
+            "MM" -> {
+                val intent = Intent(this, MainActivity::class.java)
+                this.startActivity(intent)
+            }
+            "GL" -> {
+                val intent = Intent(this, GroceryListActivity::class.java)
+                this.startActivity(intent)
+            }
+            "S" -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                this.startActivity(intent)
+            }
+
+        }
     }
 
     private fun configureUI() {
 
         // set up voice activation button listener
-        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         voiceActivationButton.setOnClickListener {
             onVoiceActivationButtonClick()
         }
@@ -181,10 +232,11 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
     }
 
     private fun onVoiceActivationButtonClick() {
-        viewModel.say(resources.getString(R.string.search_for_store) +
-                resources.getString(R.string.list_saved_stores) +
-                resources.getString(R.string.list_favorite_stores),
-                TextToSpeech.QUEUE_ADD)
+        if (viewModel.isListening.value == false) {
+            viewModel.handleSpeechBegin()
+        } else {
+            viewModel.cancelListening()
+        }
     }
 
     private fun readStores(all: Boolean = false, favorite: Boolean = false) {

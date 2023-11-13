@@ -21,7 +21,7 @@ import com.nlinterface.viewmodels.MainViewModel
 import com.nlinterface.viewmodels.SettingsViewModel
 import java.util.Locale
 
-class SettingsActivity : AppCompatActivity(), OnInitListener {
+class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
     private lateinit var viewModel: SettingsViewModel
@@ -31,8 +31,6 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
 
     private lateinit var themeOptions: MutableList<String>
     private var themeButton: Button? = null
-
-    private lateinit var tts: TextToSpeechUtility
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,9 +57,11 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
             themeOptions.add(option)
         }
 
-        initTTS()
+        viewModel.initTTS()
 
         configureUI()
+
+        configureVoiceControl()
     }
 
     private fun configureUI() {
@@ -103,7 +103,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
         //GlobalParameters.instance!!.updateTheme()
 
-        say(resources.getString(R.string.new_theme_setting, themeButton!!.text))
+        viewModel.say(resources.getString(R.string.new_theme_setting, themeButton!!.text))
     }
 
     private fun onKeepScreenOnButtonClick() {
@@ -115,7 +115,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         }
         keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
 
-        say(resources.getString(R.string.new_screen_setting, keepScreenOnButton!!.text))
+        viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton!!.text))
     }
 
     // save data to SharedPreferences
@@ -138,35 +138,26 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         }
     }
 
-    private fun initTTS() {
-
-        val ttsInitializedObserver = Observer<Boolean> { _ ->
-            say(resources.getString(R.string.settings))
-        }
-        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
-
-        tts = TextToSpeechUtility(this, this)
-
-    }
-
-    private fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
-        if (viewModel.ttsInitialized.value == true) {
-            tts.say(text, queueMode)
-        }
-    }
-
     private fun onVoiceActivationButtonClick() {
 
-        say(resources.getString(R.string.list_all_settings) +
+        viewModel.say(resources.getString(R.string.list_all_settings) +
                 resources.getString(R.string.read_screen_setting) +
                 resources.getString(R.string.read_theme_setting),
                 TextToSpeech.QUEUE_ADD)
 
     }
 
+    private fun configureVoiceControl() {
+
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            viewModel.say(resources.getString(R.string.settings))
+        }
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+    }
+
     private fun readSettings(all: Boolean = false, screen: Boolean = false, theme: Boolean = false) {
 
-    var text = ""
+        var text = ""
 
         if (all || screen) {
             text = text.plus("${keepScreenOnButton?.text}")
@@ -174,18 +165,6 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         if (all || theme) {
             text = text.plus("${themeButton?.text}")
         }
-    say(text, TextToSpeech.QUEUE_ADD)
+        viewModel.say(text, TextToSpeech.QUEUE_ADD)
     }
-
-    override fun onInit(status: Int) {
-
-        if (status == TextToSpeech.SUCCESS) {
-            tts.setLocale(Locale.getDefault())
-            viewModel.ttsInitialized.value = true
-        } else {
-            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
-        }
-
-    }
-
 }

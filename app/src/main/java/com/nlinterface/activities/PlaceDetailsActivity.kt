@@ -48,21 +48,28 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
 
         viewModel.fetchPlaceDetailsItemList()
 
-        viewModel.initTTS()
-        viewModel.initSTT()
-
         configureUI()
         configureAutocompleteFragment()
-        configureVoiceControl()
+        configureTTS()
+        configureSTT()
 
     }
 
-    private fun configureVoiceControl() {
+    private fun configureTTS() {
+
+        viewModel.initTTS()
+
         val ttsInitializedObserver = Observer<Boolean> { _ ->
             viewModel.say(resources.getString(R.string.place_details))
         }
 
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+    }
+
+    private fun configureSTT() {
+
+        viewModel.initSTT()
 
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
             if (isListening) {
@@ -79,6 +86,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         }
 
         viewModel.command.observe(this, commandObserver)
+
     }
 
     private fun executeCommand(command: ArrayList<String>?) {

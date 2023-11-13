@@ -56,12 +56,9 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
 
-        viewModel.initTTS()
-        viewModel.initSTT()
-
         configureUI()
-
-        configureVoiceControl()
+        configureTTS()
+        configureSTT()
     }
 
     private fun configureUI() {
@@ -145,13 +142,21 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewModel.storeGroceryList()
     }
 
-    private fun configureVoiceControl() {
+    private fun configureTTS() {
+
+        viewModel.initTTS()
 
         val ttsInitializedObserver = Observer<Boolean> { _ ->
             viewModel.say(resources.getString(R.string.grocery_list))
         }
 
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+    }
+
+    private fun configureSTT() {
+
+        viewModel.initSTT()
 
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
             if (isListening) {

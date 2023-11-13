@@ -45,21 +45,16 @@ class MainActivity : AppCompatActivity() {
 
         GlobalParameters.instance!!.loadPreferences(this)
 
-        viewModel.initTTS()
-
         verifyAudioPermissions()
-
         configureUI()
-
-        configureVoiceControl()
-
-        viewModel.initSTT()
+        configureTTS()
+        configureSTT()
     }
 
     override fun onStart() {
         super.onStart()
 
-        viewModel.say(resources.getString(R.string.main_activity))
+        viewModel.say(resources.getString(R.string.main_menu))
 
         // process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
@@ -72,13 +67,21 @@ class MainActivity : AppCompatActivity() {
         GlobalParameters.instance!!.updateTheme()
     }
 
-    private fun configureVoiceControl() {
+    private fun configureTTS() {
+
+        viewModel.initTTS()
 
         val ttsInitializedObserver = Observer<Boolean> { _ ->
             viewModel.say(resources.getString(R.string.main_menu))
         }
 
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+    }
+
+    private fun configureSTT() {
+
+        viewModel.initSTT()
 
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
             if (isListening) {
@@ -95,6 +98,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.command.observe(this, commandObserver)
+
     }
 
     private fun executeCommand(command: ArrayList<String>?) {

@@ -61,12 +61,10 @@ class SettingsActivity : AppCompatActivity() {
             themeOptions.add(option)
         }
 
-        viewModel.initTTS()
-        viewModel.initSTT()
-
         configureUI()
 
-        configureVoiceControl()
+        configureTTS()
+        configureSTT()
     }
 
     private fun configureUI() {
@@ -151,12 +149,21 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun configureVoiceControl() {
+    private fun configureTTS() {
+
+        viewModel.initTTS()
 
         val ttsInitializedObserver = Observer<Boolean> { _ ->
             viewModel.say(resources.getString(R.string.settings))
         }
+
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+    }
+
+    private fun configureSTT() {
+
+        viewModel.initSTT()
 
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
             if (isListening) {
@@ -173,6 +180,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         viewModel.command.observe(this, commandObserver)
+
     }
 
     private fun readSettings(all: Boolean = false, screen: Boolean = false, theme: Boolean = false) {

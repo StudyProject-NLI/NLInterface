@@ -74,6 +74,7 @@
         <item>Dark Theme</item>
     </string-array>
     <string name="main_activity">Main Activity</string>
+    <string name="main_menu">Main Menu</string>
     <string name="choose_activity_to_navigate_to">Please choose where to navigate to.</string>
     <string name="go_to">go to</string>
     <string name="deleted_ITEMNAME_from_grocery_list">Deleted %1$s from grocery list.</string>

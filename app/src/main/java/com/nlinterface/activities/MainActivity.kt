@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
     private fun configureVoiceControl() {
 
         val ttsInitializedObserver = Observer<Boolean> { _ ->
-            viewModel.say(resources.getString(R.string.main_activity))
+            viewModel.say(resources.getString(R.string.main_menu))
         }
 
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_activity">Hauptmenü</string>
+    <string name="main_activity">Haupt Activity</string>
     <string name="choose_activity_to_navigate_to">Bitte wählen Sie eine Menüoption.</string>
     <string name="go_to">gehe zu</string>
     <string name="deleted_ITEMNAME_from_grocery_list">%1$s wurde von der Einkaufsliste gelöscht.</string>
@@ -81,5 +81,6 @@
     <string name="read_screen_setting">Nenne die Bildschirmeinstellung.</string>
     <string name="read_theme_setting">Nenne die Moduseinstellung.</string>
     <string name="STORENAME_added_to_saved_places">%1$s wurde den gespeicherten Orten hinzugefügt.</string>
+    <string name="main_menu">Hauptmenü</string>
 
 </resources>

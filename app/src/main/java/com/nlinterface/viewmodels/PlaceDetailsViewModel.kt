@@ -2,6 +2,8 @@ package com.nlinterface.viewmodels
 
 import android.app.Application
 import android.content.Context
+import android.speech.tts.TextToSpeech
+import android.speech.tts.TextToSpeech.OnInitListener
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -16,13 +18,18 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nlinterface.BuildConfig
+import com.nlinterface.R
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.dataclasses.PlaceDetailsItem
+import com.nlinterface.utility.TextToSpeechUtility
 import kotlinx.coroutines.CompletionHandler
 import java.io.BufferedReader
 import java.io.File
+import java.util.Locale
 
-class PlaceDetailsViewModel(application: Application) : AndroidViewModel(application) {
+class PlaceDetailsViewModel(
+    application: Application
+) : AndroidViewModel(application), OnInitListener {
 
     private val context = application
     private lateinit var placesClient: PlacesClient
@@ -31,6 +38,8 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
     private val placeDetailsItemListFile: File = File(context.filesDir, placeDetailsItemListFileName)
     var placeDetailsItemList: ArrayList<PlaceDetailsItem> = ArrayList<PlaceDetailsItem> ()
     private var gson = Gson()
+
+    private lateinit var tts: TextToSpeechUtility
 
     val ttsInitialized: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
@@ -117,6 +126,27 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
         storePlaceDetailsItemList()
 
         return placeDetailsItemList
+    }
+
+    fun initTTS() {
+        tts = TextToSpeechUtility(getApplication<Application>().applicationContext, this)
+    }
+
+    fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
+        if (ttsInitialized.value == true) {
+            tts.say(text, queueMode)
+        }
+    }
+
+    override fun onInit(status: Int) {
+
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLocale(Locale.getDefault())
+            ttsInitialized.value = true
+        } else {
+            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
+        }
+
     }
 
 }

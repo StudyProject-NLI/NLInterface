@@ -27,14 +27,12 @@ import com.nlinterface.viewmodels.PlaceDetailsViewModel
 import java.util.Locale
 
 
-class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnInitListener {
+class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
 
     private lateinit var binding: ActivityPlaceDetailsBinding
     private lateinit var viewModel: PlaceDetailsViewModel
     private lateinit var placeDetailsItemList: ArrayList<PlaceDetailsItem>
     private lateinit var adapter: PlaceDetailsAdapter
-
-    private lateinit var tts: TextToSpeechUtility
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,11 +45,20 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
 
         viewModel.fetchPlaceDetailsItemList()
 
-        initTTS()
+        viewModel.initTTS()
 
         configureUI()
         configureAutocompleteFragment()
+        configureVoiceControl()
 
+    }
+
+    private fun configureVoiceControl() {
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            viewModel.say(resources.getString(R.string.place_details))
+        }
+
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
     }
 
     private fun configureUI() {
@@ -96,7 +103,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
 
                 viewModel.deletePlaceDetailsItem(placeDetailsItem)
                 adapter.notifyItemRemoved(index)
-                say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName))
+                viewModel.say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName))
             }
         }).attachToRecyclerView(rvPlaceDetails)
 
@@ -117,7 +124,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
 
                 viewModel.deletePlaceDetailsItem(placeDetailsItem)
                 adapter.notifyItemRemoved(index)
-                say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName))
+                viewModel.say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName))
             }
         }).attachToRecyclerView(rvPlaceDetails)
 
@@ -144,29 +151,12 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
                     if (it) {
                         adapter.notifyItemInserted(placeDetailsItemList.size - 1)
                         val storeName = placeDetailsItemList.last().storeName
-                        say(resources.getString(R.string.STORENAME_added_to_saved_places, storeName))
+                        viewModel.say(resources.getString(R.string.STORENAME_added_to_saved_places, storeName))
                     }
                 }
             }
         })
 
-    }
-
-    private fun initTTS() {
-
-        val ttsInitializedObserver = Observer<Boolean> { _ ->
-            say(resources.getString(R.string.place_details))
-        }
-        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
-
-        tts = TextToSpeechUtility(this, this)
-
-    }
-
-    private fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
-        if (viewModel.ttsInitialized.value == true) {
-            tts.say(text, queueMode)
-        }
     }
 
     override fun onDestroy() {
@@ -175,7 +165,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
     }
 
     override fun onCardClick(item: PlaceDetailsItem) {
-        say(item.storeName)
+        viewModel.say(item.storeName)
     }
 
     override fun onFavoriteClick(item: PlaceDetailsItem) {
@@ -184,14 +174,14 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
         adapter.notifyItemChanged(index)
 
         if (favorite) {
-            say(resources.getString(R.string.added_STORENAME_to_favorites, item.storeName))
+            viewModel.say(resources.getString(R.string.added_STORENAME_to_favorites, item.storeName))
         } else {
-            say(resources.getString(R.string.deleted_STORENAME_from_favorites, item.storeName))
+            viewModel.say(resources.getString(R.string.deleted_STORENAME_from_favorites, item.storeName))
         }
     }
 
     private fun onVoiceActivationButtonClick() {
-        say(resources.getString(R.string.search_for_store) +
+        viewModel.say(resources.getString(R.string.search_for_store) +
                 resources.getString(R.string.list_saved_stores) +
                 resources.getString(R.string.list_favorite_stores),
                 TextToSpeech.QUEUE_ADD)
@@ -209,17 +199,6 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
             }
         }
 
-        say(text, TextToSpeech.QUEUE_ADD)
-    }
-
-    override fun onInit(status: Int) {
-
-        if (status == TextToSpeech.SUCCESS) {
-            tts.setLocale(Locale.getDefault())
-            viewModel.ttsInitialized.value = true
-        } else {
-            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
-        }
-
+        viewModel.say(text, TextToSpeech.QUEUE_ADD)
     }
 }

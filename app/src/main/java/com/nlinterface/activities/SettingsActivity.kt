@@ -103,7 +103,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
         //GlobalParameters.instance!!.updateTheme()
 
-        say(resources.getString(R.string.new_theme_setting))
+        say(resources.getString(R.string.new_theme_setting, themeButton!!.text))
     }
 
     private fun onKeepScreenOnButtonClick() {
@@ -115,7 +115,7 @@ class SettingsActivity : AppCompatActivity(), OnInitListener {
         }
         keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
 
-        say(resources.getString(R.string.new_screen_setting))
+        say(resources.getString(R.string.new_screen_setting, keepScreenOnButton!!.text))
     }
 
     // save data to SharedPreferences

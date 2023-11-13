@@ -76,22 +76,22 @@
     <string name="main_activity">Main Activity</string>
     <string name="choose_activity_to_navigate_to">Please choose where to navigate to.</string>
     <string name="go_to">go to</string>
-    <string name="deleted_ITEMNAME_from_grocery_list">Deleted ${groceryItem.itemName} from grocery list.</string>
+    <string name="deleted_ITEMNAME_from_grocery_list">Deleted %1$s from grocery list.</string>
     <string name="list_all_grocery_items">List all items on list.</string>
     <string name="list_all_items_in_cart">List all items in cart.</string>
     <string name="list_all_items_not_in_cart">List all items not in the cart.</string>
-    <string name="added_ITEMNAME_to_list">Added $newItemName to list.</string>
+    <string name="added_ITEMNAME_to_list">Added %1$s to list.</string>
     <string name="cancelled_adding_item">Cancelled adding item to list.</string>
     <string name="enter_item_to_add">Enter the item you want to add.</string>
-    <string name="placed_ITEMNAME_into_cart">Placed ${item.itemName} into cart.</string>
-    <string name="removed_ITEMNAME_from_cart">Removed ${item.itemName} from cart.</string>
-    <string name="deleted_ITEMNAME_from_saved_places">Deleted ${placeDetailsItem.storeName} from list.</string>
-    <string name="added_STORENAME_to_favorites">Added ${item.storeName} to favorites.</string>
-    <string name="deleted_STORENAME_from_favorites">Deleted ${item.storeName} from favorites.</string>
+    <string name="placed_ITEMNAME_into_cart">Placed %1$s into cart.</string>
+    <string name="removed_ITEMNAME_from_cart">Removed %1$s from cart.</string>
+    <string name="deleted_ITEMNAME_from_saved_places">Deleted %1$s from list.</string>
+    <string name="added_STORENAME_to_favorites">Added %1$s to favorites.</string>
+    <string name="deleted_STORENAME_from_favorites">Deleted %1$s from favorites.</string>
     <string name="list_saved_stores">List all saved stores.</string>
     <string name="list_favorite_stores">List favorite stores.</string>
-    <string name="new_theme_setting">New theme setting is ${themeButton!!.text}. Switch back to Main Activity to implement change.</string>
-    <string name="new_screen_setting">New screen setting is ${keepScreenOnButton!!.text}.</string>
+    <string name="new_theme_setting">New theme setting is %1$s. Switch back to Main Activity to implement change.</string>
+    <string name="new_screen_setting">New screen setting is%1$s.</string>
     <string name="list_all_settings">List all settings.</string>
     <string name="read_screen_setting">Read screen setting.</string>
     <string name="read_theme_setting">Read theme setting.</string>
@@ -99,4 +99,5 @@
     <string name="navigation">Navigation</string>
     <string name="location">Location</string>
     <string name="settings_language">Language</string>
+    <string name="STORENAME_added_to_saved_places">%1$s was added to saved places.</string>
 </resources>

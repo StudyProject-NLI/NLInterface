@@ -96,7 +96,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
 
                 viewModel.deletePlaceDetailsItem(placeDetailsItem)
                 adapter.notifyItemRemoved(index)
-                say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places))
+                say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName))
             }
         }).attachToRecyclerView(rvPlaceDetails)
 
@@ -117,7 +117,7 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
 
                 viewModel.deletePlaceDetailsItem(placeDetailsItem)
                 adapter.notifyItemRemoved(index)
-                say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places))
+                say(resources.getString(R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName))
             }
         }).attachToRecyclerView(rvPlaceDetails)
 
@@ -140,7 +140,13 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
                 viewModel.onError(status)
             }
             override fun onPlaceSelected(place: Place) {
-                viewModel.onPlaceSelected(place) { if (it) adapter.notifyItemInserted(placeDetailsItemList.size - 1) }
+                viewModel.onPlaceSelected(place) {
+                    if (it) {
+                        adapter.notifyItemInserted(placeDetailsItemList.size - 1)
+                        val storeName = placeDetailsItemList.last().storeName
+                        say(resources.getString(R.string.STORENAME_added_to_saved_places, storeName))
+                    }
+                }
             }
         })
 
@@ -178,9 +184,9 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback, OnIni
         adapter.notifyItemChanged(index)
 
         if (favorite) {
-            say(resources.getString(R.string.added_STORENAME_to_favorites))
+            say(resources.getString(R.string.added_STORENAME_to_favorites, item.storeName))
         } else {
-            say(resources.getString(R.string.deleted_STORENAME_from_favorites))
+            say(resources.getString(R.string.deleted_STORENAME_from_favorites, item.storeName))
         }
     }
 

@@ -107,7 +107,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
 
                 adapter.notifyItemRemoved(index)
 
-                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list))
+                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName))
             }
         }).attachToRecyclerView(rvGroceryList)
 
@@ -130,7 +130,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
 
                 adapter.notifyItemRemoved(index)
 
-                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list))
+                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName))
             }
         }).attachToRecyclerView(rvGroceryList)
     }
@@ -207,7 +207,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
                     viewModel.addGroceryItem(newItemName)
                     adapter.notifyItemInserted(groceryItemList.size - 1)
 
-                    say(resources.getString(R.string.added_ITEMNAME_to_list))
+                    say(resources.getString(R.string.added_ITEMNAME_to_list, newItemName))
                 }
 
                 setNegativeButton(R.string.cancel) { _, _ ->
@@ -230,9 +230,9 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
         adapter.notifyItemChanged(index)
 
         if (inCart) {
-            say(resources.getString(R.string.placed_ITEMNAME_into_cart))
+            say(resources.getString(R.string.placed_ITEMNAME_into_cart, item.itemName))
         } else {
-            say(resources.getString(R.string.removed_ITEMNAME_from_cart))
+            say(resources.getString(R.string.removed_ITEMNAME_from_cart, item.itemName))
         }
     }
 

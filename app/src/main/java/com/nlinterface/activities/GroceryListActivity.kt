@@ -29,12 +29,11 @@ import com.nlinterface.viewmodels.GroceryListViewModel
 import java.util.Locale
 
 
-class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitListener {
+class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
     private lateinit var binding: ActivityGroceryListBinding
     private lateinit var groceryItemList: ArrayList<GroceryItem>
     private lateinit var adapter: GroceryListAdapter
-    private lateinit var tts: TextToSpeechUtility
     private lateinit var viewModel: GroceryListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +53,11 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
 
-        initTTS()
+        viewModel.initTTS()
 
         configureUI()
+
+        configureVoiceControl()
     }
 
     private fun configureUI() {
@@ -107,7 +108,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
 
                 adapter.notifyItemRemoved(index)
 
-                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName))
+                viewModel.say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName))
             }
         }).attachToRecyclerView(rvGroceryList)
 
@@ -130,7 +131,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
 
                 adapter.notifyItemRemoved(index)
 
-                say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName))
+                viewModel.say(resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName))
             }
         }).attachToRecyclerView(rvGroceryList)
     }
@@ -140,26 +141,19 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
         viewModel.storeGroceryList()
     }
 
-    private fun initTTS() {
+    private fun configureVoiceControl() {
 
         val ttsInitializedObserver = Observer<Boolean> { _ ->
-            say(resources.getString(R.string.grocery_list))
+            viewModel.say(resources.getString(R.string.grocery_list))
         }
+
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
 
-        tts = TextToSpeechUtility(this, this)
-
-    }
-
-    private fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
-        if (viewModel.ttsInitialized.value == true) {
-            tts.say(text, queueMode)
-        }
     }
 
     private fun listActionOptions() {
 
-        say(resources.getString(R.string.add_item) +
+        viewModel.say(resources.getString(R.string.add_item) +
                 resources.getString(R.string.list_all_grocery_items) +
                 resources.getString(R.string.list_all_items_in_cart) +
                 resources.getString(R.string.list_all_items_not_in_cart),
@@ -182,7 +176,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
             }
         }
 
-        say(text , TextToSpeech.QUEUE_ADD)
+        viewModel.say(text , TextToSpeech.QUEUE_ADD)
 
     }
 
@@ -207,11 +201,11 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
                     viewModel.addGroceryItem(newItemName)
                     adapter.notifyItemInserted(groceryItemList.size - 1)
 
-                    say(resources.getString(R.string.added_ITEMNAME_to_list, newItemName))
+                    viewModel.say(resources.getString(R.string.added_ITEMNAME_to_list, newItemName))
                 }
 
                 setNegativeButton(R.string.cancel) { _, _ ->
-                    say(resources.getString(R.string.cancelled_adding_item))
+                    viewModel.say(resources.getString(R.string.cancelled_adding_item))
                 }
             }
             // Set other dialog properties
@@ -221,7 +215,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
         }
         alertDialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         alertDialog.show()
-        say(resources.getString(R.string.enter_item_to_add))
+        viewModel.say(resources.getString(R.string.enter_item_to_add))
     }
 
     override fun onLongClick(item: GroceryItem) {
@@ -230,25 +224,14 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback, OnInitList
         adapter.notifyItemChanged(index)
 
         if (inCart) {
-            say(resources.getString(R.string.placed_ITEMNAME_into_cart, item.itemName))
+            viewModel.say(resources.getString(R.string.placed_ITEMNAME_into_cart, item.itemName))
         } else {
-            say(resources.getString(R.string.removed_ITEMNAME_from_cart, item.itemName))
+            viewModel.say(resources.getString(R.string.removed_ITEMNAME_from_cart, item.itemName))
         }
     }
 
     override fun onClick(item: GroceryItem) {
-        say(item.itemName)
-    }
-
-    override fun onInit(status: Int) {
-
-        if (status == TextToSpeech.SUCCESS) {
-            tts.setLocale(Locale.getDefault())
-            viewModel.ttsInitialized.value = true
-        } else {
-            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
-        }
-
+        viewModel.say(item.itemName)
     }
 
 }

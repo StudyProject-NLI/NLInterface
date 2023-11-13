@@ -1,5 +1,6 @@
 package com.nlinterface.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
@@ -35,6 +36,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     private lateinit var groceryItemList: ArrayList<GroceryItem>
     private lateinit var adapter: GroceryListAdapter
     private lateinit var viewModel: GroceryListViewModel
+    private lateinit var voiceActivationButton: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +56,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         }
 
         viewModel.initTTS()
+        viewModel.initSTT()
 
         configureUI()
 
@@ -69,7 +72,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         }
 
         // set up voice activation button listener
-        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         voiceActivationButton.setOnClickListener {
             onVoiceActivationButtonClick()
         }
@@ -149,6 +152,54 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
 
+        val sttIsListeningObserver = Observer<Boolean> { isListening ->
+            if (isListening) {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
+            } else {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
+            }
+        }
+
+        viewModel.isListening.observe(this, sttIsListeningObserver)
+
+        val commandObserver = Observer<ArrayList<String>> {command ->
+            executeCommand(command)
+        }
+
+        viewModel.command.observe(this, commandObserver)
+
+    }
+
+    private fun executeCommand(command: ArrayList<String>?) {
+
+        if (command != null && command.size == 3) {
+            if (command[0] == "GOTO") {
+                navToActivity(command[1])
+            } else {
+                viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
+            }
+        }
+
+    }
+
+    private fun navToActivity(activity: String) {
+
+        when (activity) {
+
+            "MM" -> {
+                val intent = Intent(this, MainActivity::class.java)
+                this.startActivity(intent)
+            }
+            "PD" -> {
+                val intent = Intent(this, PlaceDetailsActivity::class.java)
+                this.startActivity(intent)
+            }
+            "S" -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                this.startActivity(intent)
+            }
+
+        }
     }
 
     private fun listActionOptions() {
@@ -181,7 +232,11 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     }
 
     private fun onVoiceActivationButtonClick() {
-        listActionOptions()
+        if (viewModel.isListening.value == false) {
+            viewModel.handleSpeechBegin()
+        } else {
+            viewModel.cancelListening()
+        }
     }
 
     private fun onAddItemButtonClick() {

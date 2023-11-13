@@ -183,19 +183,6 @@ class SettingsActivity : AppCompatActivity() {
 
     }
 
-    private fun readSettings(all: Boolean = false, screen: Boolean = false, theme: Boolean = false) {
-
-        var text = ""
-
-        if (all || screen) {
-            text = text.plus("${keepScreenOnButton?.text}")
-        }
-        if (all || theme) {
-            text = text.plus("${themeButton?.text}")
-        }
-        viewModel.say(text, TextToSpeech.QUEUE_ADD)
-    }
-
     private fun executeCommand(command: ArrayList<String>?) {
 
         if ((command != null) && (command.size == 3)) {

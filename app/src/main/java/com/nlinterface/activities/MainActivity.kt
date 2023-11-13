@@ -143,23 +143,20 @@ class MainActivity : AppCompatActivity() {
 
         // set up button to navigate to GroceryListActivity
         val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
-        groceryListButton.setOnClickListener { view ->
-            val intent = Intent(view.context, GroceryListActivity::class.java)
-            view.context.startActivity(intent)
+        groceryListButton.setOnClickListener { _ ->
+            navToActivity(ActivityType.GROCERYLIST.toString())
         }
 
         // set up button to navigate to PlaceDetailsActivity
         val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
-        placeDetailsButton.setOnClickListener { view ->
-            val intent = Intent(view.context, PlaceDetailsActivity::class.java)
-            view.context.startActivity(intent)
+        placeDetailsButton.setOnClickListener { _ ->
+            navToActivity(ActivityType.PLACEDETAILS.toString())
         }
 
         // set up button to navigate to SettingsActivity
         val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
-        settingsActivityButton.setOnClickListener { view ->
-            val intent = Intent(view.context, SettingsActivity::class.java)
-            view.context.startActivity(intent)
+        settingsActivityButton.setOnClickListener { _ ->
+            navToActivity(ActivityType.SETTINGS.toString())
         }
 
         // set up voice Activation Button listener
@@ -194,14 +191,6 @@ class MainActivity : AppCompatActivity() {
                 STT_PERMISSION_REQUEST_CODE
             )
         }
-    }
-
-    private fun readMenuOptions() {
-        viewModel.say(
-            resources.getString(R.string.grocery_list) +
-            resources.getString(R.string.place_details) +
-            resources.getString(R.string.settings)
-        )
     }
 
     private fun onVoiceActivationButtonClick() {

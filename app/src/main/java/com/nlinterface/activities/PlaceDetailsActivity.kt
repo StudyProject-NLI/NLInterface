@@ -252,18 +252,4 @@ class PlaceDetailsActivity: AppCompatActivity(), PlaceDetailsItemCallback {
         }
     }
 
-    private fun readStores(all: Boolean = false, favorite: Boolean = false) {
-
-        var text = ""
-
-        for (item in placeDetailsItemList) {
-            if (all) {
-                text = text.plus(item.storeName).plus(item.openingHours)
-            } else if (favorite && item.favorite) {
-                text = text.plus(item.storeName).plus(item.openingHours)
-            }
-        }
-
-        viewModel.say(text, TextToSpeech.QUEUE_ADD)
-    }
 }

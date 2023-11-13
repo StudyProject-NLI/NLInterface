@@ -214,35 +214,6 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         }
     }
 
-    private fun listActionOptions() {
-
-        viewModel.say(resources.getString(R.string.add_item) +
-                resources.getString(R.string.list_all_grocery_items) +
-                resources.getString(R.string.list_all_items_in_cart) +
-                resources.getString(R.string.list_all_items_not_in_cart),
-                TextToSpeech.QUEUE_ADD)
-
-    }
-
-    private fun listItems(all: Boolean = false, inCart: Boolean = false, onList: Boolean = false) {
-
-        var text = ""
-
-        for (item in groceryItemList) {
-
-            if (all) {
-                text = text.plus(item.itemName)
-            } else if (inCart && item.inCart) {
-                text = text.plus(item.itemName)
-            } else if (onList && !item.inCart) {
-                text = text.plus(item.itemName)
-            }
-        }
-
-        viewModel.say(text , TextToSpeech.QUEUE_ADD)
-
-    }
-
     private fun onVoiceActivationButtonClick() {
         if (viewModel.isListening.value == false) {
             viewModel.handleSpeechBegin()

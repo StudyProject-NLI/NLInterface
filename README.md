@@ -2,7 +2,23 @@
 
 This is the code repository for the Android app developed in the studyproject Sensory augmentation and grasping movements.
 
-![Debug APK Builds](https://github.com/StudyProject-NLI/NLInterface/actions/workflows/debug_build.yml/badge.svg)
+[![Testing APK](https://github.com/StudyProject-NLI/NLInterface/actions/workflows/debug_build.yml/badge.svg)](https://github.com/StudyProject-NLI/NLInterface/actions/workflows/debug_build.yml)
+
+# Roadmap
+
+```mermaid
+	gitGraph LR:
+		commit id: "Current state"
+		commit id: "Workgroup Release" tag: "v0.0.1"
+		commit id: "Run example tensorflow model"
+		commit id: "Feedback round with experimental group"
+		commit id: "Integrate feedback"  tag: "v0.0.2"
+		commit id: "Christmas break"
+		commit id: "Object detection via any image input"
+		commit id: "Polishing"
+		commit id: "Optivist Presentation" tag: "v0.0.3"
+		commit id: "Prepare for codebase transfer"
+```
 
 # Documentation
 

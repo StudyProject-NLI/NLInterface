@@ -66,6 +66,11 @@ class GroceryListAdapter(
             groceryListCallback.onLongClick(data[holder.adapterPosition])
             true
         }
+
+        cardView.setOnClickListener {
+            groceryListCallback.onClick(data[holder.adapterPosition])
+            true
+        }
     }
 
     override fun getItemCount(): Int {

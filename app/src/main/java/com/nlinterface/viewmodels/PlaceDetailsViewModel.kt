@@ -2,8 +2,13 @@ package com.nlinterface.viewmodels
 
 import android.app.Application
 import android.content.Context
+import android.speech.SpeechRecognizer
+import android.speech.tts.TextToSpeech
+import android.speech.tts.TextToSpeech.OnInitListener
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
@@ -15,13 +20,20 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nlinterface.BuildConfig
+import com.nlinterface.R
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.dataclasses.PlaceDetailsItem
+import com.nlinterface.utility.SpeechToTextUtility
+import com.nlinterface.utility.TextToSpeechUtility
+import com.nlinterface.utility.VoiceCommandHelper
 import kotlinx.coroutines.CompletionHandler
 import java.io.BufferedReader
 import java.io.File
+import java.util.Locale
 
-class PlaceDetailsViewModel(application: Application) : AndroidViewModel(application) {
+class PlaceDetailsViewModel(
+    application: Application
+) : AndroidViewModel(application), OnInitListener {
 
     private val context = application
     private lateinit var placesClient: PlacesClient
@@ -29,7 +41,29 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
     private val placeDetailsItemListFileName = "PlaceDetailsItemList.json"
     private val placeDetailsItemListFile: File = File(context.filesDir, placeDetailsItemListFileName)
     var placeDetailsItemList: ArrayList<PlaceDetailsItem> = ArrayList<PlaceDetailsItem> ()
-    var gson = Gson()
+    private var gson = Gson()
+
+    private lateinit var tts: TextToSpeechUtility
+
+    val ttsInitialized: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    private val _isListening: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+
+    val isListening: LiveData<Boolean>
+        get() = _isListening
+
+    private val _command: MutableLiveData<ArrayList<String>> by lazy {
+        MutableLiveData<ArrayList<String>>()
+    }
+
+    val command: LiveData<ArrayList<String>>
+        get() = _command
+
+    private val stt = SpeechToTextUtility()
 
     fun fetchPlaceDetailsItemList() {
 
@@ -51,6 +85,7 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
 
     private fun addPlaceDetailsItem(placeID: String, storeName: String, openingHours: List<String>): ArrayList<PlaceDetailsItem> {
         placeDetailsItemList.add(PlaceDetailsItem(placeID, storeName, openingHours, false))
+        storePlaceDetailsItemList()
         return placeDetailsItemList
     }
 
@@ -99,13 +134,70 @@ class PlaceDetailsViewModel(application: Application) : AndroidViewModel(applica
         placeDetailsItemListFile.writeText(jsonString)
     }
 
-    fun changeFavorite(item: PlaceDetailsItem) {
+    fun changeFavorite(item: PlaceDetailsItem): Boolean {
         item.favorite = !item.favorite
+        storePlaceDetailsItemList()
+
+        return item.favorite
     }
 
     fun deletePlaceDetailsItem(placeDetailsItem: PlaceDetailsItem): ArrayList<PlaceDetailsItem> {
         placeDetailsItemList.remove(placeDetailsItem)
+        storePlaceDetailsItemList()
+
         return placeDetailsItemList
     }
 
+    fun initTTS() {
+        tts = TextToSpeechUtility(getApplication<Application>().applicationContext, this)
+    }
+
+    fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
+        if (ttsInitialized.value == true) {
+            tts.say(text, queueMode)
+        }
+    }
+
+    override fun onInit(status: Int) {
+
+        if (status == TextToSpeech.SUCCESS) {
+            tts.setLocale(Locale.getDefault())
+            ttsInitialized.value = true
+        } else {
+            Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
+        }
+
+    }
+
+    fun initSTT() {
+        stt.createSpeechRecognizer(getApplication<Application>().applicationContext,
+            onResults = {
+                cancelListening()
+                val matches = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                if (matches != null && matches.size > 0) {
+                    // results are added in decreasing order of confidence to the list, so choose the first one
+                    handleSpeechResult(matches[0])
+                }
+            }, onEndOfSpeech = {
+                cancelListening()
+            })
+    }
+
+    private fun handleSpeechResult(s: String) {
+
+        Log.println(Log.DEBUG, "handleSpeechResult", s)
+        val voiceCommandHelper = VoiceCommandHelper()
+        _command.value = voiceCommandHelper.decodeVoiceCommand(s)
+
+    }
+
+    fun handleSpeechBegin() {
+        stt.handleSpeechBegin()
+        _isListening.value = true
+    }
+
+    fun cancelListening() {
+        stt.cancelListening()
+        _isListening.value = false
+    }
 }

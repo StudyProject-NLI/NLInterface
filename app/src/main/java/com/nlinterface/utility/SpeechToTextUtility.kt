@@ -3,72 +3,41 @@ package com.nlinterface.utility
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings.Global.getString
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
+import androidx.lifecycle.MutableLiveData
 import com.nlinterface.R
 import java.util.Locale
-import com.nlinterface.activities.GroceryListActivity
-import com.nlinterface.activities.MainActivity
-import org.w3c.dom.Text
+
 
 class SpeechToTextUtility {
+
     private var speechRecognizer: SpeechRecognizer? = null
-    var commandsList: MutableList<String>? = null
 
-    // make it a Singleton
-    companion object {
-        private var mInstance: SpeechToTextUtility? = null
-
-        @get:Synchronized
-        val instance: SpeechToTextUtility?
-            get() {
-                if (null == mInstance) {
-                    mInstance = SpeechToTextUtility()
-                }
-                return mInstance
-            }
-    }
-
-    fun handleSpeechBegin(button: ImageButton) {
-        button.setImageResource(R.drawable.ic_mic_green)
+    fun handleSpeechBegin() {
         speechRecognizer!!.startListening(createIntent())
     }
 
-    fun createSpeechRecognizer(context: Context, button: ImageButton) {
+    fun cancelListening() {
+        speechRecognizer!!.cancel()
+    }
+
+    fun createSpeechRecognizer(context: Context, onResults: (results: Bundle) -> Unit, onEndOfSpeech: () -> Unit) {
+
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+
             override fun onReadyForSpeech(params: Bundle) {}
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray) {}
-            override fun onEndOfSpeech() {
-                button!!.setImageResource(R.drawable.ic_mic_white)
-            }
-            override fun onError(error: Int) {}
-
-            override fun onResults(results: Bundle) {
-                val matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (matches != null && matches.size > 0) {
-                    // results are added in decreasing order of confidence to the list, so choose the first one
-                    val result = matches[0]
-                    button!!.setImageResource(R.drawable.ic_mic_white)
-                    Toast.makeText(context, result, Toast.LENGTH_LONG).show()
-                }
-            }
-
-            // handle partial speech results for dynamic speech to text recognition
+            override fun onEndOfSpeech() {onEndOfSpeech}
+            override fun onError(p0: Int) {}
             override fun onPartialResults(partialResults: Bundle) {}
-
             override fun onEvent(eventType: Int, params: Bundle) {}
+            override fun onResults(results: Bundle) {onResults(results) }
         })
     }
 

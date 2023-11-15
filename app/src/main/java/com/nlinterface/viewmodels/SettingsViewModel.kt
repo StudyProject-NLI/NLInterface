@@ -8,28 +8,16 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import androidx.lifecycle.ViewModel
 import com.nlinterface.R
-import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.VoiceCommandHelper
-import java.io.BufferedReader
-import java.io.File
 import java.util.Locale
 
-
-class GroceryListViewModel (
+class SettingsViewModel(
     application: Application
 ) : AndroidViewModel(application), OnInitListener {
-
-    private val context = application
-    private val groceryListFileName = "GroceryList.json"
-    private val groceryListFile: File = File(context.filesDir, groceryListFileName)
-    var groceryList: ArrayList<GroceryItem> = ArrayList<GroceryItem>()
-    private var gson = Gson()
 
     private lateinit var tts: TextToSpeechUtility
 
@@ -53,47 +41,6 @@ class GroceryListViewModel (
 
     private val stt = SpeechToTextUtility()
 
-    fun fetchGroceryList() {
-
-        if (!groceryListFile.exists()) {
-            groceryListFile.createNewFile()
-        }
-
-        if (groceryListFile.length() > 0) {
-            val bufferedReader: BufferedReader = groceryListFile.bufferedReader()
-            val inputString = bufferedReader.use { it.readText() }
-            groceryList = gson.fromJson(
-                inputString,
-                object : TypeToken<ArrayList<GroceryItem?>?>() {}.type
-            ) as ArrayList<GroceryItem>
-        }
-
-        Log.println(Log.DEBUG, "1", groceryList.toString())
-    }
-
-    fun addGroceryItem(itemName: String): ArrayList<GroceryItem> {
-        groceryList.add(GroceryItem(itemName, groceryList.size, false))
-        storeGroceryList()
-        return groceryList
-    }
-
-    fun deleteGroceryItem(groceryItem: GroceryItem) {
-        storeGroceryList()
-        groceryList.remove(groceryItem)
-    }
-
-    fun placeGroceryItemInCart(groceryItem: GroceryItem): Boolean {
-        storeGroceryList()
-        groceryItem.inCart = !groceryItem.inCart
-
-        return groceryItem.inCart
-    }
-
-    fun storeGroceryList() {
-        val jsonString : String = gson.toJson(groceryList)
-        groceryListFile.writeText(jsonString)
-    }
-
     fun initTTS() {
         tts = TextToSpeechUtility(getApplication<Application>().applicationContext, this)
     }
@@ -112,7 +59,6 @@ class GroceryListViewModel (
         } else {
             Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
         }
-
     }
 
     fun initSTT() {

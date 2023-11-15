@@ -1,37 +1,32 @@
 package com.nlinterface.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings.Global
+import android.speech.tts.TextToSpeech
+import android.speech.tts.TextToSpeech.OnInitListener
+import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
+import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.setViewRelativeSize
+import com.nlinterface.viewmodels.MainViewModel
+import com.nlinterface.viewmodels.SettingsViewModel
+import java.util.Locale
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
-
-    private var header: TextView? = null
-
-    //private lateinit var impairmentOptions: MutableList<String>
-    //private var impairmentButton: Button? = null
-
-    //private lateinit var colorOptions: MutableList<String>
-    //private var colorButton: Button? = null
-
-    //private lateinit var layoutSwitchOptions: MutableList<String>
-    //private var layoutSwitchButton: Button? = null
-
-    //private lateinit var voiceCommandOptions: MutableList<String>
-    //private var voiceCommandSwitchButton: Button? = null
+    private lateinit var viewModel: SettingsViewModel
 
     private lateinit var keepScreenOnOptions: MutableList<String>
     private var keepScreenOnButton: Button? = null
@@ -39,11 +34,15 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var themeOptions: MutableList<String>
     private var themeButton: Button? = null
 
+    private lateinit var voiceActivationButton: ImageButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
 
         //process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
@@ -52,117 +51,74 @@ class SettingsActivity : AppCompatActivity() {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
 
-        val voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        /*impairmentOptions = mutableListOf()
-        resources.getStringArray(R.array.impairment_options).forEach { option ->
-            impairmentOptions.add(option)
-        }
-        impairmentButton = findViewById(R.id.settings_impairment)
-        impairmentButton!!.text = impairmentOptions[GlobalParameters.instance!!.visualImpairment.ordinal]
-
-        colorOptions = mutableListOf()
-        resources.getStringArray(R.array.color_options).forEach { option ->
-            colorOptions.add(option)
-        }
-        colorButton = findViewById(R.id.settings_colors)
-        colorButton!!.text = colorOptions[GlobalParameters.instance!!.colorChoice.ordinal]*/
-
-        /*layoutSwitchOptions = mutableListOf()
-        resources.getStringArray(R.array.layout_switch_options).forEach { option ->
-            layoutSwitchOptions.add(option)
-        }
-        layoutSwitchButton = findViewById(R.id.settings_layout)
-        layoutSwitchButton!!.text = layoutSwitchOptions[GlobalParameters.instance!!.layoutSwitch.ordinal]*/
-
-        /*voiceCommandOptions = mutableListOf()
-        resources.getStringArray(R.array.voice_command_options).forEach { option ->
-            voiceCommandOptions.add(option)
-        }
-        voiceCommandSwitchButton = findViewById(R.id.settings_voice_command)
-        voiceCommandSwitchButton!!.text = voiceCommandOptions[GlobalParameters.instance!!.voiceCommandTrigger.ordinal]*/
-
         keepScreenOnOptions = mutableListOf()
         resources.getStringArray(R.array.keep_screen_on_options).forEach { option ->
             keepScreenOnOptions.add(option)
         }
-        keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
-        keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
 
         themeOptions = mutableListOf()
         resources.getStringArray(R.array.theme_options).forEach { option ->
             themeOptions.add(option)
         }
+
+        configureUI()
+
+        configureTTS()
+        configureSTT()
+    }
+
+    private fun configureUI() {
+
+        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
+        voiceActivationButton.setOnClickListener {
+            onVoiceActivationButtonClick()
+        }
+
         themeButton = findViewById(R.id.settings_theme)
         themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
+
+        keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
+        keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+
+        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
+
     }
 
     override fun onStart() {
         super.onStart()
 
-        // on button click:
-        // check if last option was reached before -> YES: set to first option, NO: set to next option
-        // update the button text to the new selection
-        // TODO: implement actual change
-        /*impairmentButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.visualImpairment.ordinal == GlobalParameters.VisualImpairment.values().size - 1) {
-                GlobalParameters.instance!!.visualImpairment = GlobalParameters.VisualImpairment.values()[0]
-            } else {
-                GlobalParameters.instance!!.visualImpairment = GlobalParameters.VisualImpairment.values()[GlobalParameters.instance!!.visualImpairment.ordinal + 1]
-            }
-            impairmentButton!!.text = impairmentOptions[GlobalParameters.instance!!.visualImpairment.ordinal]
-        }*/
-
-
-        // TODO: implement actual change
-        /*colorButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.colorChoice.ordinal == GlobalParameters.ColorChoice.values().size - 1) {
-                GlobalParameters.instance!!.colorChoice = GlobalParameters.ColorChoice.values()[0]
-            } else {
-                GlobalParameters.instance!!.colorChoice = GlobalParameters.ColorChoice.values()[GlobalParameters.instance!!.colorChoice.ordinal + 1]
-            }
-            colorButton!!.text = colorOptions[GlobalParameters.instance!!.colorChoice.ordinal]
-        }*/
-
-        // TODO: implement actual change
-        /*layoutSwitchButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.layoutSwitch.ordinal == GlobalParameters.LayoutSwitch.values().size - 1) {
-                GlobalParameters.instance!!.layoutSwitch = GlobalParameters.LayoutSwitch.values()[0]
-            } else {
-                GlobalParameters.instance!!.layoutSwitch = GlobalParameters.LayoutSwitch.values()[GlobalParameters.instance!!.layoutSwitch.ordinal + 1]
-            }
-            layoutSwitchButton!!.text = layoutSwitchOptions[GlobalParameters.instance!!.layoutSwitch.ordinal]
-        }*/
-
-        // TODO: implement actual change
-        /*voiceCommandSwitchButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.voiceCommandTrigger.ordinal == GlobalParameters.VoiceCommandTrigger.values().size - 1) {
-                GlobalParameters.instance!!.voiceCommandTrigger = GlobalParameters.VoiceCommandTrigger.values()[0]
-            } else {
-                GlobalParameters.instance!!.voiceCommandTrigger = GlobalParameters.VoiceCommandTrigger.values()[GlobalParameters.instance!!.voiceCommandTrigger.ordinal + 1]
-            }
-            voiceCommandSwitchButton!!.text = voiceCommandOptions[GlobalParameters.instance!!.voiceCommandTrigger.ordinal]
-        }*/
-
         keepScreenOnButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.keepScreenOnSwitch.ordinal == GlobalParameters.KeepScreenOn.values().size - 1) {
-                GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[0]
-            } else {
-                GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal + 1]
-            }
-            keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+            onKeepScreenOnButtonClick()
         }
 
         themeButton!!.setOnClickListener {
-            if (GlobalParameters.instance!!.themeChoice.ordinal == GlobalParameters.ThemeChoice.values().size - 1) {
-                GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[0]
-            } else {
-                GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[GlobalParameters.instance!!.themeChoice.ordinal + 1]
-            }
-            themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
-            //GlobalParameters.instance!!.updateTheme()
+            onThemeButtonClick()
         }
+    }
+
+    private fun onThemeButtonClick() {
+
+        if (GlobalParameters.instance!!.themeChoice.ordinal == GlobalParameters.ThemeChoice.values().size - 1) {
+            GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[0]
+        } else {
+            GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[GlobalParameters.instance!!.themeChoice.ordinal + 1]
+        }
+        themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
+        //GlobalParameters.instance!!.updateTheme()
+
+        viewModel.say(resources.getString(R.string.new_theme_setting, themeButton!!.text))
+    }
+
+    private fun onKeepScreenOnButtonClick() {
+
+        if (GlobalParameters.instance!!.keepScreenOnSwitch.ordinal == GlobalParameters.KeepScreenOn.values().size - 1) {
+            GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[0]
+        } else {
+            GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal + 1]
+        }
+        keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+
+        viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton!!.text))
     }
 
     // save data to SharedPreferences
@@ -173,22 +129,6 @@ class SettingsActivity : AppCompatActivity() {
             Context.MODE_PRIVATE
         ) ?: return
         with(sharedPref.edit()) {
-            /*putString(
-                getString(R.string.settings_impairment_key),
-                GlobalParameters.instance!!.visualImpairment.toString()
-            )*/
-            /*putString(
-                getString(R.string.settings_color_key),
-                GlobalParameters.instance!!.colorChoice.toString()
-            )*/
-            /*putString(
-                getString(R.string.settings_layout_key),
-                GlobalParameters.instance!!.layoutSwitch.toString()
-            )*/
-            /*putString(
-                getString(R.string.settings_voice_command_key),
-                GlobalParameters.instance!!.voiceCommandTrigger.toString()
-            )*/
             putString(
                 getString(R.string.settings_keep_screen_on_key),
                 GlobalParameters.instance!!.keepScreenOnSwitch.toString()
@@ -201,4 +141,83 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun onVoiceActivationButtonClick() {
+        if (viewModel.isListening.value == false) {
+            viewModel.handleSpeechBegin()
+        } else {
+            viewModel.cancelListening()
+        }
+    }
+
+    private fun configureTTS() {
+
+        viewModel.initTTS()
+
+        val ttsInitializedObserver = Observer<Boolean> { _ ->
+            viewModel.say(resources.getString(R.string.settings))
+        }
+
+        viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
+
+    }
+
+    private fun configureSTT() {
+
+        viewModel.initSTT()
+
+        val sttIsListeningObserver = Observer<Boolean> { isListening ->
+            if (isListening) {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
+            } else {
+                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
+            }
+        }
+
+        viewModel.isListening.observe(this, sttIsListeningObserver)
+
+        val commandObserver = Observer<ArrayList<String>> {command ->
+            executeCommand(command)
+        }
+
+        viewModel.command.observe(this, commandObserver)
+
+    }
+
+    private fun executeCommand(command: ArrayList<String>?) {
+
+        if ((command != null) && (command.size == 3)) {
+            if (command[0] == "GOTO") {
+                navToActivity(command[1])
+            } else {
+                viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
+            }
+        }
+
+    }
+
+    private fun navToActivity(activity: String) {
+
+        Log.println(Log.DEBUG, "navToActivity", activity)
+
+        when (activity) {
+
+            ActivityType.SETTINGS.toString() -> {
+                viewModel.say(resources.getString(R.string.settings))
+            }
+
+            ActivityType.MAIN.toString() -> {
+                val intent = Intent(this, MainActivity::class.java)
+                this.startActivity(intent)
+            }
+            ActivityType.GROCERYLIST.toString() -> {
+                val intent = Intent(this, GroceryListActivity::class.java)
+                this.startActivity(intent)
+            }
+            ActivityType.PLACEDETAILS.toString() -> {
+                val intent = Intent(this, PlaceDetailsActivity::class.java)
+                this.startActivity(intent)
+            }
+
+        }
+    }
 }

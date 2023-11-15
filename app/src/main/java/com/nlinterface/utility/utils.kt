@@ -13,6 +13,8 @@ import com.google.gson.reflect.TypeToken
 import com.nlinterface.dataclasses.GroceryItem
 import java.io.BufferedReader
 import java.io.File
+import java.util.Dictionary
+import java.util.Locale
 
 fun setViewRelativeWidth(view: View, relWidth: Double) {
     val width: Int = (Resources.getSystem().displayMetrics.widthPixels * relWidth).toInt()
@@ -28,4 +30,16 @@ fun setViewRelativeSize(view: View, relWidth:Double, relHeight: Double) {
     val height = (Resources.getSystem().displayMetrics.heightPixels * relHeight).toInt()
     val width = (Resources.getSystem().displayMetrics.widthPixels * relWidth).toInt()
     view.layoutParams = ConstraintLayout.LayoutParams(width, height)
+}
+
+fun getLocaleType() : LocaleType {
+
+    return if (Locale.getDefault().toString().contains("en", true)) {
+        LocaleType.EN
+    } else if (Locale.getDefault().toString().contains("de", true)) {
+        LocaleType.DE
+    } else {
+        LocaleType.OTHER
+    }
+
 }

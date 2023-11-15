@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="main_activity">Haupt Activity</string>
+    <string name="choose_activity_to_navigate_to">Bitte wählen Sie eine Menüoption.</string>
+    <string name="go_to">gehe zu</string>
+    <string name="deleted_ITEMNAME_from_grocery_list">%1$s wurde von der Einkaufsliste gelöscht.</string>
+    <string name="list_all_grocery_items">Liste alle Artikel der Einkaufsliste auf.</string>
+    <string name="list_all_items_in_cart">Liste alle Artikel im Einkaufswagen auf.</string>
+    <string name="list_all_items_not_in_cart">Liste alle Artikel die noch nicht im Einkaufswagen sind auf.</string>
+    <string name="added_ITEMNAME_to_list">%1$s zur Einkaufsliste hinzugefügt.</string>
+    <string name="cancelled_adding_item">Neuen Artikel hinzufügen abgebrochen.</string>
+    <string name="enter_item_to_add">Geben Sie einen Artikel ein, um ihn zur Liste hinzuzufügen.</string>
+    <string name="placed_ITEMNAME_into_cart">%1$s wurde in den Einkaufswagen gelegt.</string>
+    <string name="removed_ITEMNAME_from_cart">%1$s wurde aus dem Einkaufswagen genommen.</string>
+    <string name="deleted_ITEMNAME_from_saved_places">%1$s wurde von der Liste gelöscht.</string>
+    <string name="added_STORENAME_to_favorites">%1$s wurde als Favorit markiert.</string>
+    <string name="deleted_STORENAME_from_favorites">%1$s wurde von den Favoriten gelöscht.</string>
+    <string name="list_saved_stores">Liste alle gespeicherten Läden auf.</string>
+    <string name="list_favorite_stores">Liste alle Läden von der Favoritenliste auf.</string>
     <string name="action_settings">Einstellungen</string>
     <string name="grocery_list">Einkaufsliste</string>
     <string name="navigation">Navigation</string>
@@ -14,24 +31,17 @@
     <string name="example_activity_text">Dies ist ein Beispiel für eine andere Aktivität.</string>
     <string name="next_activity_example">Nächste Aktivität (Beispiel)</string>
 
-    <string name="placeholder_text">...</string>
-
     <string name="search">Suche</string>
-    <string name="search_for_grocery_store">Suche nach Supermarkt</string>
+    <string name="search_for_store">Suche nach einem Supermarkt.</string>
 
     <string name="stt_button_content">Tippe zum Sprechen</string>
     <string name="stt_output_content">Erkannte Sprache wird hier zu sehen sein</string>
-
-    <string name="goto_grocerylist_command">Zur Einkaufsliste</string>
 
     <string name="audio_permission_granted">Die App hat nun Zugriff auf das Mikrofon.</string>
     <string name="audio_permission_denied">Bitte erlauben Sie den Zugriff auf das Mikrofon, um Sprachbefehle verwenden zu können.</string>
 
     <string name="settings_language">Sprache</string>
-    <string-array name="language_options">
-        <item>Englisch</item>
-        <item>Deutsch</item>
-    </string-array>
+
     <string name="settings">Einstellungen</string>
     <string name="settings_impairment">Art von visueller Einschränkung</string>
     <string-array name="impairment_options">
@@ -65,5 +75,12 @@
         <item>Helles Design</item>
         <item>Dunkeles Design</item>
     </string-array>
+    <string name="new_theme_setting">Neue Moduseinstellung ist %1$s. Wechseln Sie zurück zum Hauptmenü um die Einstellung zu übernehmen.</string>
+    <string name="new_screen_setting">Neue Bildschirmeinstellung ist %1$s.</string>
+    <string name="list_all_settings">Liste alle Einstellungen auf.</string>
+    <string name="read_screen_setting">Nenne die Bildschirmeinstellung.</string>
+    <string name="read_theme_setting">Nenne die Moduseinstellung.</string>
+    <string name="STORENAME_added_to_saved_places">%1$s wurde den gespeicherten Orten hinzugefügt.</string>
+    <string name="main_menu">Hauptmenü</string>
 
 </resources>

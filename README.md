@@ -2,7 +2,19 @@
 
 This is the code repository for the Android app developed in the studyproject Sensory augmentation and grasping movements.
 
-![Debug APK Builds](https://github.com/StudyProject-NLI/NLInterface/actions/workflows/main.yml/badge.svg)
+![Debug APK Builds](https://github.com/StudyProject-NLI/NLInterface/actions/workflows/debug_build.yml/badge.svg)
+
+# Documentation
+
+## Running locally
+- Install Python
+- `pip install -r docs/requirements.txt`
+
+Run the documentation server via 
+```bash
+$ mkdocs serve
+```
+
 
 # Building the app locally
 Requirements:
@@ -28,13 +40,3 @@ The resulting installable application can be found under
 `app/build/outputs/apk/debug/app-debug.apk`
 
 which you can copy and install on your device.
-
-
-# Local Development Setup
-
-We are using [Android Studio](https://developer.android.com/studio/) for development.
-
-
-# Architecture Overview
-
-t.b.d

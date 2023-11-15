@@ -23,11 +23,25 @@ jobs:
         run: touch local.properties
       - name: Add Google Maps API Key
         run: echo "MAPS_API_KEY=${{secrets.MAPS_API_KEY}}" >> local.properties
+      # Here we need to decode keystore.jks from base64 string and place it
+      # in the folder specified in the release signing configuration
+      - name: Decode Keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1.2.3
+        with:
+          fileName: 'android_keystore.jks'
+          fileDir: '/home/runner/work/<<project name>>/<<project name>>/app/keystore/'
+          encodedString: ${{ secrets.SIGNING_KEYSTORE }}
       - name: Build debug APK
         run: ./gradlew build -x lint -x lintVitalRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+
       - name: Upload APK
         uses: actions/upload-artifact@v3.1.3
         with:
-          name: app
+          name: app-debug-build
           path: app/build/outputs/apk/debug/app-debug.apk
       

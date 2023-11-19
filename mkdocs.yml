@@ -58,3 +58,12 @@ markdown_extensions:
 plugins:
   - offline
   - search
+
+nav:
+  - Overview: index.md
+  - Installation:
+    - installation/install_from_actions.md
+    - installation/install_from_release.md
+  - Development:
+    - installation/android_studio_setup.md
+    - architecture/overview.md

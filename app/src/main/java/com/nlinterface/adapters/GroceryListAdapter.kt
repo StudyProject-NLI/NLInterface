@@ -50,6 +50,7 @@ class GroceryListAdapter(
 
     /**
      * Configures the View in the ViewHolder, is called separately for each position in the data:
+     *
      * 1- formats the background color of the CardViews depending on the inCart state of the
      * GroceryItem,
      * 2- sets the text to be shown,

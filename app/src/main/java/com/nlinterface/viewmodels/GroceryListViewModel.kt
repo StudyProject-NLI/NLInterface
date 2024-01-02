@@ -20,8 +20,11 @@ import java.util.Locale
 
 /**
  * The GroceryListViewModel interfaces the user interactions with the view (the activity) and the
- * model. It handles the adding/removing/placing into cart/taking out of cart functionality on the
- * data, fetches and stores the data and handles the TTS and STT systems.
+ * model. It handles
+ * 1- adding/removing
+ * 2- placing into cart/taking out of cart functionality on the data
+ * 3- fetches and stores the data and
+ * 4- handles the TTS and STT systems.
  *
  */
 class GroceryListViewModel(

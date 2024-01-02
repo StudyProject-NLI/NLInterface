@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.util.Log
 import android.widget.ImageButton
 import androidx.lifecycle.MutableLiveData
 import com.nlinterface.R
@@ -24,7 +25,10 @@ class SpeechToTextUtility {
         speechRecognizer!!.cancel()
     }
 
-    fun createSpeechRecognizer(context: Context, onResults: (results: Bundle) -> Unit, onEndOfSpeech: () -> Unit) {
+    fun createSpeechRecognizer(context: Context,
+                               onResults: (results: Bundle) -> Unit,
+                               onEndOfSpeech: () -> Unit,
+                               onError: (p0: Int) -> Unit) {
 
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
         speechRecognizer?.setRecognitionListener(object : RecognitionListener {

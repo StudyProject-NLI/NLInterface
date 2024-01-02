@@ -2,7 +2,7 @@ package com.nlinterface.utility
 
 import android.util.Log
 
-class VoiceCommandHelper {
+class VoiceCommandUtilityOld {
 
     fun decodeVoiceCommand(string: String): ArrayList<String> {
 
@@ -56,6 +56,7 @@ class VoiceCommandHelper {
         private fun formatCommandsDE(input: String): ArrayList<String> {
 
             val command = ArrayList<String>()
+
 
             if (input.contains(Regex("gehe zu"))) {
                 command.add("GOTO")

@@ -43,3 +43,68 @@ fun getLocaleType() : LocaleType {
     }
 
 }
+
+fun cleanSTTInput(input: String) : String {
+
+    val punctuationRegex = Regex("[^\\w\\süäöß]")
+
+    var cleanInput = input.lowercase()
+    cleanInput = cleanInput.replace(punctuationRegex, "")
+
+    cleanInput = if (getLocaleType() == LocaleType.EN) {
+        cleanVoiceInputEN(cleanInput)
+    } else if (getLocaleType() == LocaleType.DE) {
+        cleanVoiceInputDE(cleanInput)
+    } else {
+        Log.println(Log.DEBUG, "cleanVoiceInput", "Locale = Locale.OTHER")
+        cleanVoiceInputEN(cleanInput)
+    }
+
+    return cleanInput
+
+}
+
+private fun cleanVoiceInputEN(input: String): String {
+
+    val word2Digit = mapOf(
+        "a" to 1,
+        "an" to 1,
+        "one" to 1,
+        "two" to 2,
+        "three" to 3,
+        "four" to 4,
+        "five" to 5,
+        "six" to 6
+    )
+
+    return input.replace(word2Digit)
+
+}
+
+private fun cleanVoiceInputDE(input: String): String {
+
+    val word2Digit = mapOf(
+        "ein" to 1,
+        "eine" to 1,
+        "einen" to 1,
+        "zwei" to 2,
+        "drei" to 3,
+        "view" to 4,
+        "fünf" to 5,
+        "sechs" to 6)
+
+    return input.replace(word2Digit)
+
+}
+
+private fun String.replace(map: Map<String, Int>): String {
+    var result = this
+    map.forEach { (k, v) -> result = result.replace(k, v) }
+    return result
+}
+
+private fun String.replace(k: String, v: Int): String {
+    val result = this
+    result.replace(k, v.toString())
+    return result
+}

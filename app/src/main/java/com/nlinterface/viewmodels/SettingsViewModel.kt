@@ -8,11 +8,9 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.nlinterface.R
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
-import com.nlinterface.utility.VoiceCommandHelper
+import com.nlinterface.utility.VoiceCommandUtilityOld
 import java.util.Locale
 
 class SettingsViewModel(
@@ -21,9 +19,12 @@ class SettingsViewModel(
 
     private lateinit var tts: TextToSpeechUtility
 
-    val ttsInitialized: MutableLiveData<Boolean> by lazy {
+    val _ttsInitialized: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
     }
+
+    val ttsInitialized: LiveData<Boolean>
+        get() = _ttsInitialized
 
     private val _isListening: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
@@ -55,7 +56,8 @@ class SettingsViewModel(
 
         if (status == TextToSpeech.SUCCESS) {
             tts.setLocale(Locale.getDefault())
-            ttsInitialized.value = true
+            tts.setSpeedRate()
+            _ttsInitialized.value = true
         } else {
             Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
         }
@@ -78,8 +80,8 @@ class SettingsViewModel(
     private fun handleSpeechResult(s: String) {
 
         Log.println(Log.DEBUG, "handleSpeechResult", s)
-        val voiceCommandHelper = VoiceCommandHelper()
-        _command.value = voiceCommandHelper.decodeVoiceCommand(s)
+        val voiceCommandUtilityOld = VoiceCommandUtilityOld()
+        _command.value = voiceCommandUtilityOld.decodeVoiceCommand(s)
 
     }
 

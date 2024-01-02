@@ -181,7 +181,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         if (command != null && command.size == 3) {
             if (command[0] == "GOTO") {
                 navToActivity(command[1])
-            } else {
+            } else if (command[0] == ""){
                 viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
             }
         }

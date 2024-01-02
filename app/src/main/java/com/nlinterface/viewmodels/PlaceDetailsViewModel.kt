@@ -12,7 +12,6 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.OpeningHours
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FetchPlaceResponse
@@ -20,13 +19,10 @@ import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nlinterface.BuildConfig
-import com.nlinterface.R
-import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
-import com.nlinterface.utility.VoiceCommandHelper
-import kotlinx.coroutines.CompletionHandler
+import com.nlinterface.utility.VoiceCommandUtilityOld
 import java.io.BufferedReader
 import java.io.File
 import java.util.Locale
@@ -45,9 +41,11 @@ class PlaceDetailsViewModel(
 
     private lateinit var tts: TextToSpeechUtility
 
-    val ttsInitialized: MutableLiveData<Boolean> by lazy {
+    val _ttsInitialized: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
     }
+    val ttsInitialized: LiveData<Boolean>
+        get() = _ttsInitialized
 
     private val _isListening: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>()
@@ -162,7 +160,8 @@ class PlaceDetailsViewModel(
 
         if (status == TextToSpeech.SUCCESS) {
             tts.setLocale(Locale.getDefault())
-            ttsInitialized.value = true
+            tts.setSpeedRate()
+            _ttsInitialized.value = true
         } else {
             Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
         }
@@ -186,8 +185,8 @@ class PlaceDetailsViewModel(
     private fun handleSpeechResult(s: String) {
 
         Log.println(Log.DEBUG, "handleSpeechResult", s)
-        val voiceCommandHelper = VoiceCommandHelper()
-        _command.value = voiceCommandHelper.decodeVoiceCommand(s)
+        val voiceCommandUtilityOld = VoiceCommandUtilityOld()
+        _command.value = voiceCommandUtilityOld.decodeVoiceCommand(s)
 
     }
 

@@ -13,6 +13,10 @@ class TextToSpeechUtility(context: Context, listener: OnInitListener)
         textToSpeechEngine.language = locale
     }
 
+    fun setSpeedRate(speedRate: Float = 1.2F) {
+        textToSpeechEngine.setSpeechRate(speedRate)
+    }
+
     fun say(text: String, queueMode: Int) {
         textToSpeechEngine.speak(text, queueMode, null, "tts1")
     }
@@ -25,24 +29,3 @@ class TextToSpeechUtility(context: Context, listener: OnInitListener)
         textToSpeechEngine.shutdown()
     }
 }
-
-// USE CASE EXAMPLE
-/*
-class SpeechToTextActivity : AppCompatActivity() {
-    private val textToSpeechUtility = TextToSpeechUtility()
-
-
-    fun onCreate() {
-        ...
-        textToSpeechUtility.createTTSEngine(this, Locale.UK)
-        ...
-    }
-    your_button.setOnClickListener {
-        ...
-        textToSpeechUtility.say("Hello World!")
-        ...
-    }
-
-}
-
-*/

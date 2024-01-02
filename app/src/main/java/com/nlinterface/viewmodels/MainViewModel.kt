@@ -119,9 +119,9 @@ class MainViewModel(
                     // so choose the first one
                     handleSpeechResult(matches[0])
                 }
-        }, onEndOfSpeech = {
-            cancelListening()
-        },
+            }, onEndOfSpeech = {
+                cancelListening()
+            },
             onError = {
                 cancelListening()
             })

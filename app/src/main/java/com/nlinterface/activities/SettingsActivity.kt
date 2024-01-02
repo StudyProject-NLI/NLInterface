@@ -3,11 +3,8 @@ package com.nlinterface.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.speech.tts.TextToSpeech
-import android.speech.tts.TextToSpeech.OnInitListener
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
@@ -17,25 +14,47 @@ import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
-import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.setViewRelativeSize
-import com.nlinterface.viewmodels.MainViewModel
 import com.nlinterface.viewmodels.SettingsViewModel
-import java.util.Locale
 
+/**
+ * The SettingsActivity handles user interaction in Settings Menu.
+ *
+ * The Settings Menu comprises the Voice Activation Buttons and a button for each settings
+ * functionality. Each click on a settings button will cycle through the available settings,
+ * narrating each action. The settings are applied once the MainActivity is selected. Current
+ * setting options are:
+ *
+ * 1- Screen Always On/Dim Screen after some time
+ * 2- Device Theme/Dark Theme/Light Theme
+ *
+ * Possible Voice Commands:
+ * - 'Read Screen Settings'
+ * - 'Read Theme Settings'
+ * - 'List Current Settings'
+ * - 'Set Screen Settings' --> Always On or Dim? --> X
+ * - 'Set Theme Settings' --> Default, Light or Dark? --> X
+ *
+ * TODO: Add TTS Speed Settings
+ */
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
     private lateinit var viewModel: SettingsViewModel
 
     private lateinit var keepScreenOnOptions: MutableList<String>
-    private var keepScreenOnButton: Button? = null
+    private lateinit var keepScreenOnButton: Button
 
     private lateinit var themeOptions: MutableList<String>
-    private var themeButton: Button? = null
+    private lateinit var themeButton: Button
 
     private lateinit var voiceActivationButton: ImageButton
 
+    /**
+     * The onCreate Function initializes the view by binding the Activity and the Layout,
+     * retrieving the ViewModel, loading the options for each preference type, configuring the UI
+     * and configuring the TTS/STT systems.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -43,13 +62,6 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
-
-        //process keep screen on settings
-        if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        } else {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
 
         keepScreenOnOptions = mutableListOf()
         resources.getStringArray(R.array.keep_screen_on_options).forEach { option ->
@@ -62,11 +74,14 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         configureUI()
-
         configureTTS()
         configureSTT()
     }
 
+    /**
+     * Sets up all UI elements, i.e. the voiceActivation/theme/keepScreenOn buttons and their
+     * respective onClickListeners
+     */
     private fun configureUI() {
 
         voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
@@ -74,56 +89,77 @@ class SettingsActivity : AppCompatActivity() {
             onVoiceActivationButtonClick()
         }
 
-        themeButton = findViewById(R.id.settings_theme)
-        themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
-
-        keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
-        keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
-
         setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
 
-    }
+        themeButton = findViewById(R.id.settings_theme)
+        themeButton.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
 
-    override fun onStart() {
-        super.onStart()
+        themeButton.setOnClickListener {
+            onThemeButtonClick()
+        }
 
-        keepScreenOnButton!!.setOnClickListener {
+        keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
+        keepScreenOnButton.text =
+            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+
+        keepScreenOnButton.setOnClickListener {
             onKeepScreenOnButtonClick()
         }
 
-        themeButton!!.setOnClickListener {
-            onThemeButtonClick()
-        }
     }
 
+    /**
+     * Cycle through the options for the Theme settings, when the button is clicked. Narrate the
+     * action.
+     */
     private fun onThemeButtonClick() {
 
-        if (GlobalParameters.instance!!.themeChoice.ordinal == GlobalParameters.ThemeChoice.values().size - 1) {
+        if (
+            GlobalParameters.instance!!.themeChoice.ordinal ==
+            GlobalParameters.ThemeChoice.values().size - 1
+        ) {
             GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[0]
         } else {
-            GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[GlobalParameters.instance!!.themeChoice.ordinal + 1]
+            GlobalParameters.instance!!.themeChoice =
+                GlobalParameters.ThemeChoice.values()[
+                    GlobalParameters.instance!!.themeChoice.ordinal + 1
+                ]
         }
-        themeButton!!.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
-        //GlobalParameters.instance!!.updateTheme()
+        themeButton.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
 
-        viewModel.say(resources.getString(R.string.new_theme_setting, themeButton!!.text))
+        viewModel.say(resources.getString(R.string.new_theme_setting, themeButton.text))
     }
 
+    /**
+     * Cycle through the options for the Screen On settings, when the button is clicked. Narrate the
+     * action.
+     */
     private fun onKeepScreenOnButtonClick() {
 
-        if (GlobalParameters.instance!!.keepScreenOnSwitch.ordinal == GlobalParameters.KeepScreenOn.values().size - 1) {
-            GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[0]
+        if (
+            GlobalParameters.instance!!.keepScreenOnSwitch.ordinal ==
+            GlobalParameters.KeepScreenOn.values().size - 1
+        ) {
+            GlobalParameters.instance!!.keepScreenOnSwitch =
+                GlobalParameters.KeepScreenOn.values()[0]
         } else {
-            GlobalParameters.instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.values()[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal + 1]
+            GlobalParameters.instance!!.keepScreenOnSwitch =
+                GlobalParameters.KeepScreenOn.values()[
+                    GlobalParameters.instance!!.keepScreenOnSwitch.ordinal + 1
+                ]
         }
-        keepScreenOnButton!!.text = keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+        keepScreenOnButton.text =
+            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
 
-        viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton!!.text))
+        viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton.text))
     }
 
-    // save data to SharedPreferences
+    /**
+     * If the activity is paused, save the current preferences to SharedPreferences.
+     */
     override fun onPause() {
         super.onPause()
+
         val sharedPref = this.getSharedPreferences(
             getString(R.string.settings_preferences_key),
             Context.MODE_PRIVATE
@@ -141,6 +177,11 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
+     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
+     * listening.
+     */
     private fun onVoiceActivationButtonClick() {
         if (viewModel.isListening.value == false) {
             viewModel.handleSpeechBegin()
@@ -149,22 +190,36 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Called by the onCreate Function and calls upon the ViewModel to initialize the TTS system. On
+     * successful initialization, the Activity name is read aloud.
+     */
     private fun configureTTS() {
 
         viewModel.initTTS()
 
+        // once the TTS is successfully initialized, read out the activity name
+        // required, since TTS initialization is asynchronous
         val ttsInitializedObserver = Observer<Boolean> { _ ->
             viewModel.say(resources.getString(R.string.settings))
         }
 
+        // observe LiveDate change, to be notified if TTS initialization is completed
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
 
     }
 
+    /**
+     * Called by the onCreate function and calls upon the ViewModel to initialize the STT system.
+     * The voiceActivationButton is configured to change it microphone color to green, if the STT
+     * system is active and to change back to white, if it is not. Also retrieves the text output
+     * of the voice input to the STT system, aka the 'command'
+     */
     private fun configureSTT() {
 
         viewModel.initSTT()
 
+        // if listening: microphone color green, else microphone color white
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
             if (isListening) {
                 voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
@@ -173,18 +228,30 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        // observe LiveData change to be notified when the STT system is active(ly listening)
         viewModel.isListening.observe(this, sttIsListeningObserver)
 
-        val commandObserver = Observer<ArrayList<String>> {command ->
+        // if a command is successfully generated, process and execute it
+        val commandObserver = Observer<ArrayList<String>> { command ->
             executeCommand(command)
         }
 
+        // observe LiveData change to be notified when the STT returns a command
         viewModel.command.observe(this, commandObserver)
 
     }
 
+    /**
+     * Called once the STT system returns a command. It is then processed and, if valid,
+     * finally executed by navigating to the next activity
+     *
+     * @param command: ArrayList<String>? containing the deconstructed command
+     *
+     * TODO: streamline processing and command structure
+     */
     private fun executeCommand(command: ArrayList<String>?) {
 
+        /*
         if ((command != null) && (command.size == 3)) {
             if (command[0] == "GOTO") {
                 navToActivity(command[1])
@@ -192,9 +259,16 @@ class SettingsActivity : AppCompatActivity() {
                 viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
             }
         }
+         */
 
     }
 
+    /**
+     * Handles navigation to next activity. Called either by button click or by execution of the
+     * voice command. If the called for activity is the current one, read out the activity name.
+     *
+     * @param activity: ActivityType, Enum specifying the activity
+     */
     private fun navToActivity(activity: String) {
 
         Log.println(Log.DEBUG, "navToActivity", activity)
@@ -209,10 +283,12 @@ class SettingsActivity : AppCompatActivity() {
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }
+
             ActivityType.GROCERYLIST.toString() -> {
                 val intent = Intent(this, GroceryListActivity::class.java)
                 this.startActivity(intent)
             }
+
             ActivityType.PLACEDETAILS.toString() -> {
                 val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)

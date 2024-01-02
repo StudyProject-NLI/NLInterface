@@ -118,7 +118,7 @@ class MainViewModel(
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
                     handleSpeechResult(matches[0])
-            }
+                }
         }, onEndOfSpeech = {
             cancelListening()
         },
@@ -135,7 +135,7 @@ class MainViewModel(
      * TODO: streamline processing and command structure
      */
     private fun handleSpeechResult(s: String) {
-        // var cleanInput = cleanSTTInput(s)
+        // TODO: implement
     }
 
     /**

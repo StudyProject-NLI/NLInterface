@@ -129,7 +129,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.isListening.observe(this, sttIsListeningObserver)
 
         // if a command is successfully generated, process and execute it
-        val commandObserver = Observer<ArrayList<String>> {command ->
+        val commandObserver = Observer<ArrayList<String>> { command ->
             executeCommand(command)
         }
 
@@ -174,14 +174,17 @@ class MainActivity : AppCompatActivity() {
             ActivityType.MAIN -> {
                 viewModel.say(resources.getString(R.string.main_menu))
             }
+
             ActivityType.GROCERYLIST -> {
                 val intent = Intent(this, GroceryListActivity::class.java)
                 this.startActivity(intent)
             }
+
             ActivityType.PLACEDETAILS -> {
                 val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)
             }
+
             ActivityType.SETTINGS -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 this.startActivity(intent)
@@ -231,7 +234,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun verifyAudioPermissions() {
         if (checkCallingOrSelfPermission(
-                Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.RECORD_AUDIO),

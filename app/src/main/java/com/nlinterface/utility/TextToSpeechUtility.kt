@@ -2,6 +2,7 @@ package com.nlinterface.utility
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import java.util.Locale
 
 /**
@@ -22,6 +23,15 @@ class TextToSpeechUtility(context: Context, listener: OnInitListener) :
     fun setLocale(locale: Locale = Locale.getDefault()) {
         textToSpeechEngine.language = locale
     }
+    
+    /**
+     * Set an UtteranceProgressListener to monitor the utterance progress.
+     *
+     * @param utteranceProgressListener: the UtteranceProgressListener to be set
+     */
+    fun setUtteranceProgressListener(utteranceProgressListener: UtteranceProgressListener) {
+        textToSpeechEngine.setOnUtteranceProgressListener(utteranceProgressListener)
+    }
 
     /**
      * Sets the engine speech speed rate.
@@ -39,8 +49,8 @@ class TextToSpeechUtility(context: Context, listener: OnInitListener) :
      * @param queueMode: Int, defines whether to append the text to the speaking queue (QUEUE.ADD)
      * or to overwrite the queue with the text (QUEUE.FLUSH)
      */
-    fun say(text: String, queueMode: Int) {
-        textToSpeechEngine.speak(text, queueMode, null, "tts1")
+    fun say(text: String, queueMode: Int, utteranceId: String? = null) {
+        textToSpeechEngine.speak(text, queueMode, null, utteranceId)
     }
 
     /**

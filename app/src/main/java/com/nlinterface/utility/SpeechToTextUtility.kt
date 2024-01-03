@@ -47,16 +47,18 @@ class SpeechToTextUtility {
      * @param onEndOfSpeech: lambda, handles the end of speech
      * @param onError: lambda, error handling
      */
-    fun createSpeechRecognizer(
-        context: Context,
+    fun createSpeechRecognizer(context: Context) {
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+    }
+    
+    fun setSpeechRecognitionListener(
         onResults: (results: Bundle) -> Unit,
         onEndOfSpeech: () -> Unit,
         onError: (p0: Int) -> Unit
     ) {
-
-        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
+    
         speechRecognizer.setRecognitionListener(object : RecognitionListener {
-
+        
             override fun onReadyForSpeech(params: Bundle) {}
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
@@ -64,18 +66,19 @@ class SpeechToTextUtility {
             override fun onEndOfSpeech() {
                 onEndOfSpeech
             }
-
+        
             override fun onError(p0: Int) {
                 onError
             }
-
+        
             override fun onPartialResults(partialResults: Bundle) {}
             override fun onEvent(eventType: Int, params: Bundle) {}
             override fun onResults(results: Bundle) {
                 onResults(results)
             }
-
+        
         })
+        
     }
 
     /**

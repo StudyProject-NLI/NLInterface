@@ -2,6 +2,7 @@ package com.nlinterface.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -22,8 +23,13 @@ import com.nlinterface.databinding.ActivityGroceryListBinding
 import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.interfaces.GroceryListCallback
 import com.nlinterface.utility.ActivityType
+import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.GroceryListViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 
 /**
@@ -59,6 +65,9 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     private lateinit var adapter: GroceryListAdapter
 
     private lateinit var voiceActivationButton: ImageButton
+    
+    private lateinit var lastCommand: String
+    private lateinit var lastResponse: String
 
     /**
      * The onCreate function initializes the view by binding the Activity and the Layout and
@@ -178,11 +187,26 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewModel.deleteGroceryItem(groceryItem)
         adapter.notifyItemRemoved(index)
         viewModel.say(
-            resources.getString(
-                R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName
-            )
+            resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName)
         )
 
+    }
+    
+    private fun deleteGroceryItem(groceryItemName: String) {
+        
+        val groceryItem = findGroceryItemByName(groceryItemName)
+        
+        if (groceryItem != null) {
+            deleteGroceryItem(groceryItem, groceryItemList.indexOf(groceryItem))
+        } else {
+            viewModel.say(
+                resources.getString(R.string.ITEMNAME_is_not_on_the_list, groceryItemName)
+            )
+        }
+    }
+    
+    private fun findGroceryItemByName(groceryItemName: String): GroceryItem? {
+        return groceryItemList.find { it.itemName.lowercase() == groceryItemName }
     }
 
     /**
@@ -192,6 +216,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     override fun onDestroy() {
         super.onDestroy()
         viewModel.storeGroceryList()
+        viewModel.shutdownTTS()
     }
 
     /**
@@ -234,17 +259,27 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
         // observe LiveData change to be notified when the STT system is active(ly listening)
         viewModel.isListening.observe(this, sttIsListeningObserver)
-
+    
         // if a command is successfully generated, process and execute it
-        val commandObserver = Observer<ArrayList<String>> { command ->
-            executeCommand(command)
+        val commandObserver = Observer<String> { command ->
+            lastCommand = command
+            executeCommand(lastCommand)
         }
-
-        // observe LiveData change to be notified when the STT returns a command
+    
+        // observe LiveData change to be notified when the STT returns a response
         viewModel.command.observe(this, commandObserver)
+    
+        // if a response is successfully generated, process and execute it
+        val responseObserver = Observer<String> { response ->
+            lastResponse = response
+            executeItemCommand(lastCommand, lastResponse)
+        }
+    
+        // observe LiveData change to be notified when the STT returns a response
+        viewModel.response.observe(this, responseObserver)
 
     }
-
+    
     /**
      * Called once the STT system returns a command. It is then processed and, if valid,
      * finally executed by navigating to the next activity
@@ -253,18 +288,188 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      *
      * TODO: streamline processing and command structure
      */
-    private fun executeCommand(command: ArrayList<String>?) {
-
-        /*
-        if (command != null && command.size == 3) {
-            if (command[0] == "GOTO") {
-                navToActivity(command[1])
-            } else if (command[0] == ""){
-                viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
+    private fun executeCommand(command: String) {
+        
+        if (command.contains("go to")) {
+            executeNavigationCommand(command)
+    
+        } else if (
+            command.contains(resources.getString(R.string.add_an_item)) ||
+            command.contains(resources.getString(R.string.remove_an_item)) ||
+            command == resources.getString(R.string.check_if_an_item_is_on_the_list)
+            ) {
+            
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
+            scope.launch {
+                requestResponse(resources.getString(R.string.which_item))
+            }
+        
+        } else if (command == resources.getString(R.string.list_all_grocery_items)) {
+    
+            for ((itemName) in groceryItemList) {
+                viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
+            }
+    
+        } else if (command == resources.getString(R.string.list_all_items_in_cart)) {
+    
+            for ((itemName, _, inCart) in groceryItemList) {
+                if (inCart) {
+                    viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
+                }
+            }
+    
+        } else if (command == resources.getString(R.string.list_all_items_not_in_cart)) {
+    
+            for ((itemName, _, inCart) in groceryItemList) {
+                if (!inCart) {
+                    viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
+                }
+            }
+    
+        }else if ((command == resources.getString(R.string.tell_me_my_options))) {
+            
+            viewModel.say(
+                "${resources.getString(R.string.your_options_are)} " +
+                        "${resources.getString(R.string.add_an_item)}," +
+                        "${resources.getString(R.string.remove_an_item)}," +
+                        "${resources.getString(R.string.add_an_item_to_the_cart)}," +
+                        "${resources.getString(R.string.remove_an_item_from_the_cart)}," +
+                        "${resources.getString(R.string.check_if_an_item_is_on_the_list)}," +
+                        "${resources.getString(R.string.list_all_grocery_items)}," +
+                        "${resources.getString(R.string.list_all_items_not_in_cart)}," +
+                        "${resources.getString(R.string.list_all_items_in_cart)}," +
+                        "${resources.getString(R.string.navigate_to_grocery_list)}," +
+                        "${resources.getString(R.string.navigate_to_place_details)} and" +
+                        "${resources.getString(R.string.navigate_to_settings)}."
+            )
+            
+        } else {
+            viewModel.say(resources.getString(R.string.invalid_command))
+        }
+        
+    }
+    
+    private suspend fun requestResponse(question: String) {
+        viewModel.sayAndAwait(question)
+        viewModel.setSpeechRecognitionListener(STTInputType.ANSWER)
+        viewModel.handleSpeechBegin()
+    }
+    
+    private fun executeItemCommand(command: String, response: String) {
+        
+        if (response != resources.getString(R.string.cancel)) {
+            
+            when (command) {
+                
+                resources.getString(R.string.add_an_item) -> {
+                    addGroceryItem(response)
+                }
+                
+                resources.getString(R.string.remove_an_item) -> {
+                    deleteGroceryItem(response)
+                }
+                
+                resources.getString(R.string.add_an_item_to_the_cart) -> {
+                    addItemToCart(response)
+                }
+                
+                resources.getString(R.string.remove_an_item_from_the_cart) -> {
+                    removeItemFromCart(response)
+                }
+                
+                resources.getString(R.string.check_if_an_item_is_on_the_list) -> {
+                    checkItemOnList(response)
+                }
+                
             }
         }
-         */
-
+    }
+    
+    private fun addItemToCart(itemName: String) {
+        
+        val groceryItem = findGroceryItemByName(itemName)
+        
+        if (groceryItem != null) {
+            
+            if (groceryItem.inCart) {
+                viewModel.say(resources.getString(R.string.ITEMNAME_is_in_the_cart, itemName))
+            } else {
+                viewModel.placeGroceryItemInCart(groceryItem)
+                adapter.notifyItemChanged(groceryItemList.indexOf(groceryItem))
+                viewModel.say(resources.getString(R.string.placed_ITEMNAME_into_cart, itemName))
+            }
+            
+        } else {
+            viewModel.say(resources.getString(R.string.ITEMNAME_is_not_on_the_list, itemName))
+        }
+        
+    }
+    
+    private fun removeItemFromCart(itemName: String) {
+        val groceryItem = findGroceryItemByName(itemName)
+    
+        if (groceryItem != null) {
+        
+            if (!groceryItem.inCart) {
+                viewModel.say(resources.getString(R.string.ITEMNAME_is_not_in_the_cart, itemName))
+            } else {
+                viewModel.placeGroceryItemInCart(groceryItem)
+                adapter.notifyItemChanged(groceryItemList.indexOf(groceryItem))
+                viewModel.say(resources.getString(R.string.removed_ITEMNAME_from_cart, itemName))
+            }
+        
+        } else {
+            viewModel.say(resources.getString(R.string.ITEMNAME_is_not_on_the_list, itemName))
+        }
+    }
+    
+    private fun checkItemOnList(itemName: String) {
+    
+        val groceryItem = findGroceryItemByName(itemName)
+    
+        if (groceryItem != null) {
+            viewModel.say(
+                resources.getString(R.string.ITEMNAME_is_on_the_list, itemName)
+            )
+            if (groceryItem.inCart) {
+                viewModel.say(
+                    resources.getString(R.string.ITEMNAME_is_in_the_cart, itemName),
+                    TextToSpeech.QUEUE_ADD
+                )
+            } else {
+                viewModel.say(
+                    resources.getString(R.string.ITEMNAME_is_not_in_the_cart, itemName),
+                    TextToSpeech.QUEUE_ADD
+                )
+            }
+        } else {
+            viewModel.say(
+                resources.getString(R.string.ITEMNAME_is_not_on_the_list, itemName)
+            )
+        }
+    
+    }
+    
+    /**
+     * Handles Navigation commands of the format "go to X". If the command is valid, navigate to
+     * the desired activity.
+     *
+     * @param command: String, the command to be executed
+     */
+    private fun executeNavigationCommand(command: String) {
+        
+        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
+            navToActivity(ActivityType.GROCERYLIST)
+        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
+            navToActivity(ActivityType.PLACEDETAILS)
+        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
+            navToActivity(ActivityType.SETTINGS)
+        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
+            navToActivity(ActivityType.MAIN)
+        } else {
+            viewModel.say(resources.getString(R.string.invalid_command))
+        }
+        
     }
 
     /**
@@ -273,27 +478,27 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      *
      * @param activity: ActivityType, Enum specifying the activity
      */
-    private fun navToActivity(activity: String) {
+    private fun navToActivity(activity: ActivityType) {
 
-        Log.println(Log.DEBUG, "navToActivity", activity)
+        Log.println(Log.DEBUG, "navToActivity", activity.toString())
 
         when (activity) {
 
-            ActivityType.GROCERYLIST.toString() -> {
+            ActivityType.GROCERYLIST -> {
                 viewModel.say(resources.getString(R.string.grocery_list))
             }
 
-            ActivityType.MAIN.toString() -> {
+            ActivityType.MAIN -> {
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }
 
-            ActivityType.PLACEDETAILS.toString() -> {
+            ActivityType.PLACEDETAILS -> {
                 val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)
             }
 
-            ActivityType.SETTINGS.toString() -> {
+            ActivityType.SETTINGS -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 this.startActivity(intent)
             }
@@ -308,6 +513,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      */
     private fun onVoiceActivationButtonClick() {
         if (viewModel.isListening.value == false) {
+            viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)
             viewModel.handleSpeechBegin()
         } else {
             viewModel.cancelListening()
@@ -395,5 +601,5 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     override fun onClick(item: GroceryItem) {
         viewModel.say(item.itemName)
     }
-
+    
 }

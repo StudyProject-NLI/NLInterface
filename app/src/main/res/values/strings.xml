@@ -78,9 +78,9 @@
     <string name="choose_activity_to_navigate_to">Please choose where to navigate to.</string>
     <string name="go_to">go to</string>
     <string name="deleted_ITEMNAME_from_grocery_list">Deleted %1$s from grocery list.</string>
-    <string name="list_all_grocery_items">List all items on list.</string>
-    <string name="list_all_items_in_cart">List all items in cart.</string>
-    <string name="list_all_items_not_in_cart">List all items not in the cart.</string>
+    <string name="list_all_grocery_items">list all grocery items</string>
+    <string name="list_all_items_in_cart">list all items in the cart</string>
+    <string name="list_all_items_not_in_cart">list all items not in the cart</string>
     <string name="added_ITEMNAME_to_list">Added %1$s to list.</string>
     <string name="cancelled_adding_item">Cancelled adding item to list.</string>
     <string name="enter_item_to_add">Enter the item you want to add.</string>
@@ -101,11 +101,21 @@
     <string name="location">Location</string>
     <string name="settings_language">Language</string>
     <string name="STORENAME_added_to_saved_places">%1$s was added to saved places.</string>
-    <string name="navigate_to_grocery_list">navigate to grocery list</string>
+    <string name="navigate_to_grocery_list">go to grocery list</string>
     <string name="navigate_to_place_details">go to place details</string>
     <string name="navigate_to_settings">go to settings</string>
     <string name="navigate_to_main_menu">go to main menu</string>
     <string name="invalid_command">Invalid command.</string>
     <string name="tell_me_my_options">tell me my options</string>
     <string name="your_options_are">your options are:</string>
+    <string name="add_an_item">add an item</string>
+    <string name="which_item">Which item?</string>
+    <string name="remove_an_item">remove an item</string>
+    <string name="check_if_an_item_is_on_the_list">check if an item is on the list</string>
+    <string name="add_an_item_to_the_cart">add an item to the cart</string>
+    <string name="remove_an_item_from_the_cart">remove an item from the cart</string>
+    <string name="ITEMNAME_is_not_on_the_list">%1$s is not on the list</string>
+    <string name="ITEMNAME_is_on_the_list">%1$s is on the list</string>
+    <string name="ITEMNAME_is_in_the_cart">%1$s is in the cart</string>
+    <string name="ITEMNAME_is_not_in_the_cart">%1$s is not in the cart</string>
 </resources>

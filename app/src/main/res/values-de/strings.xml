@@ -4,9 +4,9 @@
     <string name="choose_activity_to_navigate_to">Bitte wählen Sie eine Menüoption.</string>
     <string name="go_to">gehe zu</string>
     <string name="deleted_ITEMNAME_from_grocery_list">%1$s wurde von der Einkaufsliste gelöscht.</string>
-    <string name="list_all_grocery_items">Liste alle Artikel der Einkaufsliste auf.</string>
-    <string name="list_all_items_in_cart">Liste alle Artikel im Einkaufswagen auf.</string>
-    <string name="list_all_items_not_in_cart">Liste alle Artikel die noch nicht im Einkaufswagen sind auf.</string>
+    <string name="list_all_grocery_items">liste alle artikel auf</string>
+    <string name="list_all_items_in_cart">liste alle artikel im einkaufswagen auf</string>
+    <string name="list_all_items_not_in_cart">liste alle artikel die noch nicht im einkaufswagen sind auf</string>
     <string name="added_ITEMNAME_to_list">%1$s zur Einkaufsliste hinzugefügt.</string>
     <string name="cancelled_adding_item">Neuen Artikel hinzufügen abgebrochen.</string>
     <string name="enter_item_to_add">Geben Sie einen Artikel ein, um ihn zur Liste hinzuzufügen.</string>

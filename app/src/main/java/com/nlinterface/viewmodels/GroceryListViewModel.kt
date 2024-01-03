@@ -4,6 +4,7 @@ import android.app.Application
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -11,11 +12,14 @@ import androidx.lifecycle.MutableLiveData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nlinterface.dataclasses.GroceryItem
+import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.BufferedReader
 import java.io.File
 import java.util.Locale
+import kotlin.coroutines.resume
 
 
 /**
@@ -58,15 +62,24 @@ class GroceryListViewModel(
     // outward immutable LiveData for _isListening.
     val isListening: LiveData<Boolean>
         get() = _isListening
-
+    
     // holds the command extracted by the STT system
-    private val _command: MutableLiveData<ArrayList<String>> by lazy {
-        MutableLiveData<ArrayList<String>>()
+    private val _command: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
     }
-
+    
     // outward immutable LiveData for _command.
-    val command: LiveData<ArrayList<String>>
+    val command: LiveData<String>
         get() = _command
+    
+    // holds the command extracted by the STT system
+    private val _response: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+    
+    // outward immutable LiveData for _command.
+    val response: LiveData<String>
+        get() = _response
 
     /**
      * Retrieves the stored grocery list from local phone storage, if available, and loads it into
@@ -149,6 +162,10 @@ class GroceryListViewModel(
     fun initTTS() {
         tts = TextToSpeechUtility(getApplication<Application>().applicationContext, this)
     }
+    
+    fun shutdownTTS() {
+        tts.shutdown()
+    }
 
     /**
      * Calls the TTS system to read a given string out loud.
@@ -162,12 +179,38 @@ class GroceryListViewModel(
      *
      * TODO: error handling
      */
-    fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
+    fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH, utteranceId: String? = "1") {
         if (ttsInitialized.value == true) {
-            tts.say(text, queueMode)
+            tts.say(text, queueMode, utteranceId)
         }
     }
-
+    
+    suspend fun sayAndAwait(
+        text: String,
+        queueMode: Int = TextToSpeech.QUEUE_FLUSH,
+        utteranceId: String? = "1")
+    = suspendCancellableCoroutine {
+        tts.setUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(p0: String?) {
+                //
+            }
+        
+            override fun onDone(p0: String?) {
+                Log.println(Log.DEBUG, "onDone", "done")
+                it.resume(Unit)
+            }
+        
+            override fun onError(p0: String?) {
+                //
+            }
+        
+        })
+        
+        if (ttsInitialized.value == true) {
+            tts.say(text, queueMode, utteranceId)
+        }
+    }
+    
     /**
      * Overrides the TextToSpeech.OnInitListener's onInit function. Called, once the TTS engine
      * initialization is completed. If initialization was successful, the TTS engine's locale is
@@ -200,14 +243,19 @@ class GroceryListViewModel(
      * TODO: improve error handling
      */
     fun initSTT() {
-        stt.createSpeechRecognizer(getApplication<Application>().applicationContext,
+        stt.createSpeechRecognizer(getApplication<Application>().applicationContext)
+        setSpeechRecognitionListener(STTInputType.COMMAND)
+    }
+    
+    fun setSpeechRecognitionListener(responseType: STTInputType = STTInputType.COMMAND) {
+        stt.setSpeechRecognitionListener(
             onResults = {
                 cancelListening()
                 val matches = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
-                    handleSpeechResult(matches[0])
+                    handleSpeechResult(matches[0], responseType)
                 }
             }, onEndOfSpeech = {
                 cancelListening()
@@ -223,8 +271,22 @@ class GroceryListViewModel(
      *
      * TODO: streamline processing and command structure
      */
-    private fun handleSpeechResult(s: String) {
-        // TODO: implement
+    private fun handleSpeechResult(s: String, inputType: STTInputType) {
+        
+        when (inputType) {
+            
+            STTInputType.COMMAND -> {
+                _command.value = s.lowercase()
+            }
+            
+            STTInputType.ANSWER -> {
+                _response.value = s.lowercase()
+            }
+            
+        }
+    
+        Log.println(Log.DEBUG, inputType.toString(), s)
+        
     }
 
     /**

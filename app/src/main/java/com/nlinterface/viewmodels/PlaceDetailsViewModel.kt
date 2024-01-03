@@ -20,6 +20,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nlinterface.BuildConfig
 import com.nlinterface.dataclasses.PlaceDetailsItem
+import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.VoiceCommandUtilityOld
@@ -281,7 +282,7 @@ class PlaceDetailsViewModel(
         }
 
     }
-
+    
     /**
      * Initializes the STT system, by creating the SpeechRecognizer and passing it the functionality
      * to handle STT calls. Once results are returned by the STT recognizer, listening is cancelled,
@@ -291,14 +292,19 @@ class PlaceDetailsViewModel(
      * TODO: improve error handling
      */
     fun initSTT() {
-        stt.createSpeechRecognizer(getApplication<Application>().applicationContext,
+        stt.createSpeechRecognizer(getApplication<Application>().applicationContext)
+        setSpeechRecognitionListener(STTInputType.COMMAND)
+    }
+    
+    fun setSpeechRecognitionListener(responseType: STTInputType = STTInputType.COMMAND) {
+        stt.setSpeechRecognitionListener(
             onResults = {
                 cancelListening()
                 val matches = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
-                    handleSpeechResult(matches[0])
+                    handleSpeechResult(matches[0], responseType)
                 }
             }, onEndOfSpeech = {
                 cancelListening()
@@ -314,7 +320,7 @@ class PlaceDetailsViewModel(
      *
      * TODO: streamline processing and command structure
      */
-    private fun handleSpeechResult(s: String) {
+    private fun handleSpeechResult(s: String, responseType: STTInputType) {
 
         Log.println(Log.DEBUG, "handleSpeechResult", s)
         val voiceCommandUtilityOld = VoiceCommandUtilityOld()

@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
 import java.util.Locale
@@ -100,7 +101,7 @@ class MainViewModel(
             Log.println(Log.ERROR, "tts onInit", "Couldn't initialize TTS Engine")
         }
     }
-
+    
     /**
      * Initializes the STT system, by creating the SpeechRecognizer and passing it the functionality
      * to handle STT calls. Once results are returned by the STT recognizer, listening is cancelled,
@@ -110,19 +111,23 @@ class MainViewModel(
      * TODO: improve error handling
      */
     fun initSTT() {
-        stt.createSpeechRecognizer(getApplication<Application>().applicationContext,
+        stt.createSpeechRecognizer(getApplication<Application>().applicationContext)
+        setSpeechRecognitionListener(STTInputType.COMMAND)
+    }
+    
+    fun setSpeechRecognitionListener(responseType: STTInputType = STTInputType.COMMAND) {
+        stt.setSpeechRecognitionListener(
             onResults = {
                 cancelListening()
                 val matches = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
-                    handleSpeechResult(matches[0])
+                    handleSpeechResult(matches[0], responseType)
                 }
             }, onEndOfSpeech = {
                 cancelListening()
-            },
-            onError = {
+            }, onError = {
                 cancelListening()
             })
     }
@@ -134,7 +139,7 @@ class MainViewModel(
      *
      * TODO: streamline processing and command structure
      */
-    private fun handleSpeechResult(s: String) {
+    private fun handleSpeechResult(s: String, responseType: STTInputType) {
         _command.value = s
         
         Log.println(Log.DEBUG, "command", s)

@@ -148,21 +148,44 @@ class MainActivity : AppCompatActivity() {
      */
     private fun executeCommand(command: String) {
         
-        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
-            navToActivity(ActivityType.GROCERYLIST)
-        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
-            navToActivity(ActivityType.PLACEDETAILS)
-        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
-            navToActivity(ActivityType.SETTINGS)
-        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
-            navToActivity(ActivityType.MAIN)
+        if (command.contains("go to")) {
+            executeNavigationCommand(command)
         } else if ((command == resources.getString(R.string.tell_me_my_options))) {
+            
             viewModel.say(
                 "${resources.getString(R.string.your_options_are)} " +
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
                         "${resources.getString(R.string.navigate_to_settings)}."
             )
+            
+        } else {
+            viewModel.say(resources.getString(R.string.invalid_command))
+        }
+        
+    }
+    
+    
+    /**
+     * Handles Navigation commands of the format "go to X". If the command is valid, navigate to
+     * the desired activity.
+     *
+     * @param command: String, the command to be executed
+     */
+    private fun executeNavigationCommand(command: String) {
+    
+        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
+            navToActivity(ActivityType.GROCERYLIST)
+            
+        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
+            navToActivity(ActivityType.PLACEDETAILS)
+            
+        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
+            navToActivity(ActivityType.SETTINGS)
+            
+        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
+            navToActivity(ActivityType.MAIN)
+            
         } else {
             viewModel.say(resources.getString(R.string.invalid_command))
         }

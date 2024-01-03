@@ -101,4 +101,11 @@
     <string name="location">Location</string>
     <string name="settings_language">Language</string>
     <string name="STORENAME_added_to_saved_places">%1$s was added to saved places.</string>
+    <string name="navigate_to_grocery_list">navigate to grocery list</string>
+    <string name="navigate_to_place_details">go to place details</string>
+    <string name="navigate_to_settings">go to settings</string>
+    <string name="navigate_to_main_menu">go to main menu</string>
+    <string name="invalid_command">Invalid command.</string>
+    <string name="tell_me_my_options">tell me my options</string>
+    <string name="your_options_are">your options are:</string>
 </resources>

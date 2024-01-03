@@ -32,11 +32,11 @@ import com.nlinterface.viewmodels.MainViewModel
  * - 'Navigate to Settings'
  */
 class MainActivity : AppCompatActivity() {
-
+    
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var voiceActivationButton: ImageButton
-
+    
     /**
      * Companion Object / Singleton implementation required to handle audio permissions
      */
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         // needed to verify the audio permission result
         private const val STT_PERMISSION_REQUEST_CODE = 0
     }
-
+    
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
      * retrieving the ViewModel, loading the preferences, verifying the audio permissions and
@@ -52,60 +52,60 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
+        
         GlobalParameters.instance!!.loadPreferences(this)
-
+        
         verifyAudioPermissions()
         configureUI()
         configureTTS()
         configureSTT()
     }
-
+    
     /**
      * Called when the activity is started. It reads out the name of the activity and processes
      * the theme and keep screen on settings.
      */
     override fun onStart() {
         super.onStart()
-
+        
         // reads activity name out loud, so that the user is aware which screen they are on
         viewModel.say(resources.getString(R.string.main_menu))
-
+        
         // process keep screen on settings
         if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-
+        
         // process theme settings
         GlobalParameters.instance!!.updateTheme()
     }
-
+    
     /**
      * Called by the onCreate Function and calls upon the ViewModel to initialize the TTS system. On
      * successful initialization, the Activity name is read aloud.
      */
     private fun configureTTS() {
-
+        
         viewModel.initTTS()
-
+        
         // once the TTS is successfully initialized, read out the activity name
         // required, since TTS initialization is asynchronous
         val ttsInitializedObserver = Observer<Boolean> { _ ->
             viewModel.say(resources.getString(R.string.main_menu))
         }
-
+        
         // observe LiveDate change, to be notified if TTS initialization is completed
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
-
+        
     }
-
+    
     /**
      * Called by the onCreate function and calls upon the ViewModel to initialize the STT system.
      * The voiceActivationButton is configured to change it microphone color to green, if the STT
@@ -113,9 +113,9 @@ class MainActivity : AppCompatActivity() {
      * of the voice input to the STT system, aka the 'command'
      */
     private fun configureSTT() {
-
+        
         viewModel.initSTT()
-
+        
         // if listening: microphone color green, else microphone color white
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
             if (isListening) {
@@ -124,20 +124,20 @@ class MainActivity : AppCompatActivity() {
                 voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
             }
         }
-
+        
         // observe LiveData change to be notified when the STT system is active(ly listening)
         viewModel.isListening.observe(this, sttIsListeningObserver)
-
+        
         // if a command is successfully generated, process and execute it
-        val commandObserver = Observer<ArrayList<String>> { command ->
+        val commandObserver = Observer<String> { command ->
             executeCommand(command)
         }
-
+        
         // observe LiveData change to be notified when the STT returns a command
         viewModel.command.observe(this, commandObserver)
-
+        
     }
-
+    
     /**
      * Called once the STT system returns a command. It is then processed and, if valid,
      * finally executed by navigating to the next activity
@@ -146,19 +146,29 @@ class MainActivity : AppCompatActivity() {
      *
      * TODO: streamline processing and command structure
      */
-    private fun executeCommand(command: ArrayList<String>?) {
-
-        /*
-        if ((command != null) && (command.size == 3)) {
-            if (command[0] == "GOTO") {
-                navToActivity(command[1])
-            } else {
-                viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
-            }
+    private fun executeCommand(command: String) {
+        
+        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
+            navToActivity(ActivityType.GROCERYLIST)
+        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
+            navToActivity(ActivityType.PLACEDETAILS)
+        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
+            navToActivity(ActivityType.SETTINGS)
+        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
+            navToActivity(ActivityType.MAIN)
+        } else if ((command == resources.getString(R.string.tell_me_my_options))) {
+            viewModel.say(
+                "${resources.getString(R.string.your_options_are)} " +
+                        "${resources.getString(R.string.navigate_to_grocery_list)}," +
+                        "${resources.getString(R.string.navigate_to_place_details)} and" +
+                        "${resources.getString(R.string.navigate_to_settings)}."
+            )
+        } else {
+            viewModel.say(resources.getString(R.string.invalid_command))
         }
-        */
+        
     }
-
+    
     /**
      * Handles navigation to next activity. Called either by button click or by execution of the
      * voice command. If the called for activity is the current one, read out the activity name.
@@ -166,69 +176,69 @@ class MainActivity : AppCompatActivity() {
      * @param activity: ActivityType, Enum specifying the activity
      */
     private fun navToActivity(activity: ActivityType) {
-
+        
         Log.println(Log.DEBUG, "navToActivity", activity.toString())
-
+        
         when (activity) {
-
+            
             ActivityType.MAIN -> {
                 viewModel.say(resources.getString(R.string.main_menu))
             }
-
+            
             ActivityType.GROCERYLIST -> {
                 val intent = Intent(this, GroceryListActivity::class.java)
                 this.startActivity(intent)
             }
-
+            
             ActivityType.PLACEDETAILS -> {
                 val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)
             }
-
+            
             ActivityType.SETTINGS -> {
                 val intent = Intent(this, SettingsActivity::class.java)
                 this.startActivity(intent)
             }
-
+            
         }
-
+        
     }
-
+    
     /**
      * Sets up all UI elements, i.e. the groceryList/placeDetails/settingsActivity/voiceActivation
      * buttons and their respective onClickListeners
      */
     private fun configureUI() {
-
+        
         // set up button to navigate to GroceryListActivity
         val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
         groceryListButton.setOnClickListener { _ ->
             navToActivity(ActivityType.GROCERYLIST)
         }
-
+        
         // set up button to navigate to PlaceDetailsActivity
         val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
         placeDetailsButton.setOnClickListener { _ ->
             navToActivity(ActivityType.PLACEDETAILS)
         }
-
+        
         // set up button to navigate to SettingsActivity
         val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
         settingsActivityButton.setOnClickListener { _ ->
             navToActivity(ActivityType.SETTINGS)
         }
-
+        
         // set up voice Activation Button listener
         voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
         voiceActivationButton.setOnClickListener {
             onVoiceActivationButtonClick()
         }
-
+        
         // resize Voice Activation Button to 1/3 of display size
         setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
+        
     }
-
+    
     /**
      * Request the user to grant record audio permissions, if not already granted.
      */
@@ -244,7 +254,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
     }
-
+    
     /**
      * Called when the permissions request is answered by the user and processes the result. If
      * record audio permissions are granted, confirm that it was granted to the user. If not
@@ -263,12 +273,17 @@ class MainActivity : AppCompatActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, R.string.audio_permission_granted, Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this, R.string.audio_permission_granted, Toast.LENGTH_LONG
+            ).show()
         } else {
-            Toast.makeText(this, R.string.audio_permission_denied, Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this, R.string.audio_permission_denied,
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
-
+    
     /**
      * Called when voiceActivationButton is clicked and handles the result. If clicked while the
      * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
@@ -281,5 +296,5 @@ class MainActivity : AppCompatActivity() {
             viewModel.cancelListening()
         }
     }
-
+    
 }

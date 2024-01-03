@@ -82,5 +82,12 @@
     <string name="read_theme_setting">Nenne die Moduseinstellung.</string>
     <string name="STORENAME_added_to_saved_places">%1$s wurde den gespeicherten Orten hinzugefügt.</string>
     <string name="main_menu">Hauptmenü</string>
+    <string name="navigate_to_grocery_list">navigate to grocery list.</string>
+    <string name="navigate_to_place_details">gehe zu ort details</string>
+    <string name="navigate_to_settings">gehe zu einstellungen</string>
+    <string name="navigate_to_main_menu">gehe zu hauptmenü</string>
+    <string name="invalid_command">unbekannter befehl</string>
+    <string name="tell_me_my_options">nenne mir meine optionen</string>
+    <string name="your_options_are">deine optionen sind:</string>
 
 </resources>

@@ -45,12 +45,12 @@ class MainViewModel(
         get() = _isListening
 
     // holds the command extracted by the STT system
-    private val _command: MutableLiveData<ArrayList<String>> by lazy {
-        MutableLiveData<ArrayList<String>>()
+    private val _command: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
     }
 
     // outward immutable LiveData for _command.
-    val command: LiveData<ArrayList<String>>
+    val command: LiveData<String>
         get() = _command
 
     /**
@@ -135,7 +135,9 @@ class MainViewModel(
      * TODO: streamline processing and command structure
      */
     private fun handleSpeechResult(s: String) {
-        // TODO: implement
+        _command.value = s
+        
+        Log.println(Log.DEBUG, "command", s)
     }
 
     /**

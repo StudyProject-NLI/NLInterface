@@ -19,3 +19,11 @@ enum class ActivityType {
     SETTINGS
 }
 
+/**
+ * Specifies the input type of a STT interaction.
+ */
+enum class STTInputType {
+    COMMAND,
+    ANSWER
+}
+

@@ -93,24 +93,33 @@ class SettingsViewModel(
         }
     }
     
+    /**
+     * Reads a given text out loud and waits until the utterance is completed, before resuming. Is
+     * required when performing an action immediately after the utterance is completed.
+     *
+     * @param text: String, the string to be read out loud.
+     * @param queueMode: enum, defining how multiple speech outputs are queued.
+     *                   TextToSpeech.QUEUE_FLUSH (default) overwrites the queue with the current
+     *                   text, thus immediately reading it out loud
+     *                   TextToSpeech.QUEUE_ADD appends the current text to the queue, only reading
+     *                   it once all prior texts have been read out loud
+     *
+     * @param utteranceId: String? identifying the utterance to be made and completed
+     */
     suspend fun sayAndAwait(
         text: String,
         queueMode: Int = TextToSpeech.QUEUE_FLUSH,
         utteranceId: String? = "1")
             = suspendCancellableCoroutine {
         tts.setUtteranceProgressListener(object : UtteranceProgressListener() {
-            override fun onStart(p0: String?) {
-                //
-            }
             
-            override fun onDone(p0: String?) {
+            override fun onDone(utteranceId: String?) {
                 Log.println(Log.DEBUG, "onDone", "done")
                 it.resume(Unit)
             }
-            
-            override fun onError(p0: String?) {
-                //
-            }
+    
+            override fun onStart(utteranceId: String?) {}
+            override fun onError(utteranceId: String?) {}
             
         })
         
@@ -142,57 +151,58 @@ class SettingsViewModel(
     }
     
     /**
-     * Initializes the STT system, by creating the SpeechRecognizer and passing it the functionality
-     * to handle STT calls. Once results are returned by the STT recognizer, listening is cancelled,
-     * matches are retrieved and their text output can then be handled by this ViewModel.
-     * Listening is also cancelled once the speech ends or when an error occurs.
+     * Initializes the STT system, by creating the SpeechRecognizer and setting the
+     * SpeechRecognitionListener to handle Command functionalities.
      *
      * TODO: improve error handling
      */
     fun initSTT() {
         stt.createSpeechRecognizer(getApplication<Application>().applicationContext)
-        setSpeechRecognitionListener(STTInputType.COMMAND)
+        setSTTSpeechRecognitionListener(STTInputType.COMMAND)
     }
     
-    fun setSpeechRecognitionListener(inputType: STTInputType = STTInputType.COMMAND) {
+    /**
+     * Defines the functionality of the SpeechRecognitionListener, aka how to handle STT calls.
+     * Once results are returned by the STT recognizer, listening is cancelled, matches are
+     * retrieved and their text output can then be handled by this ViewModel. Listening is also
+     * cancelled once the speech ends or when an error occurs.
+     *
+     * @param inputType: STTInputType, defines whether the voiceInput should be handled as a command
+     * or as an answer to a system question.
+     */
+    fun setSTTSpeechRecognitionListener(inputType: STTInputType = STTInputType.COMMAND) {
         stt.setSpeechRecognitionListener(
             onResults = {
-                cancelListening()
+                cancelSTTListening()
                 val matches = it.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
-                    handleSpeechResult(matches[0], inputType)
+                    handleSTTResult(matches[0], inputType)
                 }
             }, onEndOfSpeech = {
-                cancelListening()
+                cancelSTTListening()
             }, onError = {
-                cancelListening()
+                cancelSTTListening()
             })
     }
 
     /**
-     * Handles the processing of the results returned by the STT system.
+     * Handles the processing of the results returned by the STT system, depending on the current
+     * InputType.
      *
      * @param s: String, output of the STT system onResults
+     * @param inputType: STTInputType, defines whether the voiceInput should be handled as a command
+     * or as an answer to a system question.
      *
      * TODO: streamline processing and command structure
      */
-    private fun handleSpeechResult(s: String, inputType: STTInputType) {
-    
+    private fun handleSTTResult(s: String, inputType: STTInputType) {
+        
         when (inputType) {
-        
-            STTInputType.COMMAND -> {
-                _command.value = s.lowercase()
-            }
-        
-            STTInputType.ANSWER -> {
-                _response.value = s.lowercase()
-            }
-        
+            STTInputType.COMMAND -> _command.value = s.lowercase()
+            STTInputType.ANSWER -> _response.value = s.lowercase()
         }
-    
-        Log.println(Log.DEBUG, inputType.toString(), s)
         
     }
 
@@ -202,7 +212,7 @@ class SettingsViewModel(
      *
      * TODO: error handling (What if stt.handleSpeechBegin() is unsuccessful?)
      */
-    fun handleSpeechBegin() {
+    fun handleSTTSpeechBegin() {
         stt.handleSpeechBegin()
         _isListening.value = true
     }
@@ -213,16 +223,26 @@ class SettingsViewModel(
      *
      * TODO: error handling (What if stt.cancelListening() is unsuccessful?)
      */
-    fun cancelListening() {
+    fun cancelSTTListening() {
         stt.cancelListening()
         _isListening.value = false
     }
     
+    /**
+     * Sets a (new) app theme.
+     *
+     * @param newTheme: GlobalParameters.ThemeChoice, the theme to be set
+     */
     fun setTheme(newTheme: GlobalParameters.ThemeChoice) {
         val globalParamsInstance = GlobalParameters.instance!!
         globalParamsInstance.themeChoice = newTheme
     }
     
+    /**
+     * Changes the keep screen on settings.
+     *
+     * @param newScreenSetting: GlobalParameters.KeepScreenOn, the screen settings to be set
+     */
     fun setScreenSettings(newScreenSetting: GlobalParameters.KeepScreenOn) {
         val globalParamsInstance = GlobalParameters.instance!!
         globalParamsInstance.keepScreenOn = newScreenSetting

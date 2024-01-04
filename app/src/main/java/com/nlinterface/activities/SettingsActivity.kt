@@ -1,9 +1,7 @@
 package com.nlinterface.activities
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
@@ -17,6 +15,7 @@ import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.GlobalParameters.ThemeChoice
 import com.nlinterface.utility.GlobalParameters.KeepScreenOn
 import com.nlinterface.utility.STTInputType
+import com.nlinterface.utility.navToActivity
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -130,8 +129,8 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     /**
-     * Cycle through the options for the Screen On settings, when the button is clicked. Narrate the
-     * action.
+     * Cycles through the options for the Screen On settings, when the button is clicked. Narrates
+     * the action.
      */
     private fun onKeepScreenOnButtonClick() {
 
@@ -180,10 +179,10 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun onVoiceActivationButtonClick() {
         if (viewModel.isListening.value == false) {
-            viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)
-            viewModel.handleSpeechBegin()
+            viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)
+            viewModel.handleSTTSpeechBegin()
         } else {
-            viewModel.cancelListening()
+            viewModel.cancelSTTListening()
         }
     }
 
@@ -210,7 +209,8 @@ class SettingsActivity : AppCompatActivity() {
      * Called by the onCreate function and calls upon the ViewModel to initialize the STT system.
      * The voiceActivationButton is configured to change it microphone color to green, if the STT
      * system is active and to change back to white, if it is not. Also retrieves the text output
-     * of the voice input to the STT system, aka the 'command'
+     * of the voice input to the STT system, aka the 'command', as well as a 'response', if a
+     * question was asked by the system.
      */
     private fun configureSTT() {
 
@@ -231,7 +231,7 @@ class SettingsActivity : AppCompatActivity() {
         // if a command is successfully generated, process and execute it
         val commandObserver = Observer<String> { command ->
             lastCommand = command
-            executeCommand(command)
+            handleSTTCommand(command)
         }
 
         // observe LiveData change to be notified when the STT returns a command
@@ -239,8 +239,14 @@ class SettingsActivity : AppCompatActivity() {
     
         // if a response is successfully generated, process and execute it
         val responseObserver = Observer<String> { response ->
+            
             lastResponse = response
-            executeSettingsCommand(lastCommand, lastResponse)
+            
+            // no need to handle cancelled responses
+            if (response != resources.getString(R.string.cancel)) {
+                handleSTTResponse(lastCommand, lastResponse)
+            }
+            
         }
     
         // observe LiveData change to be notified when the STT returns a response
@@ -250,14 +256,15 @@ class SettingsActivity : AppCompatActivity() {
 
     /**
      * Called once the STT system returns a command. It is then processed and, if valid,
-     * finally executed by navigating to the next activity
+     * executed by further methods.
      *
-     * @param command: ArrayList<String>? containing the deconstructed command
+     * @param command: String containing the deconstructed command
      *
      * TODO: streamline processing and command structure
      */
-    private fun executeCommand(command: String) {
+    private fun handleSTTCommand(command: String) {
     
+        // any attempted navigation commands are handled are passed on
         if (command.contains("go to")) {
             executeNavigationCommand(command)
         
@@ -297,29 +304,37 @@ class SettingsActivity : AppCompatActivity() {
         
     }
     
-    private fun executeSettingsCommand(command: String, response: String) {
-        
-        if (response != resources.getString(R.string.cancel)) {
+    /**
+     * Called when a response to a system question is registered. The response is then processed
+     * and executed dependent on the system question/last command.
+     *
+     * @param command: String, the last command, which triggered the response request
+     * @param response: String, the registered response
+     */
+    private fun handleSTTResponse(command: String, response: String) {
             
-            when (command) {
+        when (command) {
     
-                resources.getString(R.string.change_theme) -> {
-                    changeTheme(response)
-                }
-    
-                resources.getString(R.string.change_screen_settings) -> {
-                    changeScreenSettings(response)
-                }
-                
+            resources.getString(R.string.change_theme) -> {
+                executeChangeThemeCommand(response)
             }
-            
+    
+            resources.getString(R.string.change_screen_settings) -> {
+                executeChangScreenSettingsCommand(response)
+            }
+                
         }
     
     }
     
-    private fun changeTheme(response: String) {
+    /**
+     * Executes the change theme command according to the theme choice made.
+     *
+     * @param choice: String, the requested new theme
+     */
+    private fun executeChangeThemeCommand(choice: String) {
         
-        when (response) {
+        when (choice) {
             
             resources.getString(R.string.default_theme) -> {
                 viewModel.setTheme(ThemeChoice.SYSTEM_DEFAULT)
@@ -342,13 +357,20 @@ class SettingsActivity : AppCompatActivity() {
                 )
             }
             
+            else -> viewModel.say(resources.getString(R.string.invalid_command))
+            
         }
         
     }
     
-    private fun changeScreenSettings(response: String) {
+    /**
+     * Executes the change screen settings command according to the screen settings choice made.
+     *
+     * @param choice: String, the requested new theme
+     */
+    private fun executeChangScreenSettingsCommand(choice: String) {
         
-        when (response) {
+        when (choice) {
             
             resources.getString(R.string.keep_screen_always_on) -> {
                 viewModel.setScreenSettings(KeepScreenOn.YES)
@@ -366,6 +388,8 @@ class SettingsActivity : AppCompatActivity() {
                 )
             }
             
+            else -> viewModel.say(resources.getString(R.string.invalid_command))
+            
         }
         
     }
@@ -378,57 +402,34 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun executeNavigationCommand(command: String) {
         
-        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
-            navToActivity(ActivityType.GROCERYLIST)
-        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
-            navToActivity(ActivityType.PLACEDETAILS)
-        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
-            navToActivity(ActivityType.SETTINGS)
-        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
-            navToActivity(ActivityType.MAIN)
-        } else {
-            viewModel.say(resources.getString(R.string.invalid_command))
+        when (command) {
+            resources.getString(R.string.navigate_to_grocery_list) ->
+                navToActivity(this, ActivityType.GROCERYLIST)
+            
+            resources.getString(R.string.navigate_to_place_details) ->
+                navToActivity(this, ActivityType.GROCERYLIST)
+            
+            resources.getString(R.string.navigate_to_settings) ->
+                navToActivity(this, ActivityType.GROCERYLIST)
+            
+            resources.getString(R.string.navigate_to_main_menu) ->
+                navToActivity(this, ActivityType.GROCERYLIST)
+            
+            else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
         
     }
     
+    /**
+     * Requests a vocal response from the user by reading a passed question out loud. Once the TTS
+     * process is completed, the STT process is activated so that a response can be made directly.
+     *
+     * @param question: String, the system question to which a response is requested
+     */
     private suspend fun requestResponse(question: String) {
         viewModel.sayAndAwait(question)
-        viewModel.setSpeechRecognitionListener(STTInputType.ANSWER)
-        viewModel.handleSpeechBegin()
+        viewModel.setSTTSpeechRecognitionListener(STTInputType.ANSWER)
+        viewModel.handleSTTSpeechBegin()
     }
-
-    /**
-     * Handles navigation to next activity. Called either by button click or by execution of the
-     * voice command. If the called for activity is the current one, read out the activity name.
-     *
-     * @param activity: ActivityType, Enum specifying the activity
-     */
-    private fun navToActivity(activity: ActivityType) {
-
-        Log.println(Log.DEBUG, "navToActivity", activity.toString())
-
-        when (activity) {
-
-            ActivityType.SETTINGS -> {
-                viewModel.say(resources.getString(R.string.settings))
-            }
-
-            ActivityType.MAIN -> {
-                val intent = Intent(this, MainActivity::class.java)
-                this.startActivity(intent)
-            }
-
-            ActivityType.GROCERYLIST -> {
-                val intent = Intent(this, GroceryListActivity::class.java)
-                this.startActivity(intent)
-            }
-
-            ActivityType.PLACEDETAILS -> {
-                val intent = Intent(this, PlaceDetailsActivity::class.java)
-                this.startActivity(intent)
-            }
-
-        }
-    }
+    
 }

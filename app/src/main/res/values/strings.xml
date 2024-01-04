@@ -5,7 +5,7 @@
     <string name="place_details">Place Details</string>
     <string name="add_item">Add Item</string>
     <string name="add">Add</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">cancel</string>
     <string name="add_new_grocery_item">Add a New Grocery Item</string>
     <string name="example_activity_text">This is an example of another activity.</string>
 
@@ -118,4 +118,16 @@
     <string name="ITEMNAME_is_on_the_list">%1$s is on the list</string>
     <string name="ITEMNAME_is_in_the_cart">%1$s is in the cart</string>
     <string name="ITEMNAME_is_not_in_the_cart">%1$s is not in the cart</string>
+    <string name="remove_a_place">remove a place</string>
+    <string name="tell_me_the_opening_hours_of_a_place">tell me the opening hours of a place</string>
+    <string name="add_a_place">add a place</string>
+    <string name="list_all_saved_places">list all saved places</string>
+    <string name="list_my_favorite_places">list my favorite places</string>
+    <string name="list_all_open_places">list all open places</string>
+    <string name="add_a_place_to_favorites">add a place to favorites</string>
+    <string name="remove_a_place_from_favorites">remove a place from favorites</string>
+    <string name="STORENAME_is_not_on_the_list">%1$s is not on the list</string>
+    <string name="which_place">which place?</string>
+    <string name="STORENAME_is_a_favorite">%1$s is a favorite</string>
+    <string name="STORENAME_is_not_a_favorite">%1$s is not a favorite</string>
 </resources>

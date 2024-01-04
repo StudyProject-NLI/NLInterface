@@ -5,6 +5,7 @@ import android.content.Context
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -24,9 +25,11 @@ import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
 import com.nlinterface.utility.VoiceCommandUtilityOld
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.BufferedReader
 import java.io.File
 import java.util.Locale
+import kotlin.coroutines.resume
 
 /**
  * The PlaceDetailsViewModel interfaces the user interactions with the view (the activity) and the
@@ -72,13 +75,22 @@ class PlaceDetailsViewModel(
         get() = _isListening
 
     // holds the command extracted by the STT system
-    private val _command: MutableLiveData<ArrayList<String>> by lazy {
-        MutableLiveData<ArrayList<String>>()
+    private val _command: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
     }
 
     // outward immutable LiveData for _command.
-    val command: LiveData<ArrayList<String>>
+    val command: LiveData<String>
         get() = _command
+    
+    // holds the response extracted by the STT system
+    private val _response: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+    
+    // outward immutable LiveData for _response.
+    val response: LiveData<String>
+        get() = _response
 
     /**
      * Retrieves the stored place details list from local phone storage, if available, and loads it
@@ -259,6 +271,32 @@ class PlaceDetailsViewModel(
             tts.say(text, queueMode)
         }
     }
+    
+    suspend fun sayAndAwait(
+        text: String,
+        queueMode: Int = TextToSpeech.QUEUE_FLUSH,
+        utteranceId: String? = "1")
+            = suspendCancellableCoroutine {
+        tts.setUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(p0: String?) {
+                //
+            }
+            
+            override fun onDone(p0: String?) {
+                Log.println(Log.DEBUG, "onDone", "done")
+                it.resume(Unit)
+            }
+            
+            override fun onError(p0: String?) {
+                //
+            }
+            
+        })
+        
+        if (ttsInitialized.value == true) {
+            tts.say(text, queueMode, utteranceId)
+        }
+    }
 
     /**
      * Overrides the TextToSpeech.OnInitListener's onInit function. Called, once the TTS engine
@@ -296,7 +334,7 @@ class PlaceDetailsViewModel(
         setSpeechRecognitionListener(STTInputType.COMMAND)
     }
     
-    fun setSpeechRecognitionListener(responseType: STTInputType = STTInputType.COMMAND) {
+    fun setSpeechRecognitionListener(inputType: STTInputType = STTInputType.COMMAND) {
         stt.setSpeechRecognitionListener(
             onResults = {
                 cancelListening()
@@ -304,7 +342,7 @@ class PlaceDetailsViewModel(
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
-                    handleSpeechResult(matches[0], responseType)
+                    handleSpeechResult(matches[0], inputType)
                 }
             }, onEndOfSpeech = {
                 cancelListening()
@@ -320,11 +358,21 @@ class PlaceDetailsViewModel(
      *
      * TODO: streamline processing and command structure
      */
-    private fun handleSpeechResult(s: String, responseType: STTInputType) {
-
-        Log.println(Log.DEBUG, "handleSpeechResult", s)
-        val voiceCommandUtilityOld = VoiceCommandUtilityOld()
-        _command.value = voiceCommandUtilityOld.decodeVoiceCommand(s)
+    private fun handleSpeechResult(s: String, inputType: STTInputType) {
+    
+        when (inputType) {
+        
+            STTInputType.COMMAND -> {
+                _command.value = s.lowercase()
+            }
+        
+            STTInputType.ANSWER -> {
+                _response.value = s.lowercase()
+            }
+        
+        }
+    
+        Log.println(Log.DEBUG, inputType.toString(), s)
 
     }
 

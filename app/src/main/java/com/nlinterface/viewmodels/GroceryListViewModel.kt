@@ -72,12 +72,12 @@ class GroceryListViewModel(
     val command: LiveData<String>
         get() = _command
     
-    // holds the command extracted by the STT system
+    // holds the response extracted by the STT system
     private val _response: MutableLiveData<String> by lazy {
         MutableLiveData<String>()
     }
     
-    // outward immutable LiveData for _command.
+    // outward immutable LiveData for _response.
     val response: LiveData<String>
         get() = _response
 
@@ -247,7 +247,7 @@ class GroceryListViewModel(
         setSpeechRecognitionListener(STTInputType.COMMAND)
     }
     
-    fun setSpeechRecognitionListener(responseType: STTInputType = STTInputType.COMMAND) {
+    fun setSpeechRecognitionListener(inputType: STTInputType = STTInputType.COMMAND) {
         stt.setSpeechRecognitionListener(
             onResults = {
                 cancelListening()
@@ -255,7 +255,7 @@ class GroceryListViewModel(
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
-                    handleSpeechResult(matches[0], responseType)
+                    handleSpeechResult(matches[0], inputType)
                 }
             }, onEndOfSpeech = {
                 cancelListening()

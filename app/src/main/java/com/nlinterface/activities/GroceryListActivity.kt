@@ -326,7 +326,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
                 }
             }
     
-        }else if ((command == resources.getString(R.string.tell_me_my_options))) {
+        } else if ((command == resources.getString(R.string.tell_me_my_options))) {
             
             viewModel.say(
                 "${resources.getString(R.string.your_options_are)} " +

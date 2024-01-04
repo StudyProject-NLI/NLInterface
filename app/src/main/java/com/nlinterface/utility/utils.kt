@@ -1,9 +1,15 @@
 package com.nlinterface.utility
 
+import android.content.Context
+import android.content.Intent
 import android.content.res.Resources
 import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.nlinterface.activities.GroceryListActivity
+import com.nlinterface.activities.MainActivity
+import com.nlinterface.activities.PlaceDetailsActivity
+import com.nlinterface.activities.SettingsActivity
 import java.util.Locale
 
 /**
@@ -48,7 +54,7 @@ fun setViewRelativeSize(view: View, relWidth: Double, relHeight: Double) {
  * else LocaleType.OTHER
  */
 fun getLocaleType(): LocaleType {
-
+    
     return if (Locale.getDefault().toString().contains("en", true)) {
         LocaleType.EN
     } else if (Locale.getDefault().toString().contains("de", true)) {
@@ -56,5 +62,24 @@ fun getLocaleType(): LocaleType {
     } else {
         LocaleType.OTHER
     }
+    
+}
 
+fun navToActivity(context: Context, activity: ActivityType) {
+    
+    when (activity) {
+        
+        ActivityType.MAIN ->
+            context.startActivity(Intent(context, MainActivity::class.java))
+    
+        ActivityType.GROCERYLIST ->
+            context.startActivity(Intent(context, GroceryListActivity::class.java))
+        
+        ActivityType.PLACEDETAILS ->
+            context.startActivity(Intent(context, PlaceDetailsActivity::class.java))
+        
+        ActivityType.SETTINGS ->
+            context.startActivity(Intent(context, SettingsActivity::class.java))
+    }
+    
 }

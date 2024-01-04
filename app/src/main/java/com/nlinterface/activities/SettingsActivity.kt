@@ -14,8 +14,13 @@ import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.SettingsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 /**
  * The SettingsActivity handles user interaction in Settings Menu.
@@ -49,6 +54,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var themeButton: Button
 
     private lateinit var voiceActivationButton: ImageButton
+    
+    private lateinit var lastCommand: String
+    private lateinit var lastResponse: String
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -100,7 +108,7 @@ class SettingsActivity : AppCompatActivity() {
 
         keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
         keepScreenOnButton.text =
-            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOn.ordinal]
 
         keepScreenOnButton.setOnClickListener {
             onKeepScreenOnButtonClick()
@@ -137,19 +145,19 @@ class SettingsActivity : AppCompatActivity() {
     private fun onKeepScreenOnButtonClick() {
 
         if (
-            GlobalParameters.instance!!.keepScreenOnSwitch.ordinal ==
+            GlobalParameters.instance!!.keepScreenOn.ordinal ==
             GlobalParameters.KeepScreenOn.values().size - 1
         ) {
-            GlobalParameters.instance!!.keepScreenOnSwitch =
+            GlobalParameters.instance!!.keepScreenOn =
                 GlobalParameters.KeepScreenOn.values()[0]
         } else {
-            GlobalParameters.instance!!.keepScreenOnSwitch =
+            GlobalParameters.instance!!.keepScreenOn =
                 GlobalParameters.KeepScreenOn.values()[
-                    GlobalParameters.instance!!.keepScreenOnSwitch.ordinal + 1
+                    GlobalParameters.instance!!.keepScreenOn.ordinal + 1
                 ]
         }
         keepScreenOnButton.text =
-            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOnSwitch.ordinal]
+            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOn.ordinal]
 
         viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton.text))
     }
@@ -167,7 +175,7 @@ class SettingsActivity : AppCompatActivity() {
         with(sharedPref.edit()) {
             putString(
                 getString(R.string.settings_keep_screen_on_key),
-                GlobalParameters.instance!!.keepScreenOnSwitch.toString()
+                GlobalParameters.instance!!.keepScreenOn.toString()
             )
             putString(
                 getString(R.string.settings_theme_key),
@@ -184,6 +192,7 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun onVoiceActivationButtonClick() {
         if (viewModel.isListening.value == false) {
+            viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)
             viewModel.handleSpeechBegin()
         } else {
             viewModel.cancelListening()
@@ -232,12 +241,22 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.isListening.observe(this, sttIsListeningObserver)
 
         // if a command is successfully generated, process and execute it
-        val commandObserver = Observer<ArrayList<String>> { command ->
+        val commandObserver = Observer<String> { command ->
+            lastCommand = command
             executeCommand(command)
         }
 
         // observe LiveData change to be notified when the STT returns a command
         viewModel.command.observe(this, commandObserver)
+    
+        // if a response is successfully generated, process and execute it
+        val responseObserver = Observer<String> { response ->
+            lastResponse = response
+            executeSettingsCommand(lastCommand, lastResponse)
+        }
+    
+        // observe LiveData change to be notified when the STT returns a response
+        viewModel.response.observe(this, responseObserver)
 
     }
 
@@ -249,18 +268,152 @@ class SettingsActivity : AppCompatActivity() {
      *
      * TODO: streamline processing and command structure
      */
-    private fun executeCommand(command: ArrayList<String>?) {
-
-        /*
-        if ((command != null) && (command.size == 3)) {
-            if (command[0] == "GOTO") {
-                navToActivity(command[1])
-            } else {
-                viewModel.say(resources.getString(R.string.choose_activity_to_navigate_to))
+    private fun executeCommand(command: String) {
+    
+        if (command.contains("go to")) {
+            executeNavigationCommand(command)
+        
+        } else if (command == resources.getString(R.string.change_theme)) {
+    
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
+            scope.launch {
+                requestResponse(
+                    resources.getString(R.string.light_theme) + " " +
+                        resources.getString(R.string.dark_theme) +
+                        " or " + resources.getString(R.string.default_theme))
             }
+        
+        } else if (command == resources.getString(R.string.change_screen_settings)) {
+    
+            val scope = CoroutineScope(Job() + Dispatchers.Main)
+            scope.launch {
+                requestResponse(
+                    resources.getString(R.string.keep_screen_always_on) +
+                            " or " + resources.getString(R.string.dim_screen_after_a_while))
+            }
+            
+        } else if (command == resources.getString(R.string.tell_me_my_options)) {
+    
+            viewModel.say(
+                "${resources.getString(R.string.your_options_are)} " +
+                        "${resources.getString(R.string.add_an_item)}," +
+                        "${resources.getString(R.string.remove_an_item)}," +
+                        "${resources.getString(R.string.add_an_item_to_the_cart)}," +
+                        "${resources.getString(R.string.remove_an_item_from_the_cart)}," +
+                        "${resources.getString(R.string.check_if_an_item_is_on_the_list)}," +
+                        "${resources.getString(R.string.list_all_grocery_items)}," +
+                        "${resources.getString(R.string.list_all_items_not_in_cart)}," +
+                        "${resources.getString(R.string.list_all_items_in_cart)}," +
+                        "${resources.getString(R.string.navigate_to_grocery_list)}," +
+                        "${resources.getString(R.string.navigate_to_place_details)} and" +
+                        "${resources.getString(R.string.navigate_to_settings)}."
+            )
+    
+        } else {
+            viewModel.say(resources.getString(R.string.invalid_command))
         }
-         */
-
+        
+    }
+    
+    private fun executeSettingsCommand(command: String, response: String) {
+        
+        if (response != resources.getString(R.string.cancel)) {
+            
+            when (command) {
+    
+                resources.getString(R.string.change_theme) -> {
+                    changeTheme(response)
+                }
+    
+                resources.getString(R.string.change_screen_settings) -> {
+                    changeScreenSettings(response)
+                }
+                
+            }
+            
+        }
+    
+    }
+    
+    private fun changeTheme(response: String) {
+        
+        when (response) {
+            
+            resources.getString(R.string.default_theme) -> {
+                viewModel.setTheme(GlobalParameters.ThemeChoice.SYSTEM_DEFAULT)
+                viewModel.say(
+                    resources.getString(R.string.new_theme_setting, " default")
+                )
+            }
+    
+            resources.getString(R.string.light_theme) -> {
+                viewModel.setTheme(GlobalParameters.ThemeChoice.LIGHT)
+                viewModel.say(
+                    resources.getString(R.string.new_theme_setting, " light theme")
+                )
+            }
+    
+            resources.getString(R.string.dark_theme) -> {
+                viewModel.setTheme(GlobalParameters.ThemeChoice.DARK)
+                viewModel.say(
+                    resources.getString(R.string.new_theme_setting, " dark theme")
+                )
+            }
+            
+        }
+        
+    }
+    
+    private fun changeScreenSettings(response: String) {
+        
+        when (response) {
+            
+            resources.getString(R.string.keep_screen_always_on) -> {
+                viewModel.setScreenSettings(GlobalParameters.KeepScreenOn.YES)
+                viewModel.say(
+                    resources.getString(R.string.new_screen_setting,
+                        " keep screen always on")
+                )
+            }
+    
+            resources.getString(R.string.dim_screen_after_a_while) -> {
+                viewModel.setScreenSettings(GlobalParameters.KeepScreenOn.NO)
+                viewModel.say(
+                    resources.getString(R.string.new_screen_setting,
+                        " dim screen after a while")
+                )
+            }
+            
+        }
+        
+    }
+    
+    /**
+     * Handles Navigation commands of the format "go to X". If the command is valid, navigate to
+     * the desired activity.
+     *
+     * @param command: String, the command to be executed
+     */
+    private fun executeNavigationCommand(command: String) {
+        
+        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
+            navToActivity(ActivityType.GROCERYLIST)
+        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
+            navToActivity(ActivityType.PLACEDETAILS)
+        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
+            navToActivity(ActivityType.SETTINGS)
+        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
+            navToActivity(ActivityType.MAIN)
+        } else {
+            viewModel.say(resources.getString(R.string.invalid_command))
+        }
+        
+    }
+    
+    private suspend fun requestResponse(question: String) {
+        viewModel.sayAndAwait(question)
+        viewModel.setSpeechRecognitionListener(STTInputType.ANSWER)
+        viewModel.handleSpeechBegin()
     }
 
     /**
@@ -269,27 +422,27 @@ class SettingsActivity : AppCompatActivity() {
      *
      * @param activity: ActivityType, Enum specifying the activity
      */
-    private fun navToActivity(activity: String) {
+    private fun navToActivity(activity: ActivityType) {
 
-        Log.println(Log.DEBUG, "navToActivity", activity)
+        Log.println(Log.DEBUG, "navToActivity", activity.toString())
 
         when (activity) {
 
-            ActivityType.SETTINGS.toString() -> {
+            ActivityType.SETTINGS -> {
                 viewModel.say(resources.getString(R.string.settings))
             }
 
-            ActivityType.MAIN.toString() -> {
+            ActivityType.MAIN -> {
                 val intent = Intent(this, MainActivity::class.java)
                 this.startActivity(intent)
             }
 
-            ActivityType.GROCERYLIST.toString() -> {
+            ActivityType.GROCERYLIST -> {
                 val intent = Intent(this, GroceryListActivity::class.java)
                 this.startActivity(intent)
             }
 
-            ActivityType.PLACEDETAILS.toString() -> {
+            ActivityType.PLACEDETAILS -> {
                 val intent = Intent(this, PlaceDetailsActivity::class.java)
                 this.startActivity(intent)
             }

@@ -4,14 +4,18 @@ import android.app.Application
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.Locale
+import kotlin.coroutines.resume
 
 /**
  * The SettingsViewModel interfaces the user interactions with the view (the activity) and the
@@ -46,13 +50,22 @@ class SettingsViewModel(
         get() = _isListening
 
     // holds the command extracted by the STT system
-    private val _command: MutableLiveData<ArrayList<String>> by lazy {
-        MutableLiveData<ArrayList<String>>()
+    private val _command: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
     }
 
     // outward immutable LiveData for _command.
-    val command: LiveData<ArrayList<String>>
+    val command: LiveData<String>
         get() = _command
+    
+    // holds the response extracted by the STT system
+    private val _response: MutableLiveData<String> by lazy {
+        MutableLiveData<String>()
+    }
+    
+    // outward immutable LiveData for _response.
+    val response: LiveData<String>
+        get() = _response
 
     /**
      * Initializes TTS variable. Must be done here (thus making tts late-init), because context can
@@ -61,7 +74,7 @@ class SettingsViewModel(
     fun initTTS() {
         tts = TextToSpeechUtility(getApplication<Application>().applicationContext, this)
     }
-
+    
     /**
      * Calls the TTS system to read a given string out loud.
      *
@@ -74,9 +87,35 @@ class SettingsViewModel(
      *
      * TODO: error handling
      */
-    fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH) {
+    fun say(text: String, queueMode: Int = TextToSpeech.QUEUE_FLUSH, utteranceId: String? = "1") {
         if (ttsInitialized.value == true) {
-            tts.say(text, queueMode)
+            tts.say(text, queueMode, utteranceId)
+        }
+    }
+    
+    suspend fun sayAndAwait(
+        text: String,
+        queueMode: Int = TextToSpeech.QUEUE_FLUSH,
+        utteranceId: String? = "1")
+            = suspendCancellableCoroutine {
+        tts.setUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(p0: String?) {
+                //
+            }
+            
+            override fun onDone(p0: String?) {
+                Log.println(Log.DEBUG, "onDone", "done")
+                it.resume(Unit)
+            }
+            
+            override fun onError(p0: String?) {
+                //
+            }
+            
+        })
+        
+        if (ttsInitialized.value == true) {
+            tts.say(text, queueMode, utteranceId)
         }
     }
 
@@ -115,7 +154,7 @@ class SettingsViewModel(
         setSpeechRecognitionListener(STTInputType.COMMAND)
     }
     
-    fun setSpeechRecognitionListener(responseType: STTInputType = STTInputType.COMMAND) {
+    fun setSpeechRecognitionListener(inputType: STTInputType = STTInputType.COMMAND) {
         stt.setSpeechRecognitionListener(
             onResults = {
                 cancelListening()
@@ -123,7 +162,7 @@ class SettingsViewModel(
                 if (matches != null && matches.size > 0) {
                     // results are added in decreasing order of confidence to the list,
                     // so choose the first one
-                    handleSpeechResult(matches[0], responseType)
+                    handleSpeechResult(matches[0], inputType)
                 }
             }, onEndOfSpeech = {
                 cancelListening()
@@ -139,8 +178,22 @@ class SettingsViewModel(
      *
      * TODO: streamline processing and command structure
      */
-    private fun handleSpeechResult(s: String, responseType: STTInputType) {
-        // TODO: implement
+    private fun handleSpeechResult(s: String, inputType: STTInputType) {
+    
+        when (inputType) {
+        
+            STTInputType.COMMAND -> {
+                _command.value = s.lowercase()
+            }
+        
+            STTInputType.ANSWER -> {
+                _response.value = s.lowercase()
+            }
+        
+        }
+    
+        Log.println(Log.DEBUG, inputType.toString(), s)
+        
     }
 
     /**
@@ -163,5 +216,15 @@ class SettingsViewModel(
     fun cancelListening() {
         stt.cancelListening()
         _isListening.value = false
+    }
+    
+    fun setTheme(newTheme: GlobalParameters.ThemeChoice) {
+        val globalParamsInstance = GlobalParameters.instance!!
+        globalParamsInstance.themeChoice = newTheme
+    }
+    
+    fun setScreenSettings(newScreenSetting: GlobalParameters.KeepScreenOn) {
+        val globalParamsInstance = GlobalParameters.instance!!
+        globalParamsInstance.keepScreenOn = newScreenSetting
     }
 }

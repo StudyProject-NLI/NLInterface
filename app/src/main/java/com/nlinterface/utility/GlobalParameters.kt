@@ -9,7 +9,7 @@ import java.util.Locale
 
 open class GlobalParameters protected constructor() {
 
-    var keepScreenOnSwitch: KeepScreenOn = KeepScreenOn.NO
+    var keepScreenOn: KeepScreenOn = KeepScreenOn.NO
     var themeChoice: ThemeChoice = ThemeChoice.SYSTEM_DEFAULT
 
     lateinit var locale: Locale
@@ -53,7 +53,7 @@ open class GlobalParameters protected constructor() {
             context.resources.getString(R.string.settings_keep_screen_on_key),
             KeepScreenOn.NO.toString()
         )
-        instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.valueOf(prefKeepScreenOn!!)
+        instance!!.keepScreenOn = GlobalParameters.KeepScreenOn.valueOf(prefKeepScreenOn!!)
 
         val prefTheme = sharedPref.getString(
             context.resources.getString(R.string.settings_theme_key),

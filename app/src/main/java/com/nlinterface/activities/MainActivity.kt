@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.say(resources.getString(R.string.main_menu))
         
         // process keep screen on settings
-        if (GlobalParameters.instance!!.keepScreenOnSwitch == GlobalParameters.KeepScreenOn.YES) {
+        if (GlobalParameters.instance!!.keepScreenOn == GlobalParameters.KeepScreenOn.YES) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

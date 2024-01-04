@@ -29,6 +29,7 @@ open class GlobalParameters protected constructor() {
 
     // make it a Singleton
     companion object {
+        
         private var mInstance: GlobalParameters? = null
 
         @get:Synchronized
@@ -53,13 +54,13 @@ open class GlobalParameters protected constructor() {
             context.resources.getString(R.string.settings_keep_screen_on_key),
             KeepScreenOn.NO.toString()
         )
-        instance!!.keepScreenOn = GlobalParameters.KeepScreenOn.valueOf(prefKeepScreenOn!!)
+        instance!!.keepScreenOn = KeepScreenOn.valueOf(prefKeepScreenOn!!)
 
         val prefTheme = sharedPref.getString(
             context.resources.getString(R.string.settings_theme_key),
             ThemeChoice.SYSTEM_DEFAULT.toString()
         )
-        instance!!.themeChoice = GlobalParameters.ThemeChoice.valueOf(prefTheme!!)
+        instance!!.themeChoice = ThemeChoice.valueOf(prefTheme!!)
     }
 
     fun updateTheme() {

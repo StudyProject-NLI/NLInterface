@@ -14,6 +14,8 @@ import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.GlobalParameters.ThemeChoice
+import com.nlinterface.utility.GlobalParameters.KeepScreenOn
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.SettingsViewModel
@@ -57,6 +59,8 @@ class SettingsActivity : AppCompatActivity() {
     
     private lateinit var lastCommand: String
     private lateinit var lastResponse: String
+    
+    private val globalParameters = GlobalParameters.instance!!
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -93,26 +97,17 @@ class SettingsActivity : AppCompatActivity() {
     private fun configureUI() {
 
         voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener {
-            onVoiceActivationButtonClick()
-        }
-
+        voiceActivationButton.setOnClickListener { onVoiceActivationButtonClick() }
+        
         setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
 
         themeButton = findViewById(R.id.settings_theme)
-        themeButton.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
-
-        themeButton.setOnClickListener {
-            onThemeButtonClick()
-        }
-
+        themeButton.setOnClickListener { onThemeButtonClick() }
+        themeButton.text = themeOptions[globalParameters.themeChoice.ordinal]
+        
         keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
-        keepScreenOnButton.text =
-            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOn.ordinal]
-
-        keepScreenOnButton.setOnClickListener {
-            onKeepScreenOnButtonClick()
-        }
+        keepScreenOnButton.setOnClickListener { onKeepScreenOnButtonClick() }
+        keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
 
     }
 
@@ -122,18 +117,14 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun onThemeButtonClick() {
 
-        if (
-            GlobalParameters.instance!!.themeChoice.ordinal ==
-            GlobalParameters.ThemeChoice.values().size - 1
-        ) {
-            GlobalParameters.instance!!.themeChoice = GlobalParameters.ThemeChoice.values()[0]
+        if (globalParameters.themeChoice.ordinal == ThemeChoice.values().size - 1) {
+            globalParameters.themeChoice = ThemeChoice.values()[0]
         } else {
-            GlobalParameters.instance!!.themeChoice =
-                GlobalParameters.ThemeChoice.values()[
-                    GlobalParameters.instance!!.themeChoice.ordinal + 1
-                ]
+            globalParameters.themeChoice =
+                ThemeChoice.values()[globalParameters.themeChoice.ordinal + 1]
         }
-        themeButton.text = themeOptions[GlobalParameters.instance!!.themeChoice.ordinal]
+        
+        themeButton.text = themeOptions[globalParameters.themeChoice.ordinal]
 
         viewModel.say(resources.getString(R.string.new_theme_setting, themeButton.text))
     }
@@ -144,20 +135,14 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun onKeepScreenOnButtonClick() {
 
-        if (
-            GlobalParameters.instance!!.keepScreenOn.ordinal ==
-            GlobalParameters.KeepScreenOn.values().size - 1
-        ) {
-            GlobalParameters.instance!!.keepScreenOn =
-                GlobalParameters.KeepScreenOn.values()[0]
+        if (globalParameters.keepScreenOn.ordinal == KeepScreenOn.values().size - 1) {
+            globalParameters.keepScreenOn = KeepScreenOn.values()[0]
         } else {
-            GlobalParameters.instance!!.keepScreenOn =
-                GlobalParameters.KeepScreenOn.values()[
-                    GlobalParameters.instance!!.keepScreenOn.ordinal + 1
-                ]
+            globalParameters.keepScreenOn =
+                KeepScreenOn.values()[globalParameters.keepScreenOn.ordinal + 1]
         }
-        keepScreenOnButton.text =
-            keepScreenOnOptions[GlobalParameters.instance!!.keepScreenOn.ordinal]
+        
+        keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
 
         viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton.text))
     }
@@ -172,15 +157,18 @@ class SettingsActivity : AppCompatActivity() {
             getString(R.string.settings_preferences_key),
             Context.MODE_PRIVATE
         ) ?: return
+        
         with(sharedPref.edit()) {
+            
+            
             putString(
                 getString(R.string.settings_keep_screen_on_key),
-                GlobalParameters.instance!!.keepScreenOn.toString()
+                globalParameters.keepScreenOn.toString()
             )
             putString(
-                getString(R.string.settings_theme_key),
-                GlobalParameters.instance!!.themeChoice.toString()
+                getString(R.string.settings_theme_key), globalParameters.themeChoice.toString()
             )
+            
             apply()
         }
     }
@@ -296,14 +284,8 @@ class SettingsActivity : AppCompatActivity() {
     
             viewModel.say(
                 "${resources.getString(R.string.your_options_are)} " +
-                        "${resources.getString(R.string.add_an_item)}," +
-                        "${resources.getString(R.string.remove_an_item)}," +
-                        "${resources.getString(R.string.add_an_item_to_the_cart)}," +
-                        "${resources.getString(R.string.remove_an_item_from_the_cart)}," +
-                        "${resources.getString(R.string.check_if_an_item_is_on_the_list)}," +
-                        "${resources.getString(R.string.list_all_grocery_items)}," +
-                        "${resources.getString(R.string.list_all_items_not_in_cart)}," +
-                        "${resources.getString(R.string.list_all_items_in_cart)}," +
+                        "${resources.getString(R.string.change_theme)}," +
+                        "${resources.getString(R.string.change_screen_settings)}," +
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
                         "${resources.getString(R.string.navigate_to_settings)}."
@@ -340,21 +322,21 @@ class SettingsActivity : AppCompatActivity() {
         when (response) {
             
             resources.getString(R.string.default_theme) -> {
-                viewModel.setTheme(GlobalParameters.ThemeChoice.SYSTEM_DEFAULT)
+                viewModel.setTheme(ThemeChoice.SYSTEM_DEFAULT)
                 viewModel.say(
                     resources.getString(R.string.new_theme_setting, " default")
                 )
             }
     
             resources.getString(R.string.light_theme) -> {
-                viewModel.setTheme(GlobalParameters.ThemeChoice.LIGHT)
+                viewModel.setTheme(ThemeChoice.LIGHT)
                 viewModel.say(
                     resources.getString(R.string.new_theme_setting, " light theme")
                 )
             }
     
             resources.getString(R.string.dark_theme) -> {
-                viewModel.setTheme(GlobalParameters.ThemeChoice.DARK)
+                viewModel.setTheme(ThemeChoice.DARK)
                 viewModel.say(
                     resources.getString(R.string.new_theme_setting, " dark theme")
                 )
@@ -369,7 +351,7 @@ class SettingsActivity : AppCompatActivity() {
         when (response) {
             
             resources.getString(R.string.keep_screen_always_on) -> {
-                viewModel.setScreenSettings(GlobalParameters.KeepScreenOn.YES)
+                viewModel.setScreenSettings(KeepScreenOn.YES)
                 viewModel.say(
                     resources.getString(R.string.new_screen_setting,
                         " keep screen always on")
@@ -377,7 +359,7 @@ class SettingsActivity : AppCompatActivity() {
             }
     
             resources.getString(R.string.dim_screen_after_a_while) -> {
-                viewModel.setScreenSettings(GlobalParameters.KeepScreenOn.NO)
+                viewModel.setScreenSettings(KeepScreenOn.NO)
                 viewModel.say(
                     resources.getString(R.string.new_screen_setting,
                         " dim screen after a while")

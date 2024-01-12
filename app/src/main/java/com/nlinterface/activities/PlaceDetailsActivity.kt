@@ -25,6 +25,7 @@ import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.STTInputType
+import com.nlinterface.utility.navToActivity
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.PlaceDetailsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -397,51 +398,23 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      * @param command: String, the command to be executed
      */
     private fun executeNavigationCommand(command: String) {
-        
-        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
-            navToActivity(ActivityType.GROCERYLIST)
-        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
-            navToActivity(ActivityType.PLACEDETAILS)
-        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
-            navToActivity(ActivityType.SETTINGS)
-        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
-            navToActivity(ActivityType.MAIN)
-        } else {
-            viewModel.say(resources.getString(R.string.invalid_command))
-        }
-        
-    }
     
-    /**
-     * Handles navigation to next activity. Called either by button click or by execution of the
-     * voice command. If the called for activity is the current one, read out the activity name.
-     *
-     * @param activity: ActivityType, Enum specifying the activity
-     */
-    private fun navToActivity(activity: ActivityType) {
+        when (command) {
+            resources.getString(R.string.navigate_to_grocery_list) ->
+                navToActivity(this, ActivityType.GROCERYLIST)
         
-        when (activity) {
-            
-            ActivityType.PLACEDETAILS -> {
-                viewModel.say(resources.getString(R.string.place_details))
-            }
-            
-            ActivityType.MAIN -> {
-                val intent = Intent(this, MainActivity::class.java)
-                this.startActivity(intent)
-            }
-            
-            ActivityType.GROCERYLIST -> {
-                val intent = Intent(this, GroceryListActivity::class.java)
-                this.startActivity(intent)
-            }
-            
-            ActivityType.SETTINGS -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                this.startActivity(intent)
-            }
-            
+            resources.getString(R.string.navigate_to_place_details) ->
+                navToActivity(this, ActivityType.PLACEDETAILS)
+        
+            resources.getString(R.string.navigate_to_settings) ->
+                navToActivity(this, ActivityType.SETTINGS)
+        
+            resources.getString(R.string.navigate_to_main_menu) ->
+                navToActivity(this, ActivityType.MAIN)
+        
+            else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
+        
     }
     
     /**

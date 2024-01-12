@@ -174,55 +174,20 @@ class MainActivity : AppCompatActivity() {
      */
     private fun executeNavigationCommand(command: String) {
     
-        if ((command == resources.getString(R.string.navigate_to_grocery_list))) {
-            navToActivity(ActivityType.GROCERYLIST)
-            
-        } else if ((command == resources.getString(R.string.navigate_to_place_details))) {
-            navToActivity(ActivityType.PLACEDETAILS)
-            
-        } else if ((command == resources.getString(R.string.navigate_to_settings))) {
-            navToActivity(ActivityType.SETTINGS)
-            
-        } else if ((command == resources.getString(R.string.navigate_to_main_menu))) {
-            navToActivity(ActivityType.MAIN)
-            
-        } else {
-            viewModel.say(resources.getString(R.string.invalid_command))
-        }
+        when (command) {
+            resources.getString(R.string.navigate_to_grocery_list) ->
+                navToActivity(this, ActivityType.GROCERYLIST)
         
-    }
-    
-    /**
-     * Handles navigation to next activity. Called either by button click or by execution of the
-     * voice command. If the called for activity is the current one, read out the activity name.
-     *
-     * @param activity: ActivityType, Enum specifying the activity
-     */
-    private fun navToActivity(activity: ActivityType) {
+            resources.getString(R.string.navigate_to_place_details) ->
+                navToActivity(this, ActivityType.PLACEDETAILS)
         
-        Log.println(Log.DEBUG, "navToActivity", activity.toString())
+            resources.getString(R.string.navigate_to_settings) ->
+                navToActivity(this, ActivityType.SETTINGS)
         
-        when (activity) {
-            
-            ActivityType.MAIN -> {
-                viewModel.say(resources.getString(R.string.main_menu))
-            }
-            
-            ActivityType.GROCERYLIST -> {
-                val intent = Intent(this, GroceryListActivity::class.java)
-                this.startActivity(intent)
-            }
-            
-            ActivityType.PLACEDETAILS -> {
-                val intent = Intent(this, PlaceDetailsActivity::class.java)
-                this.startActivity(intent)
-            }
-            
-            ActivityType.SETTINGS -> {
-                val intent = Intent(this, SettingsActivity::class.java)
-                this.startActivity(intent)
-            }
-            
+            resources.getString(R.string.navigate_to_main_menu) ->
+                navToActivity(this, ActivityType.MAIN)
+        
+            else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
         
     }
@@ -236,19 +201,19 @@ class MainActivity : AppCompatActivity() {
         // set up button to navigate to GroceryListActivity
         val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
         groceryListButton.setOnClickListener { _ ->
-            navToActivity(ActivityType.GROCERYLIST)
+            navToActivity(this, ActivityType.GROCERYLIST)
         }
         
         // set up button to navigate to PlaceDetailsActivity
         val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
         placeDetailsButton.setOnClickListener { _ ->
-            navToActivity(ActivityType.PLACEDETAILS)
+            navToActivity(this, ActivityType.PLACEDETAILS)
         }
         
         // set up button to navigate to SettingsActivity
         val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
         settingsActivityButton.setOnClickListener { _ ->
-            navToActivity(ActivityType.SETTINGS)
+            navToActivity(this, ActivityType.SETTINGS)
         }
         
         // set up voice Activation Button listener

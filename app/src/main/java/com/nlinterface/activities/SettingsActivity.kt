@@ -401,20 +401,20 @@ class SettingsActivity : AppCompatActivity() {
      * @param command: String, the command to be executed
      */
     private fun executeNavigationCommand(command: String) {
-        
+    
         when (command) {
             resources.getString(R.string.navigate_to_grocery_list) ->
                 navToActivity(this, ActivityType.GROCERYLIST)
-            
+        
             resources.getString(R.string.navigate_to_place_details) ->
-                navToActivity(this, ActivityType.GROCERYLIST)
-            
+                navToActivity(this, ActivityType.PLACEDETAILS)
+        
             resources.getString(R.string.navigate_to_settings) ->
-                navToActivity(this, ActivityType.GROCERYLIST)
-            
+                navToActivity(this, ActivityType.SETTINGS)
+        
             resources.getString(R.string.navigate_to_main_menu) ->
-                navToActivity(this, ActivityType.GROCERYLIST)
-            
+                navToActivity(this, ActivityType.MAIN)
+        
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
         

@@ -6,6 +6,7 @@
     <string name="add_item">Add Item</string>
     <string name="add">Add</string>
     <string name="cancel">cancel</string>
+    <string name="cancel_cap">Cancel</string>
     <string name="add_new_grocery_item">Add a New Grocery Item</string>
     <string name="example_activity_text">This is an example of another activity.</string>
 

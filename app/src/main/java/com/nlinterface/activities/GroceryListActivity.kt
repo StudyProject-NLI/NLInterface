@@ -545,7 +545,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
                     addGroceryItem(addItemEt.text.toString())
                 }
 
-                setNegativeButton(R.string.cancel) { _, _ ->
+                setNegativeButton(R.string.cancel_cap) { _, _ ->
                     viewModel.say(resources.getString(R.string.cancelled_adding_item))
                 }
             }

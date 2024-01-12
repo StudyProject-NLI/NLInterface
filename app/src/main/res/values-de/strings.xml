@@ -25,7 +25,7 @@
 
     <string name="add_item">Artikel hinzufügen</string>
     <string name="add">Hinzufügen</string>
-    <string name="cancel">Abbrechen</string>
+    <string name="cancel">abbrechen</string>
     <string name="add_new_grocery_item">Neuen Artikel hinzufügen</string>
 
     <string name="example_activity_text">Dies ist ein Beispiel für eine andere Aktivität.</string>
@@ -89,5 +89,35 @@
     <string name="invalid_command">unbekannter befehl</string>
     <string name="tell_me_my_options">nenne mir meine optionen</string>
     <string name="your_options_are">deine optionen sind:</string>
+    <string name="add_an_item">füge einen Artikel hinzu</string>
+    <string name="which_item">welchen artikel?</string>
+    <string name="remove_an_item">entferne einen artikel</string>
+    <string name="check_if_an_item_is_on_the_list">prüfe ob ein artikel auf der liste steht</string>
+    <string name="add_an_item_to_the_cart">füge einen artikel dem korb hinzu</string>
+    <string name="remove_an_item_from_the_cart">entferne einen artikel aus dem korb</string>
+    <string name="ITEMNAME_is_not_on_the_list">%1$s steht nicht auf der liste</string>
+    <string name="ITEMNAME_is_on_the_list">%1$s steht auf der liste</string>
+    <string name="ITEMNAME_is_in_the_cart">%1$s ist im korb</string>
+    <string name="ITEMNAME_is_not_in_the_cart">%1$s ist nicht im korb</string>
+    <string name="remove_a_place">entferne einen ort</string>
+    <string name="tell_me_the_opening_hours_of_a_place">nenne mir die öffnungszeiten eines ortes</string>
+    <string name="add_a_place">füge einen ort hinzu</string>
+    <string name="list_all_saved_places">nenne alle gespeicherten orte</string>
+    <string name="list_my_favorite_places">nenne meine favoriten</string>
+    <string name="list_all_open_places">nenne alle geöffneten orte</string>
+    <string name="add_a_place_to_favorites">füge einen ort zu meinen favoriten hinzu</string>
+    <string name="remove_a_place_from_favorites">entferne einen ort von meinen favoriten</string>
+    <string name="STORENAME_is_not_on_the_list">%1$s steht nicht auf der liste</string>
+    <string name="which_place">welcher ort?</string>
+    <string name="STORENAME_is_a_favorite">%1$s ist ein favorit</string>
+    <string name="STORENAME_is_not_a_favorite">%1$s ist kein favorit</string>
+    <string name="change_theme">ändere den farbmodus</string>
+    <string name="light_theme">heller farbmodus</string>
+    <string name="dark_theme">dunkeler farbmodus</string>
+    <string name="default_theme">standard farbmodus</string>
+    <string name="change_screen_settings">ändere die bildschirmeinstellungen</string>
+    <string name="keep_screen_always_on">bildschirm immer an lassen</string>
+    <string name="dim_screen_after_a_while">bildschirm nach einiger zeit verdunkeln</string>
+    <string name="cancel_cap">Abbrechen</string>
 
 </resources>

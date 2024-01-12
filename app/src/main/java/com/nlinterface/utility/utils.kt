@@ -65,6 +65,12 @@ fun getLocaleType(): LocaleType {
     
 }
 
+/**
+ * Handles navigation to next activity.
+ *
+ * @param context
+ * @param activity: ActivityType, Enum specifying the activity
+ */
 fun navToActivity(context: Context, activity: ActivityType) {
     
     when (activity) {

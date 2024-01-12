@@ -165,7 +165,6 @@ class MainActivity : AppCompatActivity() {
         
     }
     
-    
     /**
      * Handles Navigation commands of the format "go to X". If the command is valid, navigate to
      * the desired activity.

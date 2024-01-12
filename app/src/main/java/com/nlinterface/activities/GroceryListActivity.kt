@@ -193,6 +193,12 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
     }
     
+    /**
+     * Deletes a grocery item from the grocery list given the name of the item. If it does not
+     * exist, state that out loud.
+     *
+     * @param groceryItemName: String, the name of the Grocery Item to be deleted.
+     */
     private fun deleteGroceryItem(groceryItemName: String) {
         
         val groceryItem = findGroceryItemByName(groceryItemName)
@@ -206,6 +212,12 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         }
     }
     
+    /**
+     * Given the name, return the corresponding Grocery Item.
+     *
+     * @param groceryItemName: String, the name of the desired Grocery Item
+     * @return the found Grocery Item or null if it does not exists
+     */
     private fun findGroceryItemByName(groceryItemName: String): GroceryItem? {
         return groceryItemList.find { it.itemName.lowercase() == groceryItemName }
     }
@@ -350,12 +362,25 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         
     }
     
+    /**
+     * Requests a response from the user by reading out the question and activating voice control
+     * once the question has been read fully.
+     *
+     * @param question: String, the question to ask the user
+     */
     private suspend fun requestResponse(question: String) {
         viewModel.sayAndAwait(question)
         viewModel.setSpeechRecognitionListener(STTInputType.ANSWER)
         viewModel.handleSpeechBegin()
     }
     
+    /**
+     * Called once the STT system returns a response by the user. Depending on the previous command
+     * and the given response, the action is executed.
+     *
+     * @param command: String, the command preceding the response
+     * @param response: String, the response given by the user
+     */
     private fun executeItemCommand(command: String, response: String) {
         
         if (response != resources.getString(R.string.cancel)) {
@@ -386,6 +411,13 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         }
     }
     
+    /**
+     * Requests the ViewModel to add a new Grocery Item to the cart by name. If no Grocery Item
+     * exists for an input item name, this is stated. If the item is already in the cart, this, too,
+     * is stated.
+     *
+     * @param itemName: String, the name of the item to be added to the cart
+     */
     private fun addItemToCart(itemName: String) {
         
         val groceryItem = findGroceryItemByName(itemName)
@@ -406,6 +438,13 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         
     }
     
+    /**
+     * Requests the ViewModel to remove a new Grocery Item from the cart by name. If no Grocery Item
+     * exists for an input item name, this is stated. If the item is already not in the cart, this,
+     * too, is stated.
+     *
+     * @param itemName: String, the name of the item to be removed from the cart
+     */
     private fun removeItemFromCart(itemName: String) {
         val groceryItem = findGroceryItemByName(itemName)
     
@@ -424,6 +463,12 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         }
     }
     
+    /**
+     * Checks and states whether an item is on the list by name. If the item is on the list, also
+     * states if it is in the cart.
+     *
+     * @param itemName: String, the item name to check the list for
+     */
     private fun checkItemOnList(itemName: String) {
     
         val groceryItem = findGroceryItemByName(itemName)

@@ -218,12 +218,25 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
     }
     
+    /**
+     * Requests a response from the user by reading out the question and activating voice control
+     * once the question has been read fully.
+     *
+     * @param question: String, the question to ask the user
+     */
     private suspend fun requestResponse(question: String) {
         viewModel.sayAndAwait(question)
         viewModel.setSpeechRecognitionListener(STTInputType.ANSWER)
         viewModel.handleSpeechBegin()
     }
     
+    /**
+     * Called when the user has given a response to an item quesion.Depending on the previous
+     * command and the given response, the action is executed.
+     *
+     * @param command: String, the command preceding the response
+     * @param response: String, the response given by the user
+     */
     private fun executeItemCommand(command: String, response: String) {
         
         if (response != resources.getString(R.string.cancel)) {
@@ -252,6 +265,13 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     
     }
     
+    /**
+     * Requests the ViewModel to add a new Place Details Item to the favorites by name. If no
+     * Place Details Item exists for the given item name, this is stated. If the item is already a
+     * favorite, this, too is stated.
+     *
+     * @param storeName: String, the name of the item to be added to favorites
+     */
     private fun addToFavorites(storeName: String) {
         
         val placeDetailsItem = findPlaceByName(storeName)
@@ -272,6 +292,13 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
     }
     
+    /**
+     * Requests the ViewModel to remove a Place Details Item from the favorites by name. If no
+     * Place Details Item exists for the given item name, this is stated. If the item is not a
+     * favorite, this, too is stated.
+     *
+     * @param storeName: String, the name of the item to be removed from favorites
+     */
     private fun removeFromFavorites(storeName: String) {
     
         Log.println(Log.DEBUG, "rmFav", "1")
@@ -298,6 +325,11 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
     }
     
+    /**
+     * Handles voice commands for which a list of place detail items must be read out loud.
+     *
+     * @param command: String, the command given by the user
+     */
     private fun executeListCommand(command: String) {
         
         Log.println(Log.DEBUG, "exec", command)
@@ -331,6 +363,10 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
     }
     
+    /**
+     * Reads today's Opening Hours for a given store name out loud. If the store name does not
+     * correspond to a place details item on the list, state this.
+     */
     private fun stateOpeningHours(storeName: String) {
     
         val placeDetailsItem = findPlaceByName(storeName)
@@ -351,6 +387,11 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
     }
     
+    /**
+     * Checks whether a store is currently open, based on its opening Hours and the current time.
+     *
+     * @param openingHours: List<String> the opening hours of a store
+     */
     private fun isOpen(openingHours: List<String>): Boolean {
         
         val dayOfWeek = Math.floorMod(Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2, 7)
@@ -517,20 +558,33 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
     }
     
-    private fun deletePlaceDetailsItem(response: String) {
+    /**
+     * Checks if the desired Place Details Item exist in the list and deletes it. If it does not
+     * exist, states this.
+     *
+     * @param itemName: name  to be deleted
+     */
+    private fun deletePlaceDetailsItem(itemName: String) {
     
-        val placeDetailsItem = findPlaceByName(response)
+        val placeDetailsItem = findPlaceByName(itemName)
     
         if (placeDetailsItem != null) {
             deletePlaceDetailsItem(placeDetailsItem, placeDetailsItemList.indexOf(placeDetailsItem))
         } else {
             viewModel.say(
-                resources.getString(R.string.STORENAME_is_not_on_the_list, response)
+                resources.getString(R.string.STORENAME_is_not_on_the_list, itemName)
             )
         }
         
     }
     
+    /**
+     * Searches the list for a Place Detail Item by its name.
+     *
+     * @param storeName: String, the name of the place to be deleted
+     *
+     * @return The Place Details Item if it exists, else null
+     */
     private fun findPlaceByName(storeName: String): PlaceDetailsItem? {
         return placeDetailsItemList.find { it.storeName.lowercase() == storeName }
     }

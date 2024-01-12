@@ -43,14 +43,18 @@ class SpeechToTextUtility {
      * Initializes the SpeechRecognizer and defines the callbacks.
      *
      * @param context: Context, the activity context
-     * @param onResults: lambda, handles the processing of speech recognition results
-     * @param onEndOfSpeech: lambda, handles the end of speech
-     * @param onError: lambda, error handling
      */
     fun createSpeechRecognizer(context: Context) {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
     }
     
+    /**
+     * Defines the callbacks for the SpeechRecognitionListener.
+     *
+     * @param onResults: lambda, handles the processing of speech recognition results
+     * @param onEndOfSpeech: lambda, handles the end of speech
+     * @param onError: lambda, error handling
+     */
     fun setSpeechRecognitionListener(
         onResults: (results: Bundle) -> Unit,
         onEndOfSpeech: () -> Unit,

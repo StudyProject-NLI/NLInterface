@@ -147,8 +147,10 @@ class MainActivity : AppCompatActivity() {
      * TODO: streamline processing and command structure
      */
     private fun executeCommand(command: String) {
+    
+        Log.println(Log.DEBUG, "STT Results", command)
         
-        if (command.contains("go to")) {
+        if (command.contains(resources.getString(R.string.go_to))) {
             executeNavigationCommand(command)
         } else if ((command == resources.getString(R.string.tell_me_my_options))) {
             

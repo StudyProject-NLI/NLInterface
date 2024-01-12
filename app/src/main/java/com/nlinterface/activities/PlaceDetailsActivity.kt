@@ -169,7 +169,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      * Called once the STT system returns a command. It is then processed and, if valid,
      * finally executed by navigating to the next activity
      *
-     * @param command: ArrayList<String>? containing the deconstructed command
+     * @param cmd: ArrayList<String>? containing the deconstructed command
      *
      * TODO: streamline processing and command structure
      */
@@ -185,8 +185,8 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
             executeListCommand(command)
             
         } else if (
-            command.contains(resources.getString(R.string.remove_a_place)) ||
-            command.contains(resources.getString(R.string.add_a_place)) ||
+            command.contains(resources.getString(R.string.remove_indicator)) ||
+            command.contains(resources.getString(R.string.add_indicator)) ||
             command == resources.getString(R.string.tell_me_the_opening_hours_of_a_place)
         ) {
     
@@ -238,6 +238,8 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      * @param response: String, the response given by the user
      */
     private fun executeItemCommand(command: String, response: String) {
+        
+        Log.println(Log.DEBUG, "", command)
         
         if (response != resources.getString(R.string.cancel)) {
             
@@ -300,17 +302,13 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      * @param storeName: String, the name of the item to be removed from favorites
      */
     private fun removeFromFavorites(storeName: String) {
-    
-        Log.println(Log.DEBUG, "rmFav", "1")
+        
         val placeDetailsItem = findPlaceByName(storeName)
     
         if (placeDetailsItem != null) {
-            Log.println(Log.DEBUG, "rmFav", "not null")
             if (!placeDetailsItem.favorite) {
-                Log.println(Log.DEBUG, "rmFav", "not fav")
-                viewModel.say(resources.getString(R.string.STORENAME_is_not_a_favorite))
+                viewModel.say(resources.getString(R.string.STORENAME_is_not_a_favorite, storeName))
             } else {
-                Log.println(Log.DEBUG, "rmFav", "fav")
                 viewModel.changeFavorite(placeDetailsItem)
                 adapter.notifyItemChanged(placeDetailsItemList.indexOf(placeDetailsItem))
                 viewModel.say(
@@ -333,28 +331,50 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     private fun executeListCommand(command: String) {
         
         Log.println(Log.DEBUG, "exec", command)
+        var exists = false
         
         when (command) {
     
             resources.getString(R.string.list_all_saved_places) -> {
-                for (place in placeDetailsItemList)
+                for (place in placeDetailsItemList) {
                     viewModel.say(place.storeName, TextToSpeech.QUEUE_ADD)
+                }
+    
+                if (placeDetailsItemList.isEmpty()) {
+                    viewModel.say(resources.getString(R.string.there_are_no_saved_places))
+                }
             }
     
             resources.getString(R.string.list_my_favorite_places) -> {
                 for ((_, storeName, _, favorite) in placeDetailsItemList) {
                     if (favorite) {
                         viewModel.say(storeName, TextToSpeech.QUEUE_ADD)
+                        exists = true
                     }
                 }
+    
+                if (placeDetailsItemList.isEmpty()) {
+                    viewModel.say(resources.getString(R.string.there_are_no_saved_places))
+                } else if (!exists) {
+                    viewModel.say(resources.getString(R.string.there_are_no_favorites))
+                }
+                
             }
     
             resources.getString(R.string.list_all_open_places) -> {
                 for ((_, storeName, openingHours, _) in placeDetailsItemList) {
                     if (isOpen(openingHours)) {
                         viewModel.say(storeName, TextToSpeech.QUEUE_ADD)
+                        exists = true
                     }
                 }
+    
+                if (placeDetailsItemList.isEmpty()) {
+                    viewModel.say(resources.getString(R.string.there_are_no_saved_places))
+                } else if (!exists) {
+                    viewModel.say(resources.getString(R.string.there_are_no_open_places))
+                }
+                
             }
             
             else -> viewModel.say(resources.getString(R.string.invalid_command))

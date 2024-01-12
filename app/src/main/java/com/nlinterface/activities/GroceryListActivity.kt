@@ -302,13 +302,15 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      * TODO: streamline processing and command structure
      */
     private fun executeCommand(command: String) {
+    
+        var exists = false
         
-        if (command.contains("go to")) {
+        if (command.contains(resources.getString(R.string.go_to))) {
             executeNavigationCommand(command)
     
         } else if (
-            command.contains(resources.getString(R.string.add_an_item)) ||
-            command.contains(resources.getString(R.string.remove_an_item)) ||
+            command.contains(resources.getString(R.string.add_indicator)) ||
+            command.contains(resources.getString(R.string.remove_indicator)) ||
             command == resources.getString(R.string.check_if_an_item_is_on_the_list)
             ) {
             
@@ -318,6 +320,10 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             }
         
         } else if (command == resources.getString(R.string.list_all_grocery_items)) {
+            
+            if (groceryItemList.isEmpty()) {
+                viewModel.say(resources.getString(R.string.there_are_no_items_on_the_list))
+            }
     
             for ((itemName) in groceryItemList) {
                 viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
@@ -328,7 +334,14 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             for ((itemName, _, inCart) in groceryItemList) {
                 if (inCart) {
                     viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
+                    exists = true
                 }
+            }
+    
+            if (groceryItemList.isEmpty()) {
+                viewModel.say(resources.getString(R.string.there_are_no_items_on_the_list))
+            } else if (!exists) {
+                viewModel.say(resources.getString(R.string.there_are_no_items_in_the_cart))
             }
     
         } else if (command == resources.getString(R.string.list_all_items_not_in_cart)) {
@@ -336,7 +349,14 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             for ((itemName, _, inCart) in groceryItemList) {
                 if (!inCart) {
                     viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
+                    exists = true
                 }
+            }
+    
+            if (groceryItemList.isEmpty()) {
+                viewModel.say(resources.getString(R.string.there_are_no_items_on_the_list))
+            } else if (!exists) {
+                viewModel.say(resources.getString(R.string.all_items_are_in_the_cart))
             }
     
         } else if ((command == resources.getString(R.string.tell_me_my_options))) {

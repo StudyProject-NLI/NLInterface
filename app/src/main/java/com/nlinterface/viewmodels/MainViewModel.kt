@@ -140,9 +140,7 @@ class MainViewModel(
      * TODO: streamline processing and command structure
      */
     private fun handleSpeechResult(s: String, responseType: STTInputType) {
-        _command.value = s
-        
-        Log.println(Log.DEBUG, "command", s)
+        _command.value = s.lowercase()
     }
 
     /**

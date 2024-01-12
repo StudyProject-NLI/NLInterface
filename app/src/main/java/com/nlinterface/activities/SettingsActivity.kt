@@ -37,7 +37,6 @@ import kotlinx.coroutines.launch
  * Possible Voice Commands:
  * - 'Read Screen Settings'
  * - 'Read Theme Settings'
- * - 'List Current Settings'
  * - 'Set Screen Settings' --> Always On or Dim? --> X
  * - 'Set Theme Settings' --> Default, Light or Dark? --> X
  *
@@ -265,7 +264,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun handleSTTCommand(command: String) {
     
         // any attempted navigation commands are handled are passed on
-        if (command.contains("go to")) {
+        if (command.contains(resources.getString(R.string.go_to))) {
             executeNavigationCommand(command)
         
         } else if (command == resources.getString(R.string.change_theme)) {
@@ -274,8 +273,10 @@ class SettingsActivity : AppCompatActivity() {
             scope.launch {
                 requestResponse(
                     resources.getString(R.string.light_theme) + " " +
-                        resources.getString(R.string.dark_theme) +
-                        " or " + resources.getString(R.string.default_theme))
+                        resources.getString(R.string.dark_theme) + " " +
+                        resources.getString(R.string.or) + " " +
+                            resources.getString(R.string.default_theme)
+                )
             }
         
         } else if (command == resources.getString(R.string.change_screen_settings)) {
@@ -283,18 +284,20 @@ class SettingsActivity : AppCompatActivity() {
             val scope = CoroutineScope(Job() + Dispatchers.Main)
             scope.launch {
                 requestResponse(
-                    resources.getString(R.string.keep_screen_always_on) +
-                            " or " + resources.getString(R.string.dim_screen_after_a_while))
+                    resources.getString(R.string.keep_screen_always_on) + " " +
+                            resources.getString(R.string.or) + " " +
+                            resources.getString(R.string.dim_screen_after_a_while)
+                )
             }
             
         } else if (command == resources.getString(R.string.tell_me_my_options)) {
     
             viewModel.say(
                 "${resources.getString(R.string.your_options_are)} " +
-                        "${resources.getString(R.string.change_theme)}," +
-                        "${resources.getString(R.string.change_screen_settings)}," +
-                        "${resources.getString(R.string.navigate_to_grocery_list)}," +
-                        "${resources.getString(R.string.navigate_to_place_details)} and" +
+                        "${resources.getString(R.string.change_theme)}, " +
+                        "${resources.getString(R.string.change_screen_settings)}, " +
+                        "${resources.getString(R.string.navigate_to_grocery_list)}, " +
+                        "${resources.getString(R.string.navigate_to_place_details)} ${resources.getString(R.string.and)} " +
                         "${resources.getString(R.string.navigate_to_settings)}."
             )
     
@@ -339,21 +342,27 @@ class SettingsActivity : AppCompatActivity() {
             resources.getString(R.string.default_theme) -> {
                 viewModel.setTheme(ThemeChoice.SYSTEM_DEFAULT)
                 viewModel.say(
-                    resources.getString(R.string.new_theme_setting, " default")
+                    resources.getString(
+                        R.string.new_theme_setting, resources.getString(R.string.default_theme)
+                    )
                 )
             }
     
             resources.getString(R.string.light_theme) -> {
                 viewModel.setTheme(ThemeChoice.LIGHT)
                 viewModel.say(
-                    resources.getString(R.string.new_theme_setting, " light theme")
+                    resources.getString(
+                        R.string.new_theme_setting, resources.getString(R.string.light_theme)
+                    )
                 )
             }
     
             resources.getString(R.string.dark_theme) -> {
                 viewModel.setTheme(ThemeChoice.DARK)
                 viewModel.say(
-                    resources.getString(R.string.new_theme_setting, " dark theme")
+                    resources.getString(
+                        R.string.new_theme_setting, resources.getString(R.string.dark_theme)
+                    )
                 )
             }
             
@@ -376,7 +385,8 @@ class SettingsActivity : AppCompatActivity() {
                 viewModel.setScreenSettings(KeepScreenOn.YES)
                 viewModel.say(
                     resources.getString(R.string.new_screen_setting,
-                        " keep screen always on")
+                        resources.getString(R.string.keep_screen_always_on)
+                    )
                 )
             }
     
@@ -384,7 +394,8 @@ class SettingsActivity : AppCompatActivity() {
                 viewModel.setScreenSettings(KeepScreenOn.NO)
                 viewModel.say(
                     resources.getString(R.string.new_screen_setting,
-                        " dim screen after a while")
+                        resources.getString(R.string.dim_screen_after_a_while)
+                    )
                 )
             }
             

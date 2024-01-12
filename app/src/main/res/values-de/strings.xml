@@ -15,6 +15,9 @@
     <string name="navigate_to_main_menu">gehe zu hauptmenü</string>
     <string name="tell_me_my_options">nenne mir meine optionen</string>
     <string name="cancel">abbrechen</string>
+    <string name="add_indicator">füge</string>
+    <string name="remove_indicator">entferne</string>
+
 
     <!--    VOICE COMMANDS: GROCERY LIST    -->
     <string name="add_an_item">füge einen artikel hinzu</string>
@@ -30,20 +33,17 @@
     <string name="remove_a_place">entferne einen ort</string>
     <string name="tell_me_the_opening_hours_of_a_place">nenne mir die öffnungszeiten eines ortes</string>
     <string name="add_a_place">füge einen ort hinzu</string>
-    <string name="list_all_saved_places">nenne alle gespeicherten orte</string>
-    <string name="list_my_favorite_places">nenne meine favoriten</string>
-    <string name="list_all_open_places">nenne alle geöffneten orte</string>
+    <string name="list_all_saved_places">liste alle gespeicherten orte auf</string>
+    <string name="list_my_favorite_places">liste meine favoriten auf</string>
+    <string name="list_all_open_places">liste alle geöffneten orte auf</string>
     <string name="add_a_place_to_favorites">füge einen ort zu meinen favoriten hinzu</string>
     <string name="remove_a_place_from_favorites">entferne einen ort von meinen favoriten</string>
 
     <!--    VOICE COMMANDS: SETTINGS    -->
     <string name="change_theme">ändere den farbmodus</string>
     <string name="light_theme">heller farbmodus</string>
-    <string name="dark_theme">dunkeler farbmodus</string>
+    <string name="dark_theme">dunkler farbmodus</string>
     <string name="default_theme">standard farbmodus</string>
-    <string name="list_all_settings">liste alle einstellungen auf</string>
-    <string name="read_screen_setting">nenne die bildschirmeinstellung</string>
-    <string name="read_theme_setting">nenne die moduseinstellung</string>
     <string name="change_screen_settings">ändere die bildschirmeinstellungen</string>
     <string name="keep_screen_always_on">bildschirm immer an lassen</string>
     <string name="dim_screen_after_a_while">bildschirm nach einiger zeit verdunkeln</string>
@@ -60,6 +60,8 @@
     <string name="your_options_are">deine optionen sind:</string>
     <string name="audio_permission_granted">Die App hat nun Zugriff auf das Mikrofon.</string>
     <string name="audio_permission_denied">Bitte erlauben Sie den Zugriff auf das Mikrofon, um Sprachbefehle verwenden zu können.</string>
+    <string name="or">oder</string>
+    <string name="and">und</string>
 
     <!--    NARRATION: GROCERY LIST    -->
     <string name="grocery_list">Einkaufsliste</string>
@@ -74,6 +76,9 @@
     <string name="placed_ITEMNAME_into_cart">%1$s wurde in den Einkaufswagen gelegt.</string>
     <string name="removed_ITEMNAME_from_cart">%1$s wurde aus dem Einkaufswagen genommen.</string>
     <string name="deleted_ITEMNAME_from_saved_places">%1$s wurde von der Liste gelöscht.</string>
+    <string name="there_are_no_items_on_the_list">es sind keine artikel auf der einkaufsliste</string>
+    <string name="there_are_no_items_in_the_cart">es sind keine artikel im einkaufswagen</string>
+    <string name="all_items_are_in_the_cart">alle artikel sind im einkaufswagen</string>
 
     <!--    NARRATION: PLACE DETAILS    -->
     <string name="place_details">Ort Details</string>
@@ -83,6 +88,9 @@
     <string name="STORENAME_added_to_saved_places">%1$s wurde den gespeicherten Orten hinzugefügt.</string>
     <string name="added_STORENAME_to_favorites">%1$s wurde als Favorit markiert.</string>
     <string name="deleted_STORENAME_from_favorites">%1$s wurde von den Favoriten gelöscht.</string>
+    <string name="there_are_no_favorites">es gibt keine favoriten</string>
+    <string name="there_are_no_open_places">es gibt keine geöffneten orte</string>
+    <string name="there_are_no_saved_places">es gibt keine gespeicherten orte</string>
 
     <!--    NARRATION: SETTINGS    -->
     <string name="settings">Einstellungen</string>

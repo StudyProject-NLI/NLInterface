@@ -19,6 +19,8 @@
     <string name="navigate_to_main_menu">go to main menu</string>
     <string name="tell_me_my_options">tell me my options</string>
     <string name="cancel">cancel</string>
+    <string name="add_indicator">add</string>
+    <string name="remove_indicator">remove</string>
 
     <!--    VOICE COMMANDS: GROCERY LIST    -->
     <string name="add_an_item">add an item</string>
@@ -45,9 +47,6 @@
     <string name="light_theme">light theme</string>
     <string name="dark_theme">dark theme</string>
     <string name="default_theme">default theme</string>
-    <string name="list_all_settings">List all settings.</string>
-    <string name="read_screen_setting">Read screen setting.</string>
-    <string name="read_theme_setting">Read theme setting.</string>
     <string name="change_screen_settings">change screen settings</string>
     <string name="keep_screen_always_on">keep screen always on</string>
     <string name="dim_screen_after_a_while">dim screen after a while</string>
@@ -64,6 +63,8 @@
     <string name="your_options_are">your options are:</string>
     <string name="audio_permission_granted">Permission granted for using voice commands!</string>
     <string name="audio_permission_denied">Please provide microphone permission to use voice commands.</string>
+    <string name="or">or</string>
+    <string name="and">and</string>
 
     <!--    NARRATION: GROCERY LIST    -->
     <string name="grocery_list">Grocery List</string>
@@ -78,6 +79,9 @@
     <string name="placed_ITEMNAME_into_cart">Placed %1$s into cart.</string>
     <string name="removed_ITEMNAME_from_cart">Removed %1$s from cart.</string>
     <string name="deleted_ITEMNAME_from_saved_places">Deleted %1$s from list.</string>
+    <string name="there_are_no_items_on_the_list">there are no items on the list</string>
+    <string name="there_are_no_items_in_the_cart">there are no items in the cart</string>
+    <string name="all_items_are_in_the_cart">all items are in the cart</string>
 
     <!--    NARRATION: PLACE DETAILS    -->
     <string name="place_details">Place Details</string>
@@ -87,11 +91,14 @@
     <string name="STORENAME_added_to_saved_places">%1$s was added to saved places.</string>
     <string name="added_STORENAME_to_favorites">Added %1$s to favorites.</string>
     <string name="deleted_STORENAME_from_favorites">Deleted %1$s from favorites.</string>
+    <string name="there_are_no_favorites">there are no favorites</string>
+    <string name="there_are_no_open_places">there are no open places</string>
+    <string name="there_are_no_saved_places">there are no saved places</string>
 
     <!--    NARRATION: SETTINGS    -->
     <string name="settings">Settings</string>
     <string name="new_theme_setting">New theme setting is %1$s. Switch back to Main Activity to implement change.</string>
-    <string name="new_screen_setting">New screen setting is%1$s.</string>
+    <string name="new_screen_setting">New screen setting is %1$s.</string>
 
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

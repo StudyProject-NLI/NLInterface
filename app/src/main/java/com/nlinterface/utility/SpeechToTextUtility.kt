@@ -6,76 +6,105 @@ import android.os.Bundle
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
-import android.widget.ImageButton
-import androidx.lifecycle.MutableLiveData
-import com.nlinterface.R
 import java.util.Locale
 
-
+/**
+ * Helper class for android.speech.SpeechRecognizer.
+ */
 class SpeechToTextUtility {
 
-    private var speechRecognizer: SpeechRecognizer? = null
+    private lateinit var speechRecognizer: SpeechRecognizer
 
-    fun handleSpeechBegin() {
-        speechRecognizer!!.startListening(createIntent())
+    /**
+     * Calls speechRecognizer to begin listening to voice input.
+     *
+     * @param locale: Locale, the language that should be used for speech recognition
+     *
+     * TODO: error handling
+     */
+    fun handleSpeechBegin(locale: Locale = Locale.getDefault()) {
+        if (this::speechRecognizer.isInitialized) {
+            speechRecognizer.startListening(createIntent(locale))
+        }
     }
 
+    /**
+     * Cancels the listening process of the speechRecognizer.
+     *
+     * TODO: error handling
+     */
     fun cancelListening() {
-        speechRecognizer!!.cancel()
+        if (this::speechRecognizer.isInitialized) {
+            speechRecognizer.cancel()
+        }
     }
 
-    fun createSpeechRecognizer(context: Context, onResults: (results: Bundle) -> Unit, onEndOfSpeech: () -> Unit) {
-
+    /**
+     * Initializes the SpeechRecognizer and defines the callbacks.
+     *
+     * @param context: Context, the activity context
+     */
+    fun createSpeechRecognizer(context: Context) {
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context)
-        speechRecognizer?.setRecognitionListener(object : RecognitionListener {
-
+    }
+    
+    /**
+     * Defines the callbacks for the SpeechRecognitionListener.
+     *
+     * @param onResults: lambda, handles the processing of speech recognition results
+     * @param onEndOfSpeech: lambda, handles the end of speech
+     * @param onError: lambda, error handling
+     */
+    fun setSpeechRecognitionListener(
+        onResults: (results: Bundle) -> Unit,
+        onEndOfSpeech: () -> Unit,
+        onError: (p0: Int) -> Unit
+    ) {
+    
+        speechRecognizer.setRecognitionListener(object : RecognitionListener {
+        
             override fun onReadyForSpeech(params: Bundle) {}
             override fun onBeginningOfSpeech() {}
             override fun onRmsChanged(rmsdB: Float) {}
             override fun onBufferReceived(buffer: ByteArray) {}
-            override fun onEndOfSpeech() {onEndOfSpeech}
-            override fun onError(p0: Int) {}
+            override fun onEndOfSpeech() {
+                onEndOfSpeech
+            }
+        
+            override fun onError(p0: Int) {
+                onError
+            }
+        
             override fun onPartialResults(partialResults: Bundle) {}
             override fun onEvent(eventType: Int, params: Bundle) {}
-            override fun onResults(results: Bundle) {onResults(results) }
+            override fun onResults(results: Bundle) {
+                onResults(results)
+            }
+        
         })
+        
     }
 
-    private fun createIntent(): Intent {
+    /**
+     * Creates an Intent for the SpeechRecognizer. Carries the information that the action is to be
+     * speech recognition, which language model to use, that partial results are accepted and which
+     * language (locale) to use.
+     *
+     * @param locale: Locale, the language to be used for speech recognition
+     *
+     * @return a constructed Intent
+     */
+    private fun createIntent(locale: Locale = Locale.getDefault()): Intent {
+
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+
+        intent.putExtra(
+            RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+        )
+
         intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale)
+
         return intent
     }
 }
-
-// USE CASE EXAMPLE
-/*
-class SpeechToTextActivity : AppCompatActivity() {
-
-    private var isListening = false
-    private var outputText: TextView? = null
-    private var sttTrigger: SpeechToTextButton? = null
-    private val speechToTextUtility = SpeechToTextUtility()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_speech_to_text_example)
-
-        outputText = findViewById(R.id.outputTV)
-
-        sttTrigger = findViewById(R.id.stt_btn)
-        sttTrigger!!.setOnClickListener {
-            if (isListening) {
-                speechToTextUtility.handleSpeechEnd(outputText!!, sttTrigger!!)
-                isListening = false
-            } else {
-                speechToTextUtility.handleSpeechBegin(outputText!!, sttTrigger!!)
-                isListening = true
-            }
-        }
-
-        speechToTextUtility.createSpeechRecognizer(this, outputText!!)
-    }
-}*/

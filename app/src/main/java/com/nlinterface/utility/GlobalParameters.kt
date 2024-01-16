@@ -1,29 +1,22 @@
 package com.nlinterface.utility
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import android.content.res.Configuration
-import android.content.res.Resources.Theme
-import android.os.LocaleList
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import com.nlinterface.R
-import com.nlinterface.activities.SettingsActivity
 import java.util.Locale
 
 
 open class GlobalParameters protected constructor() {
 
-    var keepScreenOnSwitch : KeepScreenOn = KeepScreenOn.NO
+    var keepScreenOn: KeepScreenOn = KeepScreenOn.NO
     var themeChoice: ThemeChoice = ThemeChoice.SYSTEM_DEFAULT
 
     lateinit var locale: Locale
 
     // order of the items needs to be the same as in the respective dropdown menus
 
-    enum class KeepScreenOn{
+    enum class KeepScreenOn {
         NO,
         YES
     }
@@ -36,6 +29,7 @@ open class GlobalParameters protected constructor() {
 
     // make it a Singleton
     companion object {
+        
         private var mInstance: GlobalParameters? = null
 
         @get:Synchronized
@@ -58,24 +52,27 @@ open class GlobalParameters protected constructor() {
 
         val prefKeepScreenOn = sharedPref.getString(
             context.resources.getString(R.string.settings_keep_screen_on_key),
-            KeepScreenOn.NO.toString())
-        instance!!.keepScreenOnSwitch = GlobalParameters.KeepScreenOn.valueOf(prefKeepScreenOn!!)
+            KeepScreenOn.NO.toString()
+        )
+        instance!!.keepScreenOn = KeepScreenOn.valueOf(prefKeepScreenOn!!)
 
         val prefTheme = sharedPref.getString(
             context.resources.getString(R.string.settings_theme_key),
             ThemeChoice.SYSTEM_DEFAULT.toString()
         )
-        instance!!.themeChoice = GlobalParameters.ThemeChoice.valueOf(prefTheme!!)
+        instance!!.themeChoice = ThemeChoice.valueOf(prefTheme!!)
     }
-    
+
     fun updateTheme() {
         when (instance!!.themeChoice) {
             ThemeChoice.SYSTEM_DEFAULT -> AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             )
+
             ThemeChoice.LIGHT -> AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_NO
             )
+
             ThemeChoice.DARK -> AppCompatDelegate.setDefaultNightMode(
                 AppCompatDelegate.MODE_NIGHT_YES
             )

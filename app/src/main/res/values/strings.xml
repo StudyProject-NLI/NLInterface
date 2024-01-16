@@ -1,66 +1,138 @@
 <resources>
     <string name="app_name" translatable="false">NL Interface</string>
 
-    <string name="grocery_list">Grocery List</string>
-    <string name="place_details">Place Details</string>
-    <string name="add_item">Add Item</string>
-    <string name="add">Add</string>
-    <string name="cancel">Cancel</string>
-    <string name="add_new_grocery_item">Add a New Grocery Item</string>
-    <string name="example_activity_text">This is an example of another activity.</string>
-
-    <string name="search">Search</string>
-    <string name="search_for_store">Search for a store.</string>
-
-    <string name="next_activity_example">Next Activity (Example)</string>
-
     <string name="settings_preferences_key" translatable="false">SETTINGS_KEY</string>
-    <string name="settings_impairment_key" translatable="false">IMPAIRMENT_KEY</string>
-    <string name="settings_color_key" translatable="false">COLOR_KEY</string>
-    <string name="settings_layout_key" translatable="false">LAYOUT_KEY</string>
-    <string name="settings_voice_command_key" translatable="false">VOICE_COMMAND_KEY</string>
     <string name="settings_keep_screen_on_key" translatable="false">KEEP_SCREEN_ON_KEY</string>
     <string name="settings_theme_key" translatable="false">THEME_KEY</string>
 
-    <string name="stt_button_content">Tap to speak</string>
+<!--
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    VOICE COMMANDS
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
 
-    <string name="stt_output_content">Recognized speech will be written here</string>
+    <!--    VOICE COMMANDS: GENERAL    -->
+    <string name="go_to">go to</string>
+    <string name="navigate_to_grocery_list">go to grocery list</string>
+    <string name="navigate_to_place_details">go to place details</string>
+    <string name="navigate_to_settings">go to settings</string>
+    <string name="navigate_to_main_menu">go to main menu</string>
+    <string name="tell_me_my_options">tell me my options</string>
+    <string name="cancel">cancel</string>
+    <string name="add_indicator">add</string>
+    <string name="remove_indicator">remove</string>
 
+    <!--    VOICE COMMANDS: GROCERY LIST    -->
+    <string name="add_an_item">add an item</string>
+    <string name="remove_an_item">remove an item</string>
+    <string name="check_if_an_item_is_on_the_list">check if an item is on the list</string>
+    <string name="add_an_item_to_the_cart">add an item to the cart</string>
+    <string name="remove_an_item_from_the_cart">remove an item from the cart</string>
+    <string name="list_all_grocery_items">list all grocery items</string>
+    <string name="list_all_items_in_cart">list all items in the cart</string>
+    <string name="list_all_items_not_in_cart">list all items not in the cart</string>
+
+    <!--    VOICE COMMANDS: PLACE DETAILS    -->
+    <string name="remove_a_place">remove a place</string>
+    <string name="tell_me_the_opening_hours_of_a_place">tell me the opening hours of a place</string>
+    <string name="add_a_place">add a place</string>
+    <string name="list_all_saved_places">list all saved places</string>
+    <string name="list_my_favorite_places">list my favorite places</string>
+    <string name="list_all_open_places">list all open places</string>
+    <string name="add_a_place_to_favorites">add a place to favorites</string>
+    <string name="remove_a_place_from_favorites">remove a place from favorites</string>
+
+    <!--    VOICE COMMANDS: SETTINGS    -->
+    <string name="change_theme">change theme</string>
+    <string name="light_theme">light theme</string>
+    <string name="dark_theme">dark theme</string>
+    <string name="default_theme">default theme</string>
+    <string name="change_screen_settings">change screen settings</string>
+    <string name="keep_screen_always_on">keep screen always on</string>
+    <string name="dim_screen_after_a_while">dim screen after a while</string>
+
+<!--
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    NARRATION
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+    <!--    NARRATION: GENERAL    -->
+    <string name="main_menu">Main Menu</string>
+    <string name="invalid_command">Invalid command.</string>
+    <string name="your_options_are">your options are:</string>
     <string name="audio_permission_granted">Permission granted for using voice commands!</string>
     <string name="audio_permission_denied">Please provide microphone permission to use voice commands.</string>
+    <string name="or">or</string>
+    <string name="and">and</string>
 
+    <!--    NARRATION: GROCERY LIST    -->
+    <string name="grocery_list">Grocery List</string>
+    <string name="ITEMNAME_is_not_on_the_list">%1$s is not on the list</string>
+    <string name="ITEMNAME_is_on_the_list">%1$s is on the list</string>
+    <string name="ITEMNAME_is_in_the_cart">%1$s is in the cart</string>
+    <string name="ITEMNAME_is_not_in_the_cart">%1$s is not in the cart</string>
+    <string name="deleted_ITEMNAME_from_grocery_list">Deleted %1$s from grocery list.</string>
+    <string name="added_ITEMNAME_to_list">Added %1$s to list.</string>
+    <string name="cancelled_adding_item">Cancelled adding item to list.</string>
+    <string name="enter_item_to_add">Enter the item you want to add.</string>
+    <string name="placed_ITEMNAME_into_cart">Placed %1$s into cart.</string>
+    <string name="removed_ITEMNAME_from_cart">Removed %1$s from cart.</string>
+    <string name="deleted_ITEMNAME_from_saved_places">Deleted %1$s from list.</string>
+    <string name="there_are_no_items_on_the_list">there are no items on the list</string>
+    <string name="there_are_no_items_in_the_cart">there are no items in the cart</string>
+    <string name="all_items_are_in_the_cart">all items are in the cart</string>
+
+    <!--    NARRATION: PLACE DETAILS    -->
+    <string name="place_details">Place Details</string>
+    <string name="STORENAME_is_not_on_the_list">%1$s is not on the list</string>
+    <string name="STORENAME_is_a_favorite">%1$s is a favorite</string>
+    <string name="STORENAME_is_not_a_favorite">%1$s is not a favorite</string>
+    <string name="STORENAME_added_to_saved_places">%1$s was added to saved places.</string>
+    <string name="added_STORENAME_to_favorites">Added %1$s to favorites.</string>
+    <string name="deleted_STORENAME_from_favorites">Deleted %1$s from favorites.</string>
+    <string name="there_are_no_favorites">there are no favorites</string>
+    <string name="there_are_no_open_places">there are no open places</string>
+    <string name="there_are_no_saved_places">there are no saved places</string>
+
+    <!--    NARRATION: SETTINGS    -->
     <string name="settings">Settings</string>
+    <string name="new_theme_setting">New theme setting is %1$s. Switch back to Main Activity to implement change.</string>
+    <string name="new_screen_setting">New screen setting is %1$s.</string>
 
-    <string name="settings_impairment">Type of visual impairment</string>
-    <string-array name="impairment_options">
-        <item>blind design</item>
-        <item>partially blind design</item>
-        <item>color blind design</item>
-    </string-array>
+<!--
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    FOLLOW-UP QUESTIONS
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
 
-    <string name="settings_colors">Colors</string>
-    <string-array name="color_options">
-        <item>default colors</item>
-        <item>red-green color blindness</item>
-        <item>high contrast colors</item>
-    </string-array>
+    <!--    FOLLOW-UP-QUESTIONS: GENERAL    -->
 
-    <string name="settings_layout">Add layout switch button</string>
-    <string-array name="layout_switch_options">
-        <item>layout switch button ON</item>
-        <item>layout switch button OFF</item>
-    </string-array>
+    <!--    FOLLOW-UP-QUESTIONS: GROCERY LIST    -->
+    <string name="which_item">Which item?</string>
 
-    <string name="settings_layout_explanation">If ON, each screen of the app will have two versions:
-        a "blind" version that is condensed to its function for accessibility, and a "seeing" version that is more detailed,
-        e.g. for partially blind users or seeing partners of blind users.</string>
+    <!--    FOLLOW-UP-QUESTIONS: PLACE DETAILS    -->
+    <string name="which_place">which place?</string>
 
-    <string name="settings_voice_command">Speech-to-Text trigger mode</string>
-    <string-array name="voice_command_options">
-        <item>voice command trigger via button</item>
-        <item>hands-free voice command</item>
-    </string-array>
+    <!--    FOLLOW-UP-QUESTIONS: SETTINGS    -->
 
+<!--
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    LABELS
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+    <!--    LABELS: GENERAL    -->
+
+    <!--    LABELS: GROCERY LIST    -->
+    <string name="add_item">Add Item</string>
+    <string name="add">Add</string>
+    <string name="cancel_cap">Cancel</string>
+    <string name="add_new_grocery_item">Add a New Grocery Item</string>
+
+    <!--    LABELS: PLACE DETAILS    -->
+
+    <!--    LABELS: SETTINGS    -->
     <string name="settings_keep_screen_on">Keep Screen On</string>
     <string-array name="keep_screen_on_options">
         <item>Keep Screen Always On</item>
@@ -73,32 +145,5 @@
         <item>Light Theme</item>
         <item>Dark Theme</item>
     </string-array>
-    <string name="main_activity">Main Activity</string>
-    <string name="main_menu">Main Menu</string>
-    <string name="choose_activity_to_navigate_to">Please choose where to navigate to.</string>
-    <string name="go_to">go to</string>
-    <string name="deleted_ITEMNAME_from_grocery_list">Deleted %1$s from grocery list.</string>
-    <string name="list_all_grocery_items">List all items on list.</string>
-    <string name="list_all_items_in_cart">List all items in cart.</string>
-    <string name="list_all_items_not_in_cart">List all items not in the cart.</string>
-    <string name="added_ITEMNAME_to_list">Added %1$s to list.</string>
-    <string name="cancelled_adding_item">Cancelled adding item to list.</string>
-    <string name="enter_item_to_add">Enter the item you want to add.</string>
-    <string name="placed_ITEMNAME_into_cart">Placed %1$s into cart.</string>
-    <string name="removed_ITEMNAME_from_cart">Removed %1$s from cart.</string>
-    <string name="deleted_ITEMNAME_from_saved_places">Deleted %1$s from list.</string>
-    <string name="added_STORENAME_to_favorites">Added %1$s to favorites.</string>
-    <string name="deleted_STORENAME_from_favorites">Deleted %1$s from favorites.</string>
-    <string name="list_saved_stores">List all saved stores.</string>
-    <string name="list_favorite_stores">List favorite stores.</string>
-    <string name="new_theme_setting">New theme setting is %1$s. Switch back to Main Activity to implement change.</string>
-    <string name="new_screen_setting">New screen setting is%1$s.</string>
-    <string name="list_all_settings">List all settings.</string>
-    <string name="read_screen_setting">Read screen setting.</string>
-    <string name="read_theme_setting">Read theme setting.</string>
-    <string name="action_settings">Settings</string>
-    <string name="navigation">Navigation</string>
-    <string name="location">Location</string>
-    <string name="settings_language">Language</string>
-    <string name="STORENAME_added_to_saved_places">%1$s was added to saved places.</string>
+
 </resources>

@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
+    <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -43,7 +45,9 @@
             android:name=".activities.PlaceDetailsActivity" />
         <activity
             android:name=".activities.SettingsActivity"/>
-
+        <service
+            android:name=".viewmodels.ConstantScanning"
+            android:exported="false" />
     </application>
 
 </manifest>

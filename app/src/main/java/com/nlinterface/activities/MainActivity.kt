@@ -67,8 +67,12 @@ class MainActivity : AppCompatActivity() {
         configureSTT()
 
         verifyCameraPermissions()
-        val serviceIntent = Intent(this, ConstantScanning()::class.java)
-        startService(serviceIntent)
+        if (checkCallingOrSelfPermission(
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED) {
+                val serviceIntent = Intent(this, ConstantScanning()::class.java)
+                startService(serviceIntent)
+            }
     }
     
     /**

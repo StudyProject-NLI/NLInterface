@@ -15,6 +15,8 @@ import com.google.mlkit.vision.common.InputImage
 import androidx.core.content.ContextCompat
 import android.content.Intent
 import android.os.IBinder
+import android.os.Vibrator
+import android.util.Log
 import androidx.lifecycle.ProcessLifecycleOwner
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -34,7 +36,8 @@ import org.jsoup.nodes.Document
  *  @param viewModel: viewModel allows the use of the say function
  */
 class Scanner(
-    private val viewModel: MainViewModel
+    private val viewModel: MainViewModel,
+    private val vibrator: Vibrator
 ) : ImageAnalysis.Analyzer {
 
     /**
@@ -54,9 +57,6 @@ class Scanner(
      *
      * @param image: uses the camera image without passing an argument directly
      *
-     * TODO: potentially add sound feedback on scanned barcode,
-     * TODO: hence the scraping and verbal feedback is a bit delayed
-     *
      */
     @ExperimentalGetImage
     override fun analyze(image: ImageProxy) {
@@ -67,6 +67,7 @@ class Scanner(
             barcodeScanner.process(scannerInput)
                 .addOnSuccessListener { barcodes ->
                     for (barcode in barcodes) {
+                        Log.println(Log.INFO, "Scanner", "Barcode " + barcode.rawValue + " was detected")
                         val urlAddOn = barcode.rawValue ?: "default"
                         Thread {
                             handleBarcodeResult(urlAddOn)
@@ -83,15 +84,16 @@ class Scanner(
 
     /**
      * Function to handle the Barcode Result.
+     * Initiates a vibration to give feedback to the user, that a barcode was scanned
      * It creates an object BrowserSearch to use its function searchUrl
      *
      * @param urlAddOn: the Barcode as a String to use for web-search
      */
     private fun handleBarcodeResult(urlAddOn: String) {
-        // Handle the barcode result logic here
+        vibrator.vibrate(200)
         val eanSearch = BrowserSearch()
+        Log.println(Log.INFO, "Scraping", "Waiting for Scraping result")
         eanSearch.searchUrl(viewModel, urlAddOn)
-
     }
 }
 
@@ -142,7 +144,7 @@ class ScanningProcess{
      *
      *  TODO: Change selector to other camera
      */
-    fun activateScanning(viewModel: MainViewModel, context: Context) {
+    fun activateScanning(viewModel: MainViewModel, vibrator: Vibrator, context: Context) {
 
         val selector = CameraSelector.Builder()
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
@@ -152,7 +154,7 @@ class ScanningProcess{
             .build()
         imageAnalysis.setAnalyzer(
             ContextCompat.getMainExecutor(context),
-            Scanner(viewModel)
+            Scanner(viewModel, vibrator)
         )
         val cameraProvider = ProcessCameraProvider.getInstance(context).get()
         try {
@@ -161,8 +163,10 @@ class ScanningProcess{
                 selector,
                 imageAnalysis
             )
+            Log.println(Log.INFO, "Camera", "Camera binding successful")
+
         } catch (e: Exception) {
-            e.printStackTrace()
+            e.printStackTrace().toString()
         }
     }
 }
@@ -187,7 +191,7 @@ class ConstantScanning: Service() {
     /**
      * Function that manages the Service, once initialized.
      * It creates a viewModel object to be passed on, so the say method can be used later on.
-     * It also creates a Scanner object and starts the Scanning process.
+     * It also creates a Vibrator and Scanner object and starts the Scanning process.
      * Returns Start-Sticky to ensure it will try to start again,
      * if it is destroyed for whatever reason
      *
@@ -197,11 +201,16 @@ class ConstantScanning: Service() {
      */
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+
+
         val application = application
         val viewModel = MainViewModel(application)
         viewModel.initTTS()
+        val vibrator =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         val scanner = ScanningProcess()
-        scanner.activateScanning(viewModel, this)
+        scanner.activateScanning(viewModel, vibrator, this)
+        Log.println(Log.INFO, "Scanner","Barcode Scanning Service is Active")
 
         return START_STICKY
     }

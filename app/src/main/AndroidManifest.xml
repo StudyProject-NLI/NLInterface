@@ -6,6 +6,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -48,7 +49,9 @@
             android:name=".activities.SettingsActivity"/>
         <activity
             android:name=".activities.ClassificationActivity"/>
-
+        <service
+            android:name=".viewmodels.ConstantScanning"
+            android:exported="false" />
     </application>
 
 </manifest>

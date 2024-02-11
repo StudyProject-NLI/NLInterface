@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.*
+import com.nlinterface.viewmodels.ConstantScanning
 import com.nlinterface.viewmodels.MainViewModel
 
 /**
@@ -64,6 +65,14 @@ class MainActivity : AppCompatActivity() {
         configureUI()
         configureTTS()
         configureSTT()
+
+        verifyCameraPermissions()
+        if (checkCallingOrSelfPermission(
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED) {
+                val serviceIntent = Intent(this, ConstantScanning()::class.java)
+                startService(serviceIntent)
+            }
     }
     
     /**
@@ -291,5 +300,21 @@ class MainActivity : AppCompatActivity() {
             viewModel.cancelListening()
         }
     }
-    
+
+    /**
+     * Request the user to grant camera permissions, if not already granted.
+     * Will probably not be used further once other camera is included
+     */
+    private fun verifyCameraPermissions() {
+        if (checkCallingOrSelfPermission(
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                STT_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
 }

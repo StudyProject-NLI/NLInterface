@@ -35,6 +35,13 @@ android {
     buildFeatures {
         viewBinding true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "mozilla/public-suffix-list.txt"
+        }
+    }
 }
 
 dependencies {
@@ -45,6 +52,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
     implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
+    implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -75,4 +83,9 @@ dependencies {
 
     // Camera UI
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    //mlkit
+    implementation 'com.google.mlkit:barcode-scanning:17.2.0'
+
+    //it.jsoup
+    implementation "org.jsoup:jsoup:1.14.3"
 }

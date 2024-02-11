@@ -1,9 +1,16 @@
 package com.nlinterface.dataclasses
 
 import android.os.Parcelable
-import com.google.android.libraries.places.api.model.OpeningHours
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Data Class modelling a PlaceDetailsItem aka a store.
+ *
+ * @param placeID: String, unique ID of the place
+ * @param storeName: String, the name of the place
+ * @param openingHours: List<String>, List of the last known opening hours of the place
+ * @param favorite: Boolean, whether the user has market this place as a favorite
+ */
 @Parcelize
 data class PlaceDetailsItem(
 
@@ -12,6 +19,4 @@ data class PlaceDetailsItem(
     val openingHours: List<String>,
     var favorite: Boolean
 
-): Parcelable {
-
-}
+) : Parcelable

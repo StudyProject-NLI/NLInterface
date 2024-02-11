@@ -211,6 +211,12 @@ class MainActivity : AppCompatActivity() {
             navToActivity(this, ActivityType.PLACEDETAILS)
         }
         
+        // set up button to navigate to ClassificationActivity
+        val classificationButton: Button = findViewById<View>(R.id.classification_bt) as Button
+        classificationButton.setOnClickListener { _ -> 
+            navToActivity(this, ActivityType.CLASSIFICATION)
+        }
+        
         // set up button to navigate to SettingsActivity
         val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
         settingsActivityButton.setOnClickListener { _ ->

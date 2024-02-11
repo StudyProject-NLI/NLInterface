@@ -97,6 +97,10 @@
     <string name="new_theme_setting">Neue Moduseinstellung ist %1$s. Wechseln Sie zurück zum Hauptmenü um die Einstellung zu übernehmen.</string>
     <string name="new_screen_setting">Neue Bildschirmeinstellung ist %1$s.</string>
 
+    <!--    NARRATION: CLASSIFICATION    -->
+    <string name="classification">Klassifizierung</string>
+    <string name="take_photo">Bild aufnehmen</string>
+
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     FOLLOW-UP QUESTIONS

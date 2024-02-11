@@ -100,6 +100,9 @@
     <string name="new_theme_setting">New theme setting is %1$s. Switch back to Main Activity to implement change.</string>
     <string name="new_screen_setting">New screen setting is %1$s.</string>
 
+    <!--    NARRATION: CLASSIFICATION    -->
+    <string name="classification">Classification</string>
+    <string name="take_photo">Take Photo</string>
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     FOLLOW-UP QUESTIONS

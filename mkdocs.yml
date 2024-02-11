@@ -64,6 +64,15 @@ nav:
   - Installation:
     - installation/install_from_actions.md
     - installation/install_from_release.md
+  - Modules:
+    - architecture/activities/MainActivity.md
+    - architecture/activities/GroceryListActivity.md
+    - architecture/activities/PlaceDetailsActivity.md
+    - architecture/activities/ClassificationActivity.md
+    - architecture/activities/SettingsActivity.md
   - Development:
     - installation/android_studio_setup.md
     - architecture/overview.md
+    - architecture/features/app_icon.md
+    - architecture/features/visual_design.md
+    - architecture/features/auditory_feedback.md

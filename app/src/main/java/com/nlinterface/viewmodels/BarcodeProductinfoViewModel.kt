@@ -17,6 +17,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.os.Vibrator
 import android.util.Log
+import androidx.core.content.getSystemService
 import androidx.lifecycle.ProcessLifecycleOwner
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -186,6 +187,13 @@ class ConstantScanning: Service() {
      */
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+
+    override fun onDestroy() {
+        val cameraProvider = ProcessCameraProvider.getInstance(this)
+        cameraProvider.cancel(true)
+        super.onDestroy()
     }
 
     /**

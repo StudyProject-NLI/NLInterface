@@ -247,4 +247,14 @@ class SettingsViewModel(
         val globalParamsInstance = GlobalParameters.instance!!
         globalParamsInstance.keepScreenOn = newScreenSetting
     }
+
+    /**
+     * Changes the keep screen on settings.
+     *
+     * @param newBarcodeServiceMode: GlobalParameters.BarcodeServiceMode, the barcode service status to be set
+     */
+    fun setBarcodeServiceMode(newBarcodeServiceMode: GlobalParameters.BarcodeServiceMode) {
+        val globalParamsInstance = GlobalParameters.instance!!
+        globalParamsInstance.barcodeServiceMode = newBarcodeServiceMode
+    }
 }

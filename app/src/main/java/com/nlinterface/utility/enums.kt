@@ -16,6 +16,7 @@ enum class ActivityType {
     MAIN,
     GROCERYLIST,
     PLACEDETAILS,
+    CLASSIFICATION,
     SETTINGS
 }
 

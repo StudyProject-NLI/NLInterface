@@ -7,6 +7,9 @@ default theme corresponds to the phone’s system settings. The chosen theme is
 activated by navigating back to the Main Activity. The button is always labeled with the
 currently active setting so as not to have too much visual input.
 
+- *BARCODE SERVICE SETTINGS*: Toggles the Barcode Scanning Service "on" or "off". Changes will
+take effect when you change back into the Main Activity.
+
 ## Voice Commands
 - "GO TO [DESIRED ACTIVITY NAME]": Navigates to the desired activity.
 - "CHANGE THEME [THEME CHOICE]: Changes the theme to the theme choice.

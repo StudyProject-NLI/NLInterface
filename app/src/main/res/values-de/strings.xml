@@ -145,5 +145,9 @@
         <item>Helles Design</item>
         <item>Dunkeles Design</item>
     </string-array>
-
+    <string name="settings_barcode_mode">Barcode Scanner</string>
+    <string-array name="barcode_mode_options">
+        <item>Barcode Scanner An</item>
+        <item>Barcode Scanner Aus</item>
+    </string-array>
 </resources>

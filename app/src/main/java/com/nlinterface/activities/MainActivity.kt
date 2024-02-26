@@ -65,14 +65,6 @@ class MainActivity : AppCompatActivity() {
         configureUI()
         configureTTS()
         configureSTT()
-
-        verifyCameraPermissions()
-        if (checkCallingOrSelfPermission(
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED) {
-                val serviceIntent = Intent(this, ConstantScanning()::class.java)
-                startService(serviceIntent)
-            }
     }
     
     /**
@@ -94,6 +86,17 @@ class MainActivity : AppCompatActivity() {
         
         // process theme settings
         GlobalParameters.instance!!.updateTheme()
+
+        val serviceIntent = Intent(this, ConstantScanning()::class.java)
+        if (GlobalParameters.instance!!.barcodeServiceMode == GlobalParameters.BarcodeServiceMode.ON) {
+            verifyCameraPermissions()
+            if (checkCallingOrSelfPermission( Manifest.permission.CAMERA ) == PackageManager.PERMISSION_GRANTED) {
+                startService(serviceIntent)
+        }
+        } else {
+            stopService(serviceIntent)
+            Log.println(Log.INFO, "Scanner", "Stopping the Barcode Scanning Service")
+        }
     }
     
     /**

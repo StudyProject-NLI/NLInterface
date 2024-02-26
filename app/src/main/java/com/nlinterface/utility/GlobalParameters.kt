@@ -11,6 +11,7 @@ open class GlobalParameters protected constructor() {
 
     var keepScreenOn: KeepScreenOn = KeepScreenOn.NO
     var themeChoice: ThemeChoice = ThemeChoice.SYSTEM_DEFAULT
+    var barcodeServiceMode: BarcodeServiceMode = BarcodeServiceMode.OFF
 
     lateinit var locale: Locale
 
@@ -25,6 +26,11 @@ open class GlobalParameters protected constructor() {
         SYSTEM_DEFAULT,
         LIGHT,
         DARK
+    }
+
+    enum class BarcodeServiceMode {
+        ON,
+        OFF
     }
 
     // make it a Singleton
@@ -61,6 +67,12 @@ open class GlobalParameters protected constructor() {
             ThemeChoice.SYSTEM_DEFAULT.toString()
         )
         instance!!.themeChoice = ThemeChoice.valueOf(prefTheme!!)
+
+        val prefBarcodeServiceMode = sharedPref.getString(
+            "BARCODE_SERVICE_MODE",
+            BarcodeServiceMode.OFF.toString()
+        )
+        instance!!.barcodeServiceMode = BarcodeServiceMode.valueOf(prefBarcodeServiceMode!!)
     }
 
     fun updateTheme() {

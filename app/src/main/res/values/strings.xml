@@ -149,4 +149,10 @@
         <item>Dark Theme</item>
     </string-array>
 
+    <string name="settings_barcode_mode">Barcode Service</string>
+    <string-array name="barcode_mode_options">
+        <item>Barcode Scanner On</item>
+        <item>Barcode Scanner Off</item>
+    </string-array>
+
 </resources>

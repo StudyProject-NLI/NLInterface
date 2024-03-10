@@ -6,6 +6,7 @@ import android.content.res.Resources
 import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.nlinterface.activities.ClassificationActivity
 import com.nlinterface.activities.GroceryListActivity
 import com.nlinterface.activities.MainActivity
 import com.nlinterface.activities.PlaceDetailsActivity
@@ -83,6 +84,9 @@ fun navToActivity(context: Context, activity: ActivityType) {
         
         ActivityType.PLACEDETAILS ->
             context.startActivity(Intent(context, PlaceDetailsActivity::class.java))
+
+        ActivityType.CLASSIFICATION ->
+            context.startActivity(Intent(context, ClassificationActivity::class.java))
         
         ActivityType.SETTINGS ->
             context.startActivity(Intent(context, SettingsActivity::class.java))

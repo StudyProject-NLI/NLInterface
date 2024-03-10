@@ -14,6 +14,7 @@ import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.GlobalParameters.ThemeChoice
 import com.nlinterface.utility.GlobalParameters.KeepScreenOn
+import com.nlinterface.utility.GlobalParameters.BarcodeServiceMode
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.navToActivity
 import com.nlinterface.utility.setViewRelativeSize
@@ -53,6 +54,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var themeOptions: MutableList<String>
     private lateinit var themeButton: Button
 
+    private lateinit var barcodeServiceOptions: MutableList<String>
+    private lateinit var barcodeServiceButton : Button
+
     private lateinit var voiceActivationButton: ImageButton
     
     private lateinit var lastCommand: String
@@ -83,6 +87,11 @@ class SettingsActivity : AppCompatActivity() {
             themeOptions.add(option)
         }
 
+        barcodeServiceOptions = mutableListOf()
+        resources.getStringArray(R.array.barcode_mode_options).forEach { option ->
+            barcodeServiceOptions.add(option)
+        }
+
         configureUI()
         configureTTS()
         configureSTT()
@@ -107,6 +116,9 @@ class SettingsActivity : AppCompatActivity() {
         keepScreenOnButton.setOnClickListener { onKeepScreenOnButtonClick() }
         keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
 
+        barcodeServiceButton = findViewById(R.id.settings_barcode_mode)
+        barcodeServiceButton.setOnClickListener { onBarcodeServiceButtonClick() }
+        barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
     }
 
     /**
@@ -144,6 +156,19 @@ class SettingsActivity : AppCompatActivity() {
 
         viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton.text))
     }
+
+    private fun onBarcodeServiceButtonClick() {
+        if (globalParameters.barcodeServiceMode.ordinal == BarcodeServiceMode.values().size - 1) {
+            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
+        } else {
+            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[globalParameters.barcodeServiceMode.ordinal + 1]
+        }
+
+        barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
+
+        // TODO: Add voice commands for Barcode Service
+    }
+
 
     /**
      * If the activity is paused, save the current preferences to SharedPreferences.

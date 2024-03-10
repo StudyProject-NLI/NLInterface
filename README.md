@@ -20,21 +20,10 @@ This is the code repository for the Android app developed in the studyproject Se
 		commit id: "Prepare for codebase transfer"
 ```
 
-# Documentation
-
-## Running locally
-- Install Python
-- `pip install -r docs/requirements.txt`
-
-Run the documentation server via 
-```bash
-$ mkdocs serve
-```
-
 
 # Building the app locally
 Requirements:
-- At least Java 8 JDK installed
+- At least Java 17 JDK installed
 - Create a `local.properties` file at the root of this repository with the following content
 
 ```bash
@@ -56,3 +45,15 @@ The resulting installable application can be found under
 `app/build/outputs/apk/debug/app-debug.apk`
 
 which you can copy and install on your device.
+
+# Documentation
+
+## Running locally
+- Install Python
+- `pip install -r docs/requirements.txt`
+
+Run the documentation server via 
+```bash
+$ mkdocs serve
+```
+

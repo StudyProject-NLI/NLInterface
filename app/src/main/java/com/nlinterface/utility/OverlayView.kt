@@ -19,7 +19,7 @@ import kotlin.math.max
 **/
 
 class OverlayView(context: Context?, attrs: AttributeSet) : View(context, attrs) {
-    private var results: List<Detection> = LinkedList<Detection>()
+    private var results: ArrayList<Recognition> = ArrayList<Recognition>()
     private var boxPaint = Paint()
     private var textBackgroundPaint = Paint()
     private var textPaint = Paint()
@@ -58,7 +58,7 @@ class OverlayView(context: Context?, attrs: AttributeSet) : View(context, attrs)
         super.draw(canvas)
 
         for (result in results) {
-            val boundingBox = result.boundingBox
+            val boundingBox = result.location
 
             val top = boundingBox.top * scaleFactor
             val bottom = boundingBox.bottom * scaleFactor
@@ -68,14 +68,9 @@ class OverlayView(context: Context?, attrs: AttributeSet) : View(context, attrs)
             val drawableRect = RectF(left, top, right, bottom)
             canvas.drawRect(drawableRect, boxPaint)
 
-            val drawableText = result.categories[0].label + " " + String.format("%.2f", result.categories[0].score)
+            val drawableText = result.labelName + " " + String.format("%.2f", result.labelScore)
 
             textBackgroundPaint.getTextBounds(drawableText, 0, drawableText.length, bounds)
-            val textWidth = bounds.width()
-            val textHeight = bounds.height()
-
-            canvas.drawRect(left, top, left + textWidth + Companion.BOUNDING_RECT_TEXT_PADDING, top + textHeight + Companion.BOUNDING_RECT_TEXT_PADDING, textBackgroundPaint)
-
             canvas.drawText(drawableText, left, top + bounds.height(), textPaint)
 
 
@@ -83,7 +78,7 @@ class OverlayView(context: Context?, attrs: AttributeSet) : View(context, attrs)
         }
     }
     fun setResults(
-        detectionResults: MutableList<Detection>,
+        detectionResults: ArrayList<Recognition>,
         imageHeight: Int,
         imageWidth: Int
     ) {

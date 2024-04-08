@@ -19,15 +19,10 @@ import org.tensorflow.lite.task.vision.detector.ObjectDetector
 * */
 
 class ObjectDetectorHelper(
-    var threshold: Float = 0.5f,
-    var numThreads: Int = 2,
-    var maxResults: Int = 3,
-    var currentDelegate: Int = 0,
-    var currentModel: Int = 0,
     val context: Context,
     val objectDetectorListener: DetectorListener?
 ) {
-    private var objectDetector: ObjectDetector? = null
+    private var objectDetector: Yolov5TFLiteDetector? = null
 
     init {
         setupObjectDetector()
@@ -38,37 +33,14 @@ class ObjectDetectorHelper(
     }
 
     fun setupObjectDetector() {
-        val optionsBuilder = ObjectDetector.ObjectDetectorOptions.builder().setScoreThreshold(threshold).setMaxResults(maxResults)
-
-        val baseOptionsBuilder = BaseOptions.builder().setNumThreads(numThreads)
-
-        when (currentDelegate) {
-            DELEGATE_CPU -> {}
-            DELEGATE_GPU -> {
-                if (CompatibilityList().isDelegateSupportedOnThisDevice) {
-                    baseOptionsBuilder.useGpu()
-                } else {
-                    objectDetectorListener?.onError("GPU is not supported on this device")
-                }
-            }
-            DELEGATE_NNAPI -> {
-                baseOptionsBuilder.useNnapi()
-            }
-        }
-
-        optionsBuilder.setBaseOptions(baseOptionsBuilder.build())
-
-        // Model selection
-
-        val modelName = when (currentModel) {
-            MODEL_MOBILENETV1 -> "mobilenetv1.tflite"
-            else -> "mobilenetv1.tflite"
-        }
-
         try {
-            objectDetector = ObjectDetector.createFromFileAndOptions(context, modelName, optionsBuilder.build())
+            val yolov5TFLiteDetector = Yolov5TFLiteDetector()
+            yolov5TFLiteDetector.modelFile = "hand-fp16.tflite"
+            yolov5TFLiteDetector.addGPUDelegate()
+            yolov5TFLiteDetector.initialModel(context)
+            objectDetector = yolov5TFLiteDetector
+
         } catch (e: IllegalStateException) {
-            objectDetectorListener?.onError("Object detector failed to initialize. See error logs for details")
             Log.e("NLI-Classification", "TFLite failed to load model with error: " + e.message)
         }
     }
@@ -80,12 +52,11 @@ class ObjectDetectorHelper(
 
         var inferenceTime = SystemClock.uptimeMillis()
 
-        // Image Preprocessing
         val imageProcessor = ImageProcessor.Builder().add(Rot90Op(-imageRotation / 90)).build()
-
         val tensorImage = imageProcessor.process(TensorImage.fromBitmap(image))
 
-        val results = objectDetector?.detect(tensorImage)
+        val results = objectDetector?.detect(tensorImage.bitmap)
+
         inferenceTime = SystemClock.uptimeMillis() - inferenceTime
         objectDetectorListener?.onResults(results, inferenceTime, tensorImage.height, tensorImage.width)
     }

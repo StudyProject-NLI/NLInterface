@@ -3,9 +3,9 @@ package com.nlinterface.utility
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
-import android.util.Log
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.nlinterface.activities.BarcodeSettingsActivity
 import com.nlinterface.activities.ClassificationActivity
 import com.nlinterface.activities.GroceryListActivity
 import com.nlinterface.activities.MainActivity
@@ -90,6 +90,9 @@ fun navToActivity(context: Context, activity: ActivityType) {
         
         ActivityType.SETTINGS ->
             context.startActivity(Intent(context, SettingsActivity::class.java))
+
+        ActivityType.BARCODESETTINGS ->
+            context.startActivity(Intent(context, BarcodeSettingsActivity::class.java))
     }
     
 }

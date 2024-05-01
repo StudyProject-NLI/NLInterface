@@ -17,6 +17,7 @@
     <string name="cancel">abbrechen</string>
     <string name="add_indicator">füge</string>
     <string name="remove_indicator">entferne</string>
+    <string name="stop_speech">hör auf zu sprechen</string>
 
 
     <!--    VOICE COMMANDS: GROCERY LIST    -->
@@ -101,6 +102,10 @@
     <string name="classification">Klassifizierung</string>
     <string name="take_photo">Bild aufnehmen</string>
 
+    <!--    NARRATION: BARCODE SCANNER SETTINGS    -->
+    <string name="barcode_scanner_settings">Barcodescanner Einstellungen</string>
+    <string name="new_barcode_setting">Neue Barcodescanner Einstellung ist %1$s.</string>
+
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     FOLLOW-UP QUESTIONS
@@ -149,5 +154,36 @@
     <string-array name="barcode_mode_options">
         <item>Barcode Scanner An</item>
         <item>Barcode Scanner Aus</item>
+    </string-array>
+
+    <!--    LABELS: BARCODE SCANNER SETTINGS    -->
+    <string name="settings_name_and_volume">Name und Menge</string>
+    <string-array name="settings_name_and_volume">
+        <item>Name und Menge An</item>
+        <item>Name und Menge Aus</item>
+    </string-array>
+
+    <string name="settings_labels">Labels</string>
+    <string-array name="settings_labels">
+        <item>Labels An</item>
+        <item>Labels Aus</item>
+    </string-array>
+
+    <string name="settings_country_of_origin">Herkunftsland</string>
+    <string-array name="settings_country_of_origin">
+        <item>Herkunftsland An</item>
+        <item>Herkunftsland Aus</item>
+    </string-array>
+
+    <string name="settings_ingredients_and_allergies">Zutaten und Allergien</string>
+    <string-array name="settings_ingredients_and_allergies">
+        <item>Zutaten und Allergien An</item>
+        <item>Zutaten und Allergien Aus</item>
+    </string-array>
+
+    <string name="settings_short_nutritional_values">Nährwerte</string>
+    <string-array name="settings_short_nutritional_values">
+        <item>Nährwerte An</item>
+        <item>Nährwerte Aus</item>
     </string-array>
 </resources>

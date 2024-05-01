@@ -17,7 +17,8 @@ enum class ActivityType {
     GROCERYLIST,
     PLACEDETAILS,
     CLASSIFICATION,
-    SETTINGS
+    SETTINGS,
+    BARCODESETTINGS
 }
 
 /**

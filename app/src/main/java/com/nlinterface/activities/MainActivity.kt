@@ -16,7 +16,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
-import com.nlinterface.utility.*
+import com.nlinterface.utility.ActivityType
+import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.navToActivity
+import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.ConstantScanning
 import com.nlinterface.viewmodels.MainViewModel
 
@@ -173,6 +176,13 @@ class MainActivity : AppCompatActivity() {
                         "${resources.getString(R.string.navigate_to_settings)}."
             )
             
+        } else if(command == resources.getString(R.string.stop_speech)) {
+
+            val intent = Intent("BarcodeInfo_Stop").apply {
+                putExtra("stop_speech", true)
+            }
+            sendBroadcast(intent)
+
         } else {
             viewModel.say(resources.getString(R.string.invalid_command))
         }
@@ -199,12 +209,16 @@ class MainActivity : AppCompatActivity() {
         
             resources.getString(R.string.navigate_to_main_menu) ->
                 navToActivity(this, ActivityType.MAIN)
+
+            //resources.getString(R.string.stop) ->
+                //viewModel.shutdownTTS()
         
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
         
     }
-    
+
+
     /**
      * Sets up all UI elements, i.e. the groceryList/placeDetails/settingsActivity/voiceActivation
      * buttons and their respective onClickListeners

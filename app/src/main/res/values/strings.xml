@@ -21,6 +21,7 @@
     <string name="cancel">cancel</string>
     <string name="add_indicator">add</string>
     <string name="remove_indicator">remove</string>
+    <string name="stop_speech">stop</string>
 
     <!--    VOICE COMMANDS: GROCERY LIST    -->
     <string name="add_an_item">add an item</string>
@@ -103,6 +104,10 @@
     <!--    NARRATION: CLASSIFICATION    -->
     <string name="classification">Classification</string>
     <string name="take_photo">Take Photo</string>
+
+    <!--    NARRATION: BARCODE SCANNER SETTINGS    -->
+    <string name="barcode_scanner_settings">Barcode Scanner Settings</string>
+    <string name="new_barcode_setting">New barcode scanner setting is %1$s.</string>
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     FOLLOW-UP QUESTIONS
@@ -153,6 +158,37 @@
     <string-array name="barcode_mode_options">
         <item>Barcode Scanner On</item>
         <item>Barcode Scanner Off</item>
+    </string-array>
+
+    <!--    LABELS: BARCODE SCANNER SETTINGS    -->
+    <string name="settings_name_and_volume">Name and Volume</string>
+    <string-array name="settings_name_and_volume">
+        <item>Name and Volume On</item>
+        <item>Name and Volume Off</item>
+    </string-array>
+
+    <string name="settings_labels">Labels</string>
+    <string-array name="settings_labels">
+        <item>Labels On</item>
+        <item>Labels Off</item>
+    </string-array>
+
+    <string name="settings_country_of_origin">Country of Origin</string>
+    <string-array name="settings_country_of_origin">
+        <item>Country of Origin On</item>
+        <item>Country of Origin Off</item>
+    </string-array>
+
+    <string name="settings_ingredients_and_allergies">Ingredients and Allergies</string>
+    <string-array name="settings_ingredients_and_allergies">
+        <item>Ingredients and Allergies On</item>
+        <item>Ingredients and Allergies Off</item>
+    </string-array>
+
+    <string name="settings_short_nutritional_values">Nutritional Values</string>
+    <string-array name="settings_short_nutritional_values">
+        <item>Nutritional Values On</item>
+        <item>Nutritional Values Off</item>
     </string-array>
 
 </resources>

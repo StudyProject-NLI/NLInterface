@@ -91,5 +91,33 @@ open class GlobalParameters protected constructor() {
         }
     }
 
+    var navState: NavState = NavState.YES
+    var labelsState: LabelsState = LabelsState.NO
+    var cooState: CooState = CooState.NO
+    var iaaState: IaaState = IaaState.YES
+    var snvState: SnvState = SnvState.NO
+
+    enum class NavState {
+        YES,
+        NO
+    }
+    enum class LabelsState {
+        YES,
+        NO
+    }
+    enum class CooState {
+        YES,
+        NO
+    }
+    enum class IaaState {
+        YES,
+        NO
+    }
+    enum class SnvState {
+        YES,
+        NO
+    }
+
+
 
 }

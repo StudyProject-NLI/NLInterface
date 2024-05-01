@@ -4,12 +4,27 @@
     <string name="settings_preferences_key" translatable="false">SETTINGS_KEY</string>
     <string name="settings_keep_screen_on_key" translatable="false">KEEP_SCREEN_ON_KEY</string>
     <string name="settings_theme_key" translatable="false">THEME_KEY</string>
+    <string name="barcode_service_mode_key" translatable="false">
+        BARCODE_SERVICE_MODE_KEY</string>
+    <string name="barcode_settings_preferences_key" translatable="false">
+        BARCODE_SETTINGS_KEY</string>
+    <string name="settings_name_and_volume_key" translatable="false">
+        NAME_AND_VOLUME_KEY</string>
+    <string name="settings_labels_key" translatable="false">
+        LABELS_KEY</string>
+    <string name="settings_country_of_origin_key" translatable="false">
+        COUNTRY_OF_ORIGIN_KEY</string>
+    <string name="settings_ingredients_and_allergies_key" translatable="false">
+        INGREDIENTS_KEY</string>
+    <string name="settings_short_nutritional_values_key" translatable="false">
+        NUTRITIONAL_VALUES_KEY</string>
 
-<!--
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    VOICE COMMANDS
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--->
+
+    <!--
+        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        VOICE COMMANDS
+        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    -->
 
     <!--    VOICE COMMANDS: GENERAL    -->
     <string name="go_to">go to</string>
@@ -17,6 +32,7 @@
     <string name="navigate_to_place_details">go to place details</string>
     <string name="navigate_to_settings">go to settings</string>
     <string name="navigate_to_main_menu">go to main menu</string>
+    <string name="navigate_to_barcode_scanner_settings">go to barcode scanner settings</string>
     <string name="tell_me_my_options">tell me my options</string>
     <string name="cancel">cancel</string>
     <string name="add_indicator">add</string>
@@ -51,7 +67,20 @@
     <string name="change_screen_settings">change screen settings</string>
     <string name="keep_screen_always_on">keep screen always on</string>
     <string name="dim_screen_after_a_while">dim screen after a while</string>
+    <string name="barcode_service_mode_on">barcode scanner on</string>
+    <string name="barcode_service_mode_off">barcode scanner off</string>
 
+    <!--    VOICE COMMANDS: BARCODE SCANNER SETTINGS    -->
+    <string name="product_name_on">product name on</string>
+    <string name="product_name_off">product name off</string>
+    <string name="labels_on">labels on</string>
+    <string name="labels_off">labels off</string>
+    <string name="country_of_origin_on">country of origin on</string>
+    <string name="country_of_origin_off">country of origin off</string>
+    <string name="ingredients_and_allergies_on">ingredients and allergies on</string>
+    <string name="ingredients_and_allergies_off">ingredients and allergies off</string>
+    <string name="nutritional_values_on">nutritional values on</string>
+    <string name="nutritional_values_off">nutritional values off</string>
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     NARRATION

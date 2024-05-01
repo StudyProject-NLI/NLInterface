@@ -173,7 +173,8 @@ class MainActivity : AppCompatActivity() {
                 "${resources.getString(R.string.your_options_are)} " +
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
-                        "${resources.getString(R.string.navigate_to_settings)}."
+                        "${resources.getString(R.string.navigate_to_settings)}." +
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."
             )
             
         } else if(command == resources.getString(R.string.stop_speech)) {
@@ -210,8 +211,8 @@ class MainActivity : AppCompatActivity() {
             resources.getString(R.string.navigate_to_main_menu) ->
                 navToActivity(this, ActivityType.MAIN)
 
-            //resources.getString(R.string.stop) ->
-                //viewModel.shutdownTTS()
+            resources.getString(R.string.navigate_to_barcode_scanner_settings) ->
+                navToActivity(this, ActivityType.BARCODESETTINGS)
         
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }

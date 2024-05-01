@@ -33,6 +33,33 @@ open class GlobalParameters protected constructor() {
         OFF
     }
 
+    var navState: NavState = NavState.YES
+    var labelsState: LabelsState = LabelsState.NO
+    var cooState: CooState = CooState.NO
+    var iaaState: IaaState = IaaState.YES
+    var snvState: SnvState = SnvState.NO
+
+    enum class NavState {
+        YES,
+        NO
+    }
+    enum class LabelsState {
+        YES,
+        NO
+    }
+    enum class CooState {
+        YES,
+        NO
+    }
+    enum class IaaState {
+        YES,
+        NO
+    }
+    enum class SnvState {
+        YES,
+        NO
+    }
+
     // make it a Singleton
     companion object {
         
@@ -69,10 +96,40 @@ open class GlobalParameters protected constructor() {
         instance!!.themeChoice = ThemeChoice.valueOf(prefTheme!!)
 
         val prefBarcodeServiceMode = sharedPref.getString(
-            "BARCODE_SERVICE_MODE",
+            context.resources.getString(R.string.barcode_service_mode_key),
             BarcodeServiceMode.OFF.toString()
         )
         instance!!.barcodeServiceMode = BarcodeServiceMode.valueOf(prefBarcodeServiceMode!!)
+
+        val prefNameAndVolume = sharedPref.getString(
+            context.resources.getString(R.string.settings_name_and_volume_key),
+            NavState.YES.toString()
+        )
+        instance!!.navState = NavState.valueOf(prefNameAndVolume!!)
+
+        val prefLabels = sharedPref.getString(
+            context.resources.getString(R.string.settings_labels_key),
+            LabelsState.NO.toString()
+        )
+        instance!!.labelsState = LabelsState.valueOf(prefLabels!!)
+
+        val prefCountryOfOrigin = sharedPref.getString(
+            context.resources.getString(R.string.settings_country_of_origin_key),
+            CooState.NO.toString()
+        )
+        instance!!.cooState = CooState.valueOf(prefCountryOfOrigin!!)
+
+        val prefIngredients = sharedPref.getString(
+            context.resources.getString(R.string.settings_ingredients_and_allergies_key),
+            IaaState.YES.toString()
+        )
+        instance!!.iaaState = IaaState.valueOf(prefIngredients!!)
+
+        val prefNutritionalValues = sharedPref.getString(
+                context.resources.getString(R.string.settings_short_nutritional_values_key),
+                SnvState.NO.toString()
+        )
+        instance!!.snvState = SnvState.valueOf(prefNutritionalValues!!)
     }
 
     fun updateTheme() {
@@ -90,34 +147,5 @@ open class GlobalParameters protected constructor() {
             )
         }
     }
-
-    var navState: NavState = NavState.YES
-    var labelsState: LabelsState = LabelsState.NO
-    var cooState: CooState = CooState.NO
-    var iaaState: IaaState = IaaState.YES
-    var snvState: SnvState = SnvState.NO
-
-    enum class NavState {
-        YES,
-        NO
-    }
-    enum class LabelsState {
-        YES,
-        NO
-    }
-    enum class CooState {
-        YES,
-        NO
-    }
-    enum class IaaState {
-        YES,
-        NO
-    }
-    enum class SnvState {
-        YES,
-        NO
-    }
-
-
 
 }

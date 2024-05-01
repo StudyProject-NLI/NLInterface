@@ -10,8 +10,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityBarcodeSettingsBinding
+import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.STTInputType
+import com.nlinterface.utility.navToActivity
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.BarcodeSettingsViewModel
 
@@ -59,7 +61,6 @@ class BarcodeSettingsActivity : AppCompatActivity() {
     private lateinit var voiceActivationButton: ImageButton
 
     private lateinit var lastCommand: String
-    private lateinit var lastResponse: String
 
     private val globalParameters = GlobalParameters.instance!!
 
@@ -104,7 +105,7 @@ class BarcodeSettingsActivity : AppCompatActivity() {
 
         configureUI()
         configureTTS()
-        //configureSTT()
+        configureSTT()
     }
 
     /**
@@ -155,10 +156,7 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                 GlobalParameters.NavState.values()[globalParameters.navState.ordinal + 1]
         }
 
-        nameAndVolumeButton.text =
-            nameAndVolumeOptions[globalParameters.navState.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_barcode_setting, nameAndVolumeButton.text))
+        changeAndReadButtonName()
     }
 
     /**
@@ -172,9 +170,7 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                 GlobalParameters.LabelsState.values()[globalParameters.labelsState.ordinal + 1]
         }
 
-        labelsButton.text = labelsOptions[globalParameters.labelsState.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_barcode_setting, labelsButton.text))
+        changeAndReadButtonLabels()
     }
 
     /**
@@ -188,9 +184,7 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                 GlobalParameters.CooState.values()[globalParameters.cooState.ordinal + 1]
         }
 
-        countryOfOriginButton.text = countryOfOriginOptions[globalParameters.cooState.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_barcode_setting, countryOfOriginButton.text))
+        changeAndReadButtonCountry()
     }
 
     /**
@@ -204,9 +198,7 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                 GlobalParameters.IaaState.values()[globalParameters.iaaState.ordinal + 1]
         }
 
-        ingredientsAndAllergiesButton.text = ingredientsAndAllergiesOptions[globalParameters.iaaState.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_barcode_setting, ingredientsAndAllergiesButton.text))
+        changeAndReadButtonIngredients()
     }
 
     /**
@@ -220,51 +212,8 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                 GlobalParameters.SnvState.values()[globalParameters.snvState.ordinal + 1]
         }
 
-        shortNutritionalValuesButton.text = shortNutritionalValuesOptions[globalParameters.snvState.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_barcode_setting, shortNutritionalValuesButton.text))
+        changeAndReadButtonNutritionalValues()
     }
-
-
-    /**
-     * If the activity is paused, save the current preferences to SharedPreferences.
-     */
-    override fun onPause() {
-        super.onPause()
-
-        val sharedPref = this.getSharedPreferences(
-            getString(R.string.settings_preferences_key),
-            Context.MODE_PRIVATE
-        ) ?: return
-
-        with(sharedPref.edit()) {
-
-            putString(
-                getString(R.string.settings_name_and_volume),
-                globalParameters.navState.toString()
-            )
-            putString(
-                getString(R.string.settings_labels),
-                globalParameters.labelsState.toString()
-            )
-            putString(
-                getString(R.string.settings_country_of_origin),
-                globalParameters.cooState.toString()
-            )
-            putString(
-                getString(R.string.settings_ingredients_and_allergies),
-                globalParameters.iaaState.toString()
-            )
-            putString(
-                getString(R.string.settings_short_nutritional_values),
-                globalParameters.snvState.toString()
-            )
-
-
-            apply()
-        }
-    }
-
 
 
     /**
@@ -278,6 +227,41 @@ class BarcodeSettingsActivity : AppCompatActivity() {
             viewModel.handleSTTSpeechBegin()
         } else {
             viewModel.cancelSTTListening()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val sharedBarcodePref = this.getSharedPreferences(
+            getString(R.string.barcode_settings_preferences_key),
+            Context.MODE_PRIVATE
+        ) ?: return
+
+        with(sharedBarcodePref.edit()) {
+
+            putString(
+                getString(R.string.settings_name_and_volume_key),
+                globalParameters.navState.toString()
+            )
+            putString(
+                getString(R.string.settings_labels_key),
+                globalParameters.labelsState.toString()
+            )
+            putString(
+                getString(R.string.settings_country_of_origin_key),
+                globalParameters.cooState.toString()
+            )
+            putString(
+                getString(R.string.settings_ingredients_and_allergies_key),
+                globalParameters.iaaState.toString()
+            )
+            putString(
+                getString(R.string.settings_short_nutritional_values_key),
+                globalParameters.snvState.toString()
+            )
+
+            apply()
         }
     }
 
@@ -299,9 +283,6 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         viewModel.ttsInitialized.observe(this, ttsInitializedObserver)
 
     }
-
-
-    /*
 
     /**
      * Called by the onCreate function and calls upon the ViewModel to initialize the STT system.
@@ -335,21 +316,6 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         // observe LiveData change to be notified when the STT returns a command
         viewModel.command.observe(this, commandObserver)
 
-        // if a response is successfully generated, process and execute it
-        val responseObserver = Observer<String> { response ->
-
-            lastResponse = response
-
-            // no need to handle cancelled responses
-            if (response != resources.getString(R.string.cancel)) {
-                handleSTTResponse(lastCommand, lastResponse)
-            }
-
-        }
-
-        // observe LiveData change to be notified when the STT returns a response
-        viewModel.response.observe(this, responseObserver)
-
     }
 
     /**
@@ -365,31 +331,45 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         // any attempted navigation commands are handled are passed on
         if (command.contains(resources.getString(R.string.go_to))) {
             executeNavigationCommand(command)
+        }
 
-        } else if (command == resources.getString(R.string.change_theme)) {
+        else if (command == resources.getString(R.string.product_name_on)){
+            globalParameters.navState = GlobalParameters.NavState.values()[0]
+            changeAndReadButtonName()
+        } else if (command == resources.getString(R.string.product_name_off)){
+            globalParameters.navState = GlobalParameters.NavState.values()[1]
+            changeAndReadButtonName()
+        }
+        else if (command == resources.getString(R.string.labels_on)){
+            globalParameters.labelsState = GlobalParameters.LabelsState.values()[0]
+            changeAndReadButtonLabels()
+        } else if (command == resources.getString(R.string.labels_off)){
+            globalParameters.labelsState = GlobalParameters.LabelsState.values()[1]
+            changeAndReadButtonLabels()
+        }
+        else if (command == resources.getString(R.string.country_of_origin_on)){
+            globalParameters.cooState = GlobalParameters.CooState.values()[0]
+            changeAndReadButtonCountry()
+        } else if (command == resources.getString(R.string.country_of_origin_off)){
+            globalParameters.cooState = GlobalParameters.CooState.values()[1]
+            changeAndReadButtonCountry()
+        }
+        else if (command == resources.getString(R.string.ingredients_and_allergies_on)){
+            globalParameters.iaaState = GlobalParameters.IaaState.values()[0]
+            changeAndReadButtonIngredients()
+        } else if (command == resources.getString(R.string.ingredients_and_allergies_off)){
+            globalParameters.iaaState = GlobalParameters.IaaState.values()[1]
+            changeAndReadButtonIngredients()
+        }
+        else if (command == resources.getString(R.string.nutritional_values_on)){
+            globalParameters.snvState = GlobalParameters.SnvState.values()[0]
+            changeAndReadButtonNutritionalValues()
+        } else if (command == resources.getString(R.string.nutritional_values_off)){
+            globalParameters.snvState = GlobalParameters.SnvState.values()[1]
+            changeAndReadButtonNutritionalValues()
+        }
 
-            val scope = CoroutineScope(Job() + Dispatchers.Main)
-            scope.launch {
-                requestResponse(
-                    resources.getString(R.string.light_theme) + " " +
-                            resources.getString(R.string.dark_theme) + " " +
-                            resources.getString(R.string.or) + " " +
-                            resources.getString(R.string.default_theme)
-                )
-            }
-
-        } else if (command == resources.getString(R.string.change_screen_settings)) {
-
-            val scope = CoroutineScope(Job() + Dispatchers.Main)
-            scope.launch {
-                requestResponse(
-                    resources.getString(R.string.keep_screen_always_on) + " " +
-                            resources.getString(R.string.or) + " " +
-                            resources.getString(R.string.dim_screen_after_a_while)
-                )
-            }
-
-        } else if (command == resources.getString(R.string.tell_me_my_options)) {
+        else if (command == resources.getString(R.string.tell_me_my_options)) {
 
             viewModel.say(
                 "${resources.getString(R.string.your_options_are)} " +
@@ -401,7 +381,8 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                                 R.string.and
                             )
                         } " +
-                        "${resources.getString(R.string.navigate_to_settings)}."
+                        "${resources.getString(R.string.navigate_to_settings)}." +
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."
             )
 
         } else {
@@ -411,103 +392,62 @@ class BarcodeSettingsActivity : AppCompatActivity() {
     }
 
     /**
-     * Called when a response to a system question is registered. The response is then processed
-     * and executed dependent on the system question/last command.
+     * Handles Navigation commands of the format "go to X". If the command is valid, navigate to
+     * the desired activity.
      *
-     * @param command: String, the last command, which triggered the response request
-     * @param response: String, the registered response
+     * @param command: String, the command to be executed
      */
-    private fun handleSTTResponse(command: String, response: String) {
+    private fun executeNavigationCommand(command: String) {
 
         when (command) {
+            resources.getString(R.string.navigate_to_grocery_list) ->
+                navToActivity(this, ActivityType.GROCERYLIST)
 
-            resources.getString(R.string.product_name_and_volume) -> {
-                executeSwitchProductNameAndVolume(response)
-            }
-            resources.getString(R.string.labels) -> {
-                executeSwitchLabels(response)
-            }
-            resources.getString(R.string.country_of_origin) -> {
-                executeCountryOfOrigin(response)
-            }
-            resources.getString(R.string.ingredients_and_allergies) -> {
-                executeIngredientsAndAllergies(response)
-            }
-            resources.getString(R.string.short_nutritional_values) -> {
-                executShortNutritionalValues(response)
-            }
+            resources.getString(R.string.navigate_to_place_details) ->
+                navToActivity(this, ActivityType.PLACEDETAILS)
 
+            resources.getString(R.string.navigate_to_settings) ->
+                navToActivity(this, ActivityType.SETTINGS)
+
+            resources.getString(R.string.navigate_to_main_menu) ->
+                navToActivity(this, ActivityType.MAIN)
+
+            resources.getString(R.string.navigate_to_barcode_scanner_settings) ->
+                navToActivity(this, ActivityType.BARCODESETTINGS)
+
+
+            else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
-
     }
 
-    /**
-     *
-     */
+    private fun changeAndReadButtonName(){
+        nameAndVolumeButton.text =
+            nameAndVolumeOptions[globalParameters.navState.ordinal]
 
-    private fun executeSwitchProductNameAndVolume() {
-        globalParameters.navState = !navState
-        viewModel.say(
-            resources.getString(R.string.nam_vol_act)
-        )
-        viewModel.say(
-            resources.getString(R.string.standard_barcode)
-        )
+        viewModel.say(resources.getString(R.string.new_barcode_setting, nameAndVolumeButton.text))
     }
 
-    private fun executeSwitchLabels() {
-        globalParameters.labelsState = !labelsState
-        viewModel.say(
-            resources.getString(R.string.labels_act)
-        )
-        viewModel.say(
-            resources.getString(R.string.standard_barcode)
-        )
+    private fun changeAndReadButtonLabels(){
+        labelsButton.text = labelsOptions[globalParameters.labelsState.ordinal]
+
+        viewModel.say(resources.getString(R.string.new_barcode_setting, labelsButton.text))
     }
 
-    private fun executeCountryOfOrigin() {
-        globalParameters.cooState = !cooState
-        viewModel.say(
-            resources.getString(R.string.cou_ori)
-        )
-        viewModel.say(
-            resources.getString(R.string.standard_barcode)
-        )
+    private fun changeAndReadButtonCountry(){
+        countryOfOriginButton.text = countryOfOriginOptions[globalParameters.cooState.ordinal]
+
+        viewModel.say(resources.getString(R.string.new_barcode_setting, countryOfOriginButton.text))
     }
 
-    private fun executeIngredientsAndAllergies() {
-        globalParameters.iaaState = !iaaState
-        viewModel.say(
-            resources.getString(R.string.ing_all)
-        )
-        viewModel.say(
-            resources.getString(R.string.standard_barcode)
-        )
+    private fun changeAndReadButtonIngredients(){
+        ingredientsAndAllergiesButton.text = ingredientsAndAllergiesOptions[globalParameters.iaaState.ordinal]
+
+        viewModel.say(resources.getString(R.string.new_barcode_setting, ingredientsAndAllergiesButton.text))
     }
 
-    private fun executShortNutritionalValues() {
-        globalParameters.snvState = !snvState
-        viewModel.say(
-            resources.getString(R.string.nam_vol)
-        )
-        viewModel.say(
-            resources.getString(R.string.standard_barcode)
-        )
+    private fun changeAndReadButtonNutritionalValues(){
+        shortNutritionalValuesButton.text = shortNutritionalValuesOptions[globalParameters.snvState.ordinal]
+
+        viewModel.say(resources.getString(R.string.new_barcode_setting, shortNutritionalValuesButton.text))
     }
-
-
-    /**
-     * Requests a vocal response from the user by reading a passed question out loud. Once the TTS
-     * process is completed, the STT process is activated so that a response can be made directly.
-     *
-     * @param question: String, the system question to which a response is requested
-     */
-    private suspend fun requestResponse(question: String) {
-        viewModel.sayAndAwait(question)
-        viewModel.setSTTSpeechRecognitionListener(STTInputType.ANSWER)
-        viewModel.handleSTTSpeechBegin()
-    }
-
-     */
-
 }

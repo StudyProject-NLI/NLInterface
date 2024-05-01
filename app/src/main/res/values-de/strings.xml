@@ -13,6 +13,7 @@
     <string name="navigate_to_place_details">gehe zu ort details</string>
     <string name="navigate_to_settings">gehe zu einstellungen</string>
     <string name="navigate_to_main_menu">gehe zu hauptmenü</string>
+    <string name="navigate_to_barcode_scanner_settings">gehe zu barcode scanner einstellungen</string>
     <string name="tell_me_my_options">nenne mir meine optionen</string>
     <string name="cancel">abbrechen</string>
     <string name="add_indicator">füge</string>
@@ -48,6 +49,20 @@
     <string name="change_screen_settings">ändere die bildschirmeinstellungen</string>
     <string name="keep_screen_always_on">bildschirm immer an lassen</string>
     <string name="dim_screen_after_a_while">bildschirm nach einiger zeit verdunkeln</string>
+    <string name="barcode_service_mode_on">barcode scanner an</string>
+    <string name="barcode_service_mode_off">barcode scanner aus</string>
+
+    <!--    VOICE COMMANDS: BARCODE SCANNER SETTINGS    -->
+    <string name="product_name_on">produktname an</string>
+    <string name="product_name_off">produktname aus</string>
+    <string name="labels_on">labels an</string>
+    <string name="labels_off">labels aus</string>
+    <string name="country_of_origin_on">herkunftsland an</string>
+    <string name="country_of_origin_off">herkunftsland aus</string>
+    <string name="ingredients_and_allergies_on">zutaten und allergien an</string>
+    <string name="ingredients_and_allergies_off">zutaten und allergien aus</string>
+    <string name="nutritional_values_on">nährwerte an</string>
+    <string name="nutritional_values_off">nährwerte aus</string>
 
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

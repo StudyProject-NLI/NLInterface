@@ -182,13 +182,11 @@ class BrowserSearch{
                 allInfo +=
                     document.getElementById("field_origins")?.text()
 
-            }
-            else if(globalParameters.iaaState.ordinal == 0){
+            } else if(globalParameters.iaaState.ordinal == 0){
                 allInfo +=
                     document.getElementById("panel_ingredients_content")?.text()
 
-            }
-            else if(globalParameters.snvState.ordinal == 0){
+            } else if(globalParameters.snvState.ordinal == 0){
                 allInfo +=
                     document.getElementById("panel_nutrient_levels_content")?.text()
             }

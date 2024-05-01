@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
+import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,10 +23,14 @@ import androidx.fragment.app.Fragment
 import com.nlinterface.databinding.FragmentCameraBinding
 import com.nlinterface.interfaces.DetectorListener
 import com.nlinterface.utility.ObjectDetectorHelper
+import com.nlinterface.utility.Recognition
+import com.nlinterface.utility.Yolov5TFLiteDetector
 import org.tensorflow.lite.task.vision.detector.Detection
 import java.util.LinkedList
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.log
+
 class CameraFragment : Fragment(), DetectorListener{
 
     private val TAG = "ObjectDetection"
@@ -171,7 +176,7 @@ class CameraFragment : Fragment(), DetectorListener{
     // Update UI after objects have been detected. Extracts original image height/width
     // to scale and place bounding boxes properly through OverlayView
     override fun onResults(
-        results: MutableList<Detection>?,
+        results: ArrayList<Recognition>?,
         inferenceTime: Long,
         imageHeight: Int,
         imageWidth: Int
@@ -179,7 +184,7 @@ class CameraFragment : Fragment(), DetectorListener{
         activity?.runOnUiThread {
             // Pass necessary information to OverlayView for drawing on the canvas
             fragmentCameraBinding.overlay.setResults(
-                results ?: LinkedList<Detection>(),
+                results ?: ArrayList<Recognition>(),
                 imageHeight,
                 imageWidth
             )

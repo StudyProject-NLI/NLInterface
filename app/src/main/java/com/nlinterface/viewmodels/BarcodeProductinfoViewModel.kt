@@ -153,7 +153,7 @@ class Scanner(
  * The BrowserSearch class embeds the web-search.
  *
  */
-class BrowserSearch{
+class BrowserSearch {
     val globalParameters = GlobalParameters.instance!!
 
     /**
@@ -170,25 +170,21 @@ class BrowserSearch{
             val searchUrl = "https://de.openfoodfacts.org/produkt/$barcode"
             val document: Document = Jsoup.connect(searchUrl).get()
             var allInfo = ""
-            if (globalParameters.navState.ordinal == 0) {
-                allInfo +=
-                    document.select("h1.title-3").first()?.text()
 
-            } else if(globalParameters.labelsState.ordinal == 0){
-                allInfo +=
-                    document.getElementById("field_labels")?.text()
-
-            } else if(globalParameters.cooState.ordinal == 0){
-                allInfo +=
-                    document.getElementById("field_origins")?.text()
-
-            } else if(globalParameters.iaaState.ordinal == 0){
-                allInfo +=
-                    document.getElementById("panel_ingredients_content")?.text()
-
-            } else if(globalParameters.snvState.ordinal == 0){
-                allInfo +=
-                    document.getElementById("panel_nutrient_levels_content")?.text()
+            if(globalParameters.navState.ordinal == 0) {
+                allInfo += document.select("h1.title-3").first()?.text()
+            }
+            if (globalParameters.labelsState.ordinal == 0) {
+                allInfo += document.getElementById("field_labels")?.text()
+            }
+            if (globalParameters.cooState.ordinal == 0) {
+                allInfo += document.getElementById("field_origins")?.text()
+            }
+            if(globalParameters.iaaState.ordinal == 0) {
+                allInfo += document.getElementById("panel_ingredients_content")?.text()
+            }
+            if(globalParameters.snvState.ordinal == 0) {
+                allInfo += document.select("h4.evaluation__title").text()
             }
 
             viewModel.say(allInfo)
@@ -203,6 +199,8 @@ class BrowserSearch{
  */
 
 class ScanningProcess{
+
+    private lateinit var cameraProvider: ProcessCameraProvider
 
     /**
      * Function starting the scanning process.
@@ -227,7 +225,7 @@ class ScanningProcess{
             ContextCompat.getMainExecutor(context),
             Scanner(viewModel, vibrator)
         )
-        val cameraProvider = ProcessCameraProvider.getInstance(context).get()
+        cameraProvider = ProcessCameraProvider.getInstance(context).get()
         try {
             cameraProvider.bindToLifecycle(
                 ProcessLifecycleOwner.get(),
@@ -240,6 +238,12 @@ class ScanningProcess{
             e.printStackTrace().toString()
         }
     }
+
+    fun cleanup(){
+        cameraProvider.unbindAll()
+    }
+
+
 }
 
 /**
@@ -250,8 +254,30 @@ class ScanningProcess{
 
 class ConstantScanning: Service() {
 
+    lateinit var viewModel: MainViewModel
+    /**
+     * Configuring a BroadcastReceiver, that allows the user to use the STT utility
+     * of the current activity to stop the speech about the information of a product.
+     *
+     * todo: MAYBE make it that tts really shuts down and is not just overwrite
+     *  with empty text
+     */
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if ("BarcodeInfo_Stop" == intent.action) {
+                val stopSpeech = intent.getBooleanExtra("stop_speech", false)
+                if (stopSpeech) {
+                    viewModel.say("")
+                    Log.println(Log.INFO, "TTS", "Stop TTS")
+                }
+            }
+        }
+    }
+    private val filter = IntentFilter("BarcodeInfo_Stop")
 
-     /**
+    private var scanner = ScanningProcess()
+
+    /**
      * This method is required by the Service architecture,
      * but not needed because the scanning should be done constantly.
      * Therefore it just return null
@@ -259,14 +285,6 @@ class ConstantScanning: Service() {
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
-
-
-    override fun onDestroy() {
-        val cameraProvider = ProcessCameraProvider.getInstance(this)
-        cameraProvider.cancel(true)
-        super.onDestroy()
-    }
-
 
     /**
      * Function that manages the Service, once initialized.
@@ -282,38 +300,28 @@ class ConstantScanning: Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-
         val application = application
-        val viewModel = MainViewModel(application)
-        viewModel.initTTS()
+        viewModel = MainViewModel(application)
 
-        /**
-         * Configuring a BroadcastReceiver, that allows the user to use the STT utility
-         * of the current activity to stop the speech about the information of a product.
-         *
-         * todo: MAYBE make it that tts really shuts down and is not just overwritte
-         *  with empty text
-         */
-        val broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                if ("BarcodeInfo_Stop" == intent.action) {
-                    val stopSpeech = intent.getBooleanExtra("stop_speech", false)
-                    if (stopSpeech) {
-                        viewModel.say("")
-                        Log.println(Log.INFO, "TTS", "Stop TTS")
-                    }
-                }
-            }
-        }
-        val filter = IntentFilter("BarcodeInfo_Stop")
+        viewModel.initTTS()
         registerReceiver(broadcastReceiver, filter)
 
         val vibrator =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        val scanner = ScanningProcess()
         scanner.activateScanning(viewModel, vibrator, this)
         Log.println(Log.INFO, "Scanner","Barcode Scanning Service is Active")
 
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
+    /**
+     *
+     */
+
+    override fun onDestroy() {
+
+        scanner.cleanup()
+        Log.i("ConstantScanning", "Barcode Scanning Service destroyed")
+        unregisterReceiver(broadcastReceiver)
+        super.onDestroy()
+    }
 }

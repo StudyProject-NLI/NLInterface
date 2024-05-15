@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -369,6 +370,14 @@ class BarcodeSettingsActivity : AppCompatActivity() {
             changeAndReadButtonNutritionalValues()
         }
 
+        else if(command == resources.getString(R.string.stop_speech)) {
+
+            val intent = Intent("BarcodeInfo_Stop").apply {
+                putExtra("stop_speech", true)
+            }
+            sendBroadcast(intent)
+        }
+
         else if (command == resources.getString(R.string.tell_me_my_options)) {
 
             viewModel.say(
@@ -382,7 +391,8 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                             )
                         } " +
                         "${resources.getString(R.string.navigate_to_settings)}." +
-                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."+
+                        "${resources.getString(R.string.stop_speech)}."
             )
 
         } else {

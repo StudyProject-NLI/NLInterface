@@ -62,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         
-        GlobalParameters.instance!!.loadPreferences(this)
+        GlobalParameters.instance!!.loadSettingsPreferences(this)
+        GlobalParameters.instance!!.loadBarcodePreferences(this)
         
         verifyAudioPermissions()
         configureUI()
@@ -91,12 +92,15 @@ class MainActivity : AppCompatActivity() {
         GlobalParameters.instance!!.updateTheme()
 
         val serviceIntent = Intent(this, ConstantScanning()::class.java)
-        if (GlobalParameters.instance!!.barcodeServiceMode == GlobalParameters.BarcodeServiceMode.ON) {
+        if (GlobalParameters.instance!!.barcodeServiceMode ==
+            GlobalParameters.BarcodeServiceMode.ON) {
             verifyCameraPermissions()
-            if (checkCallingOrSelfPermission( Manifest.permission.CAMERA ) == PackageManager.PERMISSION_GRANTED) {
+            if (checkCallingOrSelfPermission( Manifest.permission.CAMERA ) ==
+                PackageManager.PERMISSION_GRANTED) {
                 startService(serviceIntent)
         }
         } else {
+
             stopService(serviceIntent)
             Log.println(Log.INFO, "Scanner", "Stopping the Barcode Scanning Service")
         }
@@ -174,7 +178,8 @@ class MainActivity : AppCompatActivity() {
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
                         "${resources.getString(R.string.navigate_to_settings)}." +
-                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."+
+                        "${resources.getString(R.string.stop_speech)}."
             )
             
         } else if(command == resources.getString(R.string.stop_speech)) {

@@ -75,7 +75,7 @@ open class GlobalParameters protected constructor() {
             }
     }
 
-    fun loadPreferences(context: Context) {
+    fun loadSettingsPreferences(context: Context) {
         // get saved data from SharedPreferences or create SharedPreferences
         // and set the respective GlobalParameters to the saved data
         val sharedPref: SharedPreferences = context.getSharedPreferences(
@@ -100,34 +100,43 @@ open class GlobalParameters protected constructor() {
             BarcodeServiceMode.OFF.toString()
         )
         instance!!.barcodeServiceMode = BarcodeServiceMode.valueOf(prefBarcodeServiceMode!!)
+    }
 
-        val prefNameAndVolume = sharedPref.getString(
+    fun loadBarcodePreferences(context: Context) {
+        // get saved data from SharedPreferences or create SharedPreferences
+        // and set the respective GlobalParameters to the saved data
+        val sharedBarcodePref: SharedPreferences = context.getSharedPreferences(
+            context.resources.getString(R.string.barcode_settings_preferences_key),
+            Context.MODE_PRIVATE
+        ) ?: return
+
+        val prefNameAndVolume = sharedBarcodePref.getString(
             context.resources.getString(R.string.settings_name_and_volume_key),
             NavState.YES.toString()
         )
         instance!!.navState = NavState.valueOf(prefNameAndVolume!!)
 
-        val prefLabels = sharedPref.getString(
+        val prefLabels = sharedBarcodePref.getString(
             context.resources.getString(R.string.settings_labels_key),
             LabelsState.NO.toString()
         )
         instance!!.labelsState = LabelsState.valueOf(prefLabels!!)
 
-        val prefCountryOfOrigin = sharedPref.getString(
+        val prefCountryOfOrigin = sharedBarcodePref.getString(
             context.resources.getString(R.string.settings_country_of_origin_key),
             CooState.NO.toString()
         )
         instance!!.cooState = CooState.valueOf(prefCountryOfOrigin!!)
 
-        val prefIngredients = sharedPref.getString(
+        val prefIngredients = sharedBarcodePref.getString(
             context.resources.getString(R.string.settings_ingredients_and_allergies_key),
             IaaState.YES.toString()
         )
         instance!!.iaaState = IaaState.valueOf(prefIngredients!!)
 
-        val prefNutritionalValues = sharedPref.getString(
-                context.resources.getString(R.string.settings_short_nutritional_values_key),
-                SnvState.NO.toString()
+        val prefNutritionalValues = sharedBarcodePref.getString(
+            context.resources.getString(R.string.settings_short_nutritional_values_key),
+            SnvState.NO.toString()
         )
         instance!!.snvState = SnvState.valueOf(prefNutritionalValues!!)
     }

@@ -380,7 +380,8 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
                         "${resources.getString(R.string.navigate_to_settings)}." +
-                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."+
+                        "${resources.getString(R.string.stop_speech)}."
             )
             
         } else {

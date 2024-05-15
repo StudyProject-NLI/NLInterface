@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -165,6 +166,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun onBarcodeServiceButtonClick() {
+
         if (globalParameters.barcodeServiceMode.ordinal == BarcodeServiceMode.values().size - 1) {
             globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
         } else {
@@ -203,7 +205,7 @@ class SettingsActivity : AppCompatActivity() {
             putString(
                 getString(R.string.barcode_service_mode_key), globalParameters.barcodeServiceMode.toString()
             )
-            
+
             apply()
         }
     }
@@ -343,7 +345,14 @@ class SettingsActivity : AppCompatActivity() {
 
             viewModel.say(barcodeServiceButton.text as String)
 
-        }else if (command == resources.getString(R.string.tell_me_my_options)) {
+        } else if(command == resources.getString(R.string.stop_speech)) {
+
+            val intent = Intent("BarcodeInfo_Stop").apply {
+                putExtra("stop_speech", true)
+            }
+            sendBroadcast(intent)
+
+        } else if (command == resources.getString(R.string.tell_me_my_options)) {
     
             viewModel.say(
                 "${resources.getString(R.string.your_options_are)} " +
@@ -352,7 +361,8 @@ class SettingsActivity : AppCompatActivity() {
                         "${resources.getString(R.string.navigate_to_grocery_list)}, " +
                         "${resources.getString(R.string.navigate_to_place_details)} ${resources.getString(R.string.and)} " +
                         "${resources.getString(R.string.navigate_to_settings)}." +
-                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."+
+                        "${resources.getString(R.string.stop_speech)}."
             )
     
         } else {

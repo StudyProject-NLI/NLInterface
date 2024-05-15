@@ -16,7 +16,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
-import com.nlinterface.utility.*
+import com.nlinterface.utility.ActivityType
+import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.navToActivity
+import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.ConstantScanning
 import com.nlinterface.viewmodels.MainViewModel
 
@@ -59,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         
-        GlobalParameters.instance!!.loadPreferences(this)
+        GlobalParameters.instance!!.loadSettingsPreferences(this)
+        GlobalParameters.instance!!.loadBarcodePreferences(this)
         
         verifyAudioPermissions()
         configureUI()
@@ -88,12 +92,15 @@ class MainActivity : AppCompatActivity() {
         GlobalParameters.instance!!.updateTheme()
 
         val serviceIntent = Intent(this, ConstantScanning()::class.java)
-        if (GlobalParameters.instance!!.barcodeServiceMode == GlobalParameters.BarcodeServiceMode.ON) {
+        if (GlobalParameters.instance!!.barcodeServiceMode ==
+            GlobalParameters.BarcodeServiceMode.ON) {
             verifyCameraPermissions()
-            if (checkCallingOrSelfPermission( Manifest.permission.CAMERA ) == PackageManager.PERMISSION_GRANTED) {
+            if (checkCallingOrSelfPermission( Manifest.permission.CAMERA ) ==
+                PackageManager.PERMISSION_GRANTED) {
                 startService(serviceIntent)
         }
         } else {
+
             stopService(serviceIntent)
             Log.println(Log.INFO, "Scanner", "Stopping the Barcode Scanning Service")
         }
@@ -170,9 +177,18 @@ class MainActivity : AppCompatActivity() {
                 "${resources.getString(R.string.your_options_are)} " +
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
-                        "${resources.getString(R.string.navigate_to_settings)}."
+                        "${resources.getString(R.string.navigate_to_settings)}." +
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."+
+                        "${resources.getString(R.string.stop_speech)}."
             )
             
+        } else if(command == resources.getString(R.string.stop_speech)) {
+
+            val intent = Intent("BarcodeInfo_Stop").apply {
+                putExtra("stop_speech", true)
+            }
+            sendBroadcast(intent)
+
         } else {
             viewModel.say(resources.getString(R.string.invalid_command))
         }
@@ -199,12 +215,16 @@ class MainActivity : AppCompatActivity() {
         
             resources.getString(R.string.navigate_to_main_menu) ->
                 navToActivity(this, ActivityType.MAIN)
+
+            resources.getString(R.string.navigate_to_barcode_scanner_settings) ->
+                navToActivity(this, ActivityType.BARCODESETTINGS)
         
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
         
     }
-    
+
+
     /**
      * Sets up all UI elements, i.e. the groceryList/placeDetails/settingsActivity/voiceActivation
      * buttons and their respective onClickListeners

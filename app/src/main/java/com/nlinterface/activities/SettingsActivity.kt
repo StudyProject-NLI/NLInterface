@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -12,9 +13,9 @@ import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
-import com.nlinterface.utility.GlobalParameters.ThemeChoice
-import com.nlinterface.utility.GlobalParameters.KeepScreenOn
 import com.nlinterface.utility.GlobalParameters.BarcodeServiceMode
+import com.nlinterface.utility.GlobalParameters.KeepScreenOn
+import com.nlinterface.utility.GlobalParameters.ThemeChoice
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.navToActivity
 import com.nlinterface.utility.setViewRelativeSize
@@ -56,6 +57,8 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var barcodeServiceOptions: MutableList<String>
     private lateinit var barcodeServiceButton : Button
+
+    private lateinit var barcodeSettingsButton: Button
 
     private lateinit var voiceActivationButton: ImageButton
     
@@ -119,6 +122,11 @@ class SettingsActivity : AppCompatActivity() {
         barcodeServiceButton = findViewById(R.id.settings_barcode_mode)
         barcodeServiceButton.setOnClickListener { onBarcodeServiceButtonClick() }
         barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
+
+        barcodeSettingsButton = findViewById(R.id.barcode_settings)
+        barcodeSettingsButton.setOnClickListener {_ ->
+            navToActivity(this, ActivityType.BARCODESETTINGS)}
+        barcodeSettingsButton.text =  resources.getString(R.string.barcode_scanner_settings)
     }
 
     /**
@@ -158,6 +166,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun onBarcodeServiceButtonClick() {
+
         if (globalParameters.barcodeServiceMode.ordinal == BarcodeServiceMode.values().size - 1) {
             globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
         } else {
@@ -166,13 +175,15 @@ class SettingsActivity : AppCompatActivity() {
 
         barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
 
-        // TODO: Add voice commands for Barcode Service
+        viewModel.say(barcodeServiceButton.text as String)
     }
 
 
     /**
+     *
      * If the activity is paused, save the current preferences to SharedPreferences.
      */
+
     override fun onPause() {
         super.onPause()
 
@@ -191,7 +202,10 @@ class SettingsActivity : AppCompatActivity() {
             putString(
                 getString(R.string.settings_theme_key), globalParameters.themeChoice.toString()
             )
-            
+            putString(
+                getString(R.string.barcode_service_mode_key), globalParameters.barcodeServiceMode.toString()
+            )
+
             apply()
         }
     }
@@ -287,13 +301,13 @@ class SettingsActivity : AppCompatActivity() {
      * TODO: streamline processing and command structure
      */
     private fun handleSTTCommand(command: String) {
-    
+
         // any attempted navigation commands are handled are passed on
         if (command.contains(resources.getString(R.string.go_to))) {
             executeNavigationCommand(command)
-        
+
         } else if (command == resources.getString(R.string.change_theme)) {
-    
+
             val scope = CoroutineScope(Job() + Dispatchers.Main)
             scope.launch {
                 requestResponse(
@@ -303,9 +317,9 @@ class SettingsActivity : AppCompatActivity() {
                             resources.getString(R.string.default_theme)
                 )
             }
-        
+
         } else if (command == resources.getString(R.string.change_screen_settings)) {
-    
+
             val scope = CoroutineScope(Job() + Dispatchers.Main)
             scope.launch {
                 requestResponse(
@@ -314,7 +328,30 @@ class SettingsActivity : AppCompatActivity() {
                             resources.getString(R.string.dim_screen_after_a_while)
                 )
             }
-            
+
+        } else if (command == resources.getString(R.string.barcode_service_mode_on)){
+
+            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
+
+            barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
+
+            viewModel.say(barcodeServiceButton.text as String)
+
+        } else if (command == resources.getString(R.string.barcode_service_mode_off)){
+
+            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[1]
+
+            barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
+
+            viewModel.say(barcodeServiceButton.text as String)
+
+        } else if(command == resources.getString(R.string.stop_speech)) {
+
+            val intent = Intent("BarcodeInfo_Stop").apply {
+                putExtra("stop_speech", true)
+            }
+            sendBroadcast(intent)
+
         } else if (command == resources.getString(R.string.tell_me_my_options)) {
     
             viewModel.say(
@@ -323,7 +360,9 @@ class SettingsActivity : AppCompatActivity() {
                         "${resources.getString(R.string.change_screen_settings)}, " +
                         "${resources.getString(R.string.navigate_to_grocery_list)}, " +
                         "${resources.getString(R.string.navigate_to_place_details)} ${resources.getString(R.string.and)} " +
-                        "${resources.getString(R.string.navigate_to_settings)}."
+                        "${resources.getString(R.string.navigate_to_settings)}." +
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."+
+                        "${resources.getString(R.string.stop_speech)}."
             )
     
         } else {
@@ -350,6 +389,8 @@ class SettingsActivity : AppCompatActivity() {
             resources.getString(R.string.change_screen_settings) -> {
                 executeChangScreenSettingsCommand(response)
             }
+
+            //
                 
         }
     
@@ -450,6 +491,9 @@ class SettingsActivity : AppCompatActivity() {
         
             resources.getString(R.string.navigate_to_main_menu) ->
                 navToActivity(this, ActivityType.MAIN)
+
+            resources.getString(R.string.navigate_to_barcode_scanner_settings) ->
+                navToActivity(this, ActivityType.BARCODESETTINGS)
         
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }

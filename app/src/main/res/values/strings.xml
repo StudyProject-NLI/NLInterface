@@ -4,12 +4,27 @@
     <string name="settings_preferences_key" translatable="false">SETTINGS_KEY</string>
     <string name="settings_keep_screen_on_key" translatable="false">KEEP_SCREEN_ON_KEY</string>
     <string name="settings_theme_key" translatable="false">THEME_KEY</string>
+    <string name="barcode_service_mode_key" translatable="false">
+        BARCODE_SERVICE_MODE_KEY</string>
+    <string name="barcode_settings_preferences_key" translatable="false">
+        BARCODE_SETTINGS_KEY</string>
+    <string name="settings_name_and_volume_key" translatable="false">
+        NAME_AND_VOLUME_KEY</string>
+    <string name="settings_labels_key" translatable="false">
+        LABELS_KEY</string>
+    <string name="settings_country_of_origin_key" translatable="false">
+        COUNTRY_OF_ORIGIN_KEY</string>
+    <string name="settings_ingredients_and_allergies_key" translatable="false">
+        INGREDIENTS_KEY</string>
+    <string name="settings_short_nutritional_values_key" translatable="false">
+        NUTRITIONAL_VALUES_KEY</string>
 
-<!--
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    VOICE COMMANDS
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
--->
+
+    <!--
+        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        VOICE COMMANDS
+        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    -->
 
     <!--    VOICE COMMANDS: GENERAL    -->
     <string name="go_to">go to</string>
@@ -17,10 +32,12 @@
     <string name="navigate_to_place_details">go to place details</string>
     <string name="navigate_to_settings">go to settings</string>
     <string name="navigate_to_main_menu">go to main menu</string>
+    <string name="navigate_to_barcode_scanner_settings">go to barcode scanner settings</string>
     <string name="tell_me_my_options">tell me my options</string>
     <string name="cancel">cancel</string>
     <string name="add_indicator">add</string>
     <string name="remove_indicator">remove</string>
+    <string name="stop_speech">stop</string>
 
     <!--    VOICE COMMANDS: GROCERY LIST    -->
     <string name="add_an_item">add an item</string>
@@ -50,7 +67,20 @@
     <string name="change_screen_settings">change screen settings</string>
     <string name="keep_screen_always_on">keep screen always on</string>
     <string name="dim_screen_after_a_while">dim screen after a while</string>
+    <string name="barcode_service_mode_on">barcode scanner on</string>
+    <string name="barcode_service_mode_off">barcode scanner off</string>
 
+    <!--    VOICE COMMANDS: BARCODE SCANNER SETTINGS    -->
+    <string name="product_name_on">product name on</string>
+    <string name="product_name_off">product name off</string>
+    <string name="labels_on">labels on</string>
+    <string name="labels_off">labels off</string>
+    <string name="country_of_origin_on">country of origin on</string>
+    <string name="country_of_origin_off">country of origin off</string>
+    <string name="ingredients_and_allergies_on">ingredients and allergies on</string>
+    <string name="ingredients_and_allergies_off">ingredients and allergies off</string>
+    <string name="nutritional_values_on">nutritional values on</string>
+    <string name="nutritional_values_off">nutritional values off</string>
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     NARRATION
@@ -97,12 +127,18 @@
 
     <!--    NARRATION: SETTINGS    -->
     <string name="settings">Settings</string>
-    <string name="new_theme_setting">New theme setting is %1$s. Switch back to Main Activity to implement change.</string>
+    <string name="new_theme_setting">New theme setting is %1$s.
+        Switch back to Main Activity to implement change.</string>
     <string name="new_screen_setting">New screen setting is %1$s.</string>
 
     <!--    NARRATION: CLASSIFICATION    -->
     <string name="classification">Classification</string>
     <string name="take_photo">Take Photo</string>
+
+    <!--    NARRATION: BARCODE SCANNER SETTINGS    -->
+    <string name="barcode_scanner_settings">Barcode Scanner Settings</string>
+    <string name="new_barcode_setting">New barcode scanner setting is %1$s.</string>
+
 <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     FOLLOW-UP QUESTIONS
@@ -153,6 +189,37 @@
     <string-array name="barcode_mode_options">
         <item>Barcode Scanner On</item>
         <item>Barcode Scanner Off</item>
+    </string-array>
+
+    <!--    LABELS: BARCODE SCANNER SETTINGS    -->
+    <string name="settings_name_and_volume">Name and Volume</string>
+    <string-array name="settings_name_and_volume">
+        <item>Name and Volume On</item>
+        <item>Name and Volume Off</item>
+    </string-array>
+
+    <string name="settings_labels">Labels</string>
+    <string-array name="settings_labels">
+        <item>Labels On</item>
+        <item>Labels Off</item>
+    </string-array>
+
+    <string name="settings_country_of_origin">Country of Origin</string>
+    <string-array name="settings_country_of_origin">
+        <item>Country of Origin On</item>
+        <item>Country of Origin Off</item>
+    </string-array>
+
+    <string name="settings_ingredients_and_allergies">Ingredients and Allergies</string>
+    <string-array name="settings_ingredients_and_allergies">
+        <item>Ingredients and Allergies On</item>
+        <item>Ingredients and Allergies Off</item>
+    </string-array>
+
+    <string name="settings_short_nutritional_values">Nutritional Values</string>
+    <string-array name="settings_short_nutritional_values">
+        <item>Nutritional Values On</item>
+        <item>Nutritional Values Off</item>
     </string-array>
 
 </resources>

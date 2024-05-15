@@ -209,7 +209,8 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
                         "${resources.getString(R.string.list_my_favorite_places)}" +
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
-                        "${resources.getString(R.string.navigate_to_settings)}."
+                        "${resources.getString(R.string.navigate_to_settings)}." +
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."
             )
             
         } else {
@@ -472,6 +473,9 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
             resources.getString(R.string.navigate_to_main_menu) ->
                 navToActivity(this, ActivityType.MAIN)
+
+            resources.getString(R.string.navigate_to_barcode_scanner_settings) ->
+                navToActivity(this, ActivityType.BARCODESETTINGS)
         
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }

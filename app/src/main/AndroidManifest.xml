@@ -49,6 +49,8 @@
             android:name=".activities.SettingsActivity"/>
         <activity
             android:name=".activities.ClassificationActivity"/>
+        <activity
+            android:name=".activities.BarcodeSettingsActivity"/>
         <service
             android:name=".viewmodels.ConstantScanning"
             android:exported="false" />

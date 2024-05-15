@@ -3,7 +3,6 @@ package com.nlinterface.activities
 import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
@@ -359,6 +358,13 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
                 viewModel.say(resources.getString(R.string.all_items_are_in_the_cart))
             }
     
+        } else if(command == resources.getString(R.string.stop_speech)) {
+
+            val intent = Intent("BarcodeInfo_Stop").apply {
+                putExtra("stop_speech", true)
+            }
+            sendBroadcast(intent)
+
         } else if ((command == resources.getString(R.string.tell_me_my_options))) {
             
             viewModel.say(
@@ -373,7 +379,9 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
                         "${resources.getString(R.string.list_all_items_in_cart)}," +
                         "${resources.getString(R.string.navigate_to_grocery_list)}," +
                         "${resources.getString(R.string.navigate_to_place_details)} and" +
-                        "${resources.getString(R.string.navigate_to_settings)}."
+                        "${resources.getString(R.string.navigate_to_settings)}." +
+                        "${resources.getString(R.string.navigate_to_barcode_scanner_settings)}."+
+                        "${resources.getString(R.string.stop_speech)}."
             )
             
         } else {
@@ -536,6 +544,9 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             
             resources.getString(R.string.navigate_to_main_menu) ->
                 navToActivity(this, ActivityType.MAIN)
+
+            resources.getString(R.string.navigate_to_barcode_scanner_settings) ->
+                navToActivity(this, ActivityType.BARCODESETTINGS)
             
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }

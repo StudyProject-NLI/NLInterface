@@ -18,6 +18,7 @@ import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.LocationGetter
 import com.nlinterface.utility.navToActivity
 import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.ConstantScanning
@@ -40,14 +41,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var voiceActivationButton: ImageButton
-    
+    private val globalParameters = GlobalParameters.instance!!
+
+
+
+
     /**
      * Companion Object / Singleton implementation required to handle audio permissions
      */
     companion object {
         // needed to verify the audio permission result
         private const val STT_PERMISSION_REQUEST_CODE = 0
+        private const val CAMERA_PERMISSION_REQUEST_CODE = 1
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 2
     }
+
     
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -62,9 +70,9 @@ class MainActivity : AppCompatActivity() {
         
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         
-        GlobalParameters.instance!!.loadSettingsPreferences(this)
-        GlobalParameters.instance!!.loadBarcodePreferences(this)
-        
+        globalParameters.loadSettingsPreferences(this)
+        globalParameters.loadBarcodePreferences(this)
+
         verifyAudioPermissions()
         configureUI()
         configureTTS()
@@ -82,28 +90,35 @@ class MainActivity : AppCompatActivity() {
         viewModel.say(resources.getString(R.string.main_menu))
         
         // process keep screen on settings
-        if (GlobalParameters.instance!!.keepScreenOn == GlobalParameters.KeepScreenOn.YES) {
+        if (globalParameters.keepScreenOn == GlobalParameters.KeepScreenOn.YES) {
             window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
         
         // process theme settings
-        GlobalParameters.instance!!.updateTheme()
+        globalParameters.updateTheme()
 
-        val serviceIntent = Intent(this, ConstantScanning()::class.java)
-        if (GlobalParameters.instance!!.barcodeServiceMode ==
+        if (checkCallingOrSelfPermission( Manifest.permission.ACCESS_FINE_LOCATION ) ==
+            PackageManager.PERMISSION_GRANTED) {
+            val locationService = Intent(this, LocationGetter()::class.java)
+            startService(locationService)
+        }
+
+        val barcodeService = Intent(this, ConstantScanning()::class.java)
+        if (globalParameters.barcodeServiceMode ==
             GlobalParameters.BarcodeServiceMode.ON) {
             verifyCameraPermissions()
             if (checkCallingOrSelfPermission( Manifest.permission.CAMERA ) ==
                 PackageManager.PERMISSION_GRANTED) {
-                startService(serviceIntent)
+                startService(barcodeService)
         }
         } else {
-
-            stopService(serviceIntent)
+            stopService(barcodeService)
             Log.println(Log.INFO, "Scanner", "Stopping the Barcode Scanning Service")
         }
+
+
     }
     
     /**
@@ -132,7 +147,7 @@ class MainActivity : AppCompatActivity() {
      * of the voice input to the STT system, aka the 'command'
      */
     private fun configureSTT() {
-        
+
         viewModel.initSTT()
         
         // if listening: microphone color green, else microphone color white
@@ -279,8 +294,66 @@ class MainActivity : AppCompatActivity() {
                 arrayOf(Manifest.permission.RECORD_AUDIO),
                 STT_PERMISSION_REQUEST_CODE
             )
+        } else{
+            verifyForegroundLocationPermissions()
         }
     }
+
+    /**
+     * Request the user to grant camera permissions, if not already granted.
+     * Will probably not be used further once other camera is included
+     */
+    private fun verifyCameraPermissions() {
+        if (checkCallingOrSelfPermission(
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA),
+                CAMERA_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    /**
+     * Request the user to grant access to current location permissions, if not already granted.
+     *
+     */
+    private fun verifyForegroundLocationPermissions(){
+        if (checkCallingOrSelfPermission(
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+
+    }
+
+    /*
+    /**
+     * Request the user to grant access to current location permissions, if not already granted.
+     *
+     */
+    private fun verifyBackgroundLocationPermissions(){
+        if (checkCallingOrSelfPermission(
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+
+    }
+
+     */
     
     /**
      * Called when the permissions request is answered by the user and processes the result. If
@@ -299,15 +372,44 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(
-                this, R.string.audio_permission_granted, Toast.LENGTH_LONG
-            ).show()
-        } else {
-            Toast.makeText(
-                this, R.string.audio_permission_denied,
-                Toast.LENGTH_LONG
-            ).show()
+        if (requestCode == STT_PERMISSION_REQUEST_CODE){
+            if (requestCode == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                    this, R.string.audio_permission_granted, Toast.LENGTH_LONG
+                ).show()
+                verifyForegroundLocationPermissions()
+            }   else {
+                Toast.makeText(
+                    this, R.string.audio_permission_denied,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        else if(requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (requestCode == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                    this, R.string.location_permission_granted, Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    this, R.string.location_permission_denied,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+        else if(requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (requestCode == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                    this, R.string.camera_permission_granted, Toast.LENGTH_LONG
+                ).show()
+                val barcodeService = Intent(this, ConstantScanning()::class.java)
+                startService(barcodeService)
+            } else {
+                Toast.makeText(
+                    this, R.string.camera_permission_denied,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
     
@@ -324,20 +426,5 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Request the user to grant camera permissions, if not already granted.
-     * Will probably not be used further once other camera is included
-     */
-    private fun verifyCameraPermissions() {
-        if (checkCallingOrSelfPermission(
-                Manifest.permission.CAMERA
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                STT_PERMISSION_REQUEST_CODE
-            )
-        }
-    }
+
 }

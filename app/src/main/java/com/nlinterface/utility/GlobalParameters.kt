@@ -2,6 +2,7 @@ package com.nlinterface.utility
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.location.Location
 import androidx.appcompat.app.AppCompatDelegate
 import com.nlinterface.R
 import java.util.Locale
@@ -13,6 +14,7 @@ open class GlobalParameters protected constructor() {
     var themeChoice: ThemeChoice = ThemeChoice.SYSTEM_DEFAULT
     var barcodeServiceMode: BarcodeServiceMode = BarcodeServiceMode.OFF
 
+    lateinit var location: Location
     lateinit var locale: Locale
 
     // order of the items needs to be the same as in the respective dropdown menus

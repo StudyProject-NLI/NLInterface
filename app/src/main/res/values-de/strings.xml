@@ -76,6 +76,12 @@
     <string name="your_options_are">deine optionen sind:</string>
     <string name="audio_permission_granted">Die App hat nun Zugriff auf das Mikrofon.</string>
     <string name="audio_permission_denied">Bitte erlauben Sie den Zugriff auf das Mikrofon, um Sprachbefehle verwenden zu können.</string>
+    <string name="location_permission_granted">>Die App hat nun Zugriff auf deinen Standort.</string>
+    <string name="location_permission_denied">Bitte erlaube den Zugriff auf deinen Standort.
+    Di KI liefert die besten Ergebnisse mit dieser Information</string>
+    <string name="camera_permission_granted">>Die App hat nun Zugriff auf deine Kamera.</string>
+    <string name="camera_permission_denied">Bitte erlaube den Zugriff auf deine Kamera
+    damit du den Barcode Scanner nutzen kannst.</string>
     <string name="or">oder</string>
     <string name="and">und</string>
 

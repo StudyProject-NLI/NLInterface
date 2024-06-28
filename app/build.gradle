@@ -85,10 +85,15 @@ dependencies {
 
     // Camera UI
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+
     //mlkit
     implementation 'com.google.mlkit:barcode-scanning:17.2.0'
     implementation 'com.google.mlkit:object-detection-custom:17.0.1'
 
     //it.jsoup
     implementation "org.jsoup:jsoup:1.14.3"
+
+    //GPT
+    implementation "com.aallam.openai:openai-client:3.7.2"
+    implementation "io.ktor:ktor-client-android:2.2.4"
 }

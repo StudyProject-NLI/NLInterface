@@ -52,26 +52,6 @@ class Scanner(
         .build()
     private val barcodeScanner = BarcodeScanning.getClient(options)
 
-    /**
-     *
-     */
-    /*
-    private val localModel = LocalModel.Builder()
-        .setAssetFilePath("mobilenetv1.tflite")
-        .build()
-    private val detectorOptions =
-        CustomObjectDetectorOptions.Builder(localModel)
-            .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
-            .enableMultipleObjects()
-            .enableClassification()
-            .setClassificationConfidenceThreshold(0.5f)
-            .setMaxPerObjectLabelCount(3)
-            .build()
-    private val handDetector =
-        ObjectDetection.getClient(detectorOptions)
-
-     */
-
 
     /**
      * Analysis of the ImageProxy. Converts the camera output into analyzable format.
@@ -90,23 +70,7 @@ class Scanner(
         if (mediaImage != null) {
             val scannerInput =
                 InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)
-            /*
-            var handBoundingBox: Rect = Rect(0,0,0,0)
-            handDetector.process(scannerInput)
-                .addOnSuccessListener { objects ->
-                    for (detectedObject in objects) {
-                        for (label in detectedObject.labels) {
-                            if (label.index == 0 && label.confidence > 0.5) {
-                                handBoundingBox = detectedObject.boundingBox
-                            }
-                        }
-                    }
-                }
-                .addOnFailureListener{exception ->
-                exception.printStackTrace()
-                }
 
-             */
             barcodeScanner.process(scannerInput)
                 .addOnSuccessListener { barcodes ->
                     if (barcodes.isNotEmpty()) {
@@ -262,7 +226,7 @@ class ConstantScanning: Service() {
      * todo: MAYBE make it that tts really shuts down and is not just overwrite
      *  with empty text
      */
-    private val broadcastReceiver = object : BroadcastReceiver() {
+    private val cameraBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if ("BarcodeInfo_Stop" == intent.action) {
                 val stopSpeech = intent.getBooleanExtra("stop_speech", false)
@@ -304,7 +268,7 @@ class ConstantScanning: Service() {
         viewModel = MainViewModel(application)
 
         viewModel.initTTS()
-        registerReceiver(broadcastReceiver, filter)
+        registerReceiver(cameraBroadcastReceiver, filter)
 
         val vibrator =  getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         scanner.activateScanning(viewModel, vibrator, this)
@@ -321,7 +285,7 @@ class ConstantScanning: Service() {
 
         scanner.cleanup()
         Log.i("ConstantScanning", "Barcode Scanning Service destroyed")
-        unregisterReceiver(broadcastReceiver)
+        unregisterReceiver(cameraBroadcastReceiver)
         super.onDestroy()
     }
 }

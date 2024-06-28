@@ -93,6 +93,12 @@
     <string name="your_options_are">your options are:</string>
     <string name="audio_permission_granted">Permission granted for using voice commands!</string>
     <string name="audio_permission_denied">Please provide microphone permission to use voice commands.</string>
+    <string name="location_permission_granted">Permission granted for using your current location!</string>
+    <string name="location_permission_denied">Please provide your permission to use your current location.
+    The AI needs this information for better results.</string>
+    <string name="camera_permission_granted">Permission granted for using your camera.</string>
+    <string name="camera_permission_denied">Please provide your permission to use your camera,
+    so you can use the barcode scanner.</string>
     <string name="or">or</string>
     <string name="and">and</string>
 

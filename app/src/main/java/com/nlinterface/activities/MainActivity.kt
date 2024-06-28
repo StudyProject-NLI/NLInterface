@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         if (checkCallingOrSelfPermission( Manifest.permission.ACCESS_FINE_LOCATION ) ==
             PackageManager.PERMISSION_GRANTED) {
-            val locationService = Intent(this, LocationGetter::class.java)
+            val locationService = Intent(this, LocationGetter()::class.java)
             startService(locationService)
         }
 

@@ -278,7 +278,7 @@ class ConstantScanning: Service() {
     }
 
     /**
-     *
+     * When service is terminated camera binds are removed and resources are cleared.
      */
 
     override fun onDestroy() {

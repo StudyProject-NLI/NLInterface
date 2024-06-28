@@ -81,7 +81,8 @@ class MainActivity : AppCompatActivity() {
     
     /**
      * Called when the activity is started. It reads out the name of the activity and processes
-     * the theme and keep screen on settings.
+     * the theme and keep screen on settings. It also starts the camera and location tracking if
+     * the permissions are granted.
      */
     override fun onStart() {
         super.onStart()
@@ -103,6 +104,7 @@ class MainActivity : AppCompatActivity() {
             PackageManager.PERMISSION_GRANTED) {
             val locationService = Intent(this, LocationGetter()::class.java)
             startService(locationService)
+            Log.i("Location", "Service for location tracking started.")
         }
 
         val barcodeService = Intent(this, ConstantScanning()::class.java)
@@ -115,7 +117,7 @@ class MainActivity : AppCompatActivity() {
         }
         } else {
             stopService(barcodeService)
-            Log.println(Log.INFO, "Scanner", "Stopping the Barcode Scanning Service")
+            Log.i("Scanner", "Stopping the Barcode Scanning Service")
         }
 
 
@@ -358,7 +360,9 @@ class MainActivity : AppCompatActivity() {
     /**
      * Called when the permissions request is answered by the user and processes the result. If
      * record audio permissions are granted, confirm that it was granted to the user. If not
-     * granted, request that it be granted for the full functionality to work.
+     * granted, request that it be granted for the full functionality to work. If audio permissions
+     * are granted further ask for location permissions.
+     *
      *
      * @param requestCode
      * @param permissions
@@ -393,20 +397,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this, R.string.location_permission_denied,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-        else if(requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (requestCode == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(
-                    this, R.string.camera_permission_granted, Toast.LENGTH_LONG
-                ).show()
-                val barcodeService = Intent(this, ConstantScanning()::class.java)
-                startService(barcodeService)
-            } else {
-                Toast.makeText(
-                    this, R.string.camera_permission_denied,
                     Toast.LENGTH_LONG
                 ).show()
             }

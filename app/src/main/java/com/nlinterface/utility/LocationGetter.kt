@@ -13,12 +13,29 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
+
+/**
+ * Location Getter is a service that allows to access the users location to use it for further
+ * context data for the AI. It helps the AI with choosing the appropriate functions with those
+ * additional context information.
+ */
 class LocationGetter: Service() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
-    private val globalParameters = GlobalParameters.instance!!
+    private var globalParameters = GlobalParameters.instance!!
 
+    /**
+     * Function that manages the Service, once initialized.
+     * It maps a value to location Client and
+     * starts the setupLocationCallback and startLocationUpdates
+     * Returns Start-Sticky to ensure it will try to start again,
+     * if it is destroyed for whatever reason.
+     *
+     * @param intent
+     * @param flags
+     * @param startId
+     */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -28,6 +45,10 @@ class LocationGetter: Service() {
         return START_STICKY
     }
 
+    /**
+     * Function that gets the location and saves it in a global variable to be accessed from
+     * everywhere.
+     */
     private fun setupLocationCallback() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
@@ -41,6 +62,9 @@ class LocationGetter: Service() {
         }
     }
 
+    /**
+     * Function that updates the location prioritizing low power drainage.
+     */
     private fun startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -54,10 +78,19 @@ class LocationGetter: Service() {
         }
     }
 
+    /**
+     * This method is required by the Service architecture,
+     * but not needed because the scanning should be done constantly.
+     * Therefore it just return null
+     */
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 
+    /**
+     * When service is terminated stop updating the location.
+     */
     override fun onDestroy() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
         Log.i("Location", "Accessing the location was stopped")

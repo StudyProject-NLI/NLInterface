@@ -12,6 +12,9 @@ open class GlobalParameters protected constructor() {
 
     var keepScreenOn: KeepScreenOn = KeepScreenOn.NO
     var themeChoice: ThemeChoice = ThemeChoice.SYSTEM_DEFAULT
+    var feedbackChoice: FeedbackChoice = FeedbackChoice.TACTILE
+    var narrationSpeedChoice: NarrationSpeedChoice = NarrationSpeedChoice.NORMAL
+    var narrationAmountChoice: NarrationAmountChoice = NarrationAmountChoice.STANDARD
     var barcodeServiceMode: BarcodeServiceMode = BarcodeServiceMode.OFF
 
     lateinit var location: Location
@@ -30,6 +33,24 @@ open class GlobalParameters protected constructor() {
         DARK
     }
 
+    enum class FeedbackChoice {
+        TACTILE,
+        AUDITORY,
+        BOTH,
+        NONE
+    }
+
+    enum class NarrationSpeedChoice {
+        NORMAL,
+        FAST,
+        SLOW
+    }
+
+    enum class NarrationAmountChoice {
+        STANDARD,
+        OFF,
+        EXTENSIVE
+    }
     enum class BarcodeServiceMode {
         ON,
         OFF
@@ -40,6 +61,7 @@ open class GlobalParameters protected constructor() {
     var cooState: CooState = CooState.NO
     var iaaState: IaaState = IaaState.YES
     var snvState: SnvState = SnvState.NO
+    var brandsState: BrandsState = BrandsState.NO
 
     enum class NavState {
         YES,
@@ -58,6 +80,10 @@ open class GlobalParameters protected constructor() {
         NO
     }
     enum class SnvState {
+        YES,
+        NO
+    }
+    enum class BrandsState{
         YES,
         NO
     }
@@ -96,6 +122,24 @@ open class GlobalParameters protected constructor() {
             ThemeChoice.SYSTEM_DEFAULT.toString()
         )
         instance!!.themeChoice = ThemeChoice.valueOf(prefTheme!!)
+
+        val prefFeedback = sharedPref.getString(
+            context.resources.getString(R.string.settings_feedback_key),
+            FeedbackChoice.TACTILE.toString()
+        )
+        instance!!.feedbackChoice = FeedbackChoice.valueOf(prefFeedback!!)
+
+        val prefNarrationSpeed = sharedPref.getString(
+            context.resources.getString(R.string.settings_narration_speed_key),
+            NarrationSpeedChoice.NORMAL.toString()
+        )
+        instance!!.narrationSpeedChoice = NarrationSpeedChoice.valueOf(prefNarrationSpeed!!)
+
+        val prefNarrationAmount = sharedPref.getString(
+            context.resources.getString(R.string.settings_narration_amount_key),
+            NarrationAmountChoice.STANDARD.toString()
+        )
+        instance!!.narrationAmountChoice = NarrationAmountChoice.valueOf(prefNarrationAmount!!)
 
         val prefBarcodeServiceMode = sharedPref.getString(
             context.resources.getString(R.string.barcode_service_mode_key),
@@ -141,6 +185,12 @@ open class GlobalParameters protected constructor() {
             SnvState.NO.toString()
         )
         instance!!.snvState = SnvState.valueOf(prefNutritionalValues!!)
+
+        val prefBrand= sharedBarcodePref.getString(
+            context.resources.getString(R.string.brands_key),
+            BrandsState.NO.toString()
+        )
+        instance!!.brandsState = BrandsState.valueOf(prefBrand!!)
     }
 
     fun updateTheme() {

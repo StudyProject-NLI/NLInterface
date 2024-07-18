@@ -1,42 +1,27 @@
 package com.nlinterface.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import android.view.View
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.common.api.Status
-import com.google.android.libraries.places.api.model.LocalTime
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.nlinterface.R
 import com.nlinterface.adapters.PlaceDetailsAdapter
 import com.nlinterface.databinding.ActivityPlaceDetailsBinding
-import com.nlinterface.dataclasses.GroceryItem
 import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.navToActivity
-import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.PlaceDetailsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 
 /**
@@ -75,10 +60,10 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     
     private lateinit var adapter: PlaceDetailsAdapter
     
-    private lateinit var voiceActivationButton: ImageButton
-    
     private lateinit var lastCommand: String
     private lateinit var lastResponse: String
+
+    private lateinit var navController: NavController
     
     /**
      * The onCreate function initializes the view by binding the Activity and the Layout and
@@ -90,18 +75,28 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         
         binding = ActivityPlaceDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.place_details_nav_host_fragment) as NavHostFragment
+        if (navHostFragment == null) {
+            Log.i("SettingsActivity", "NavHostFragment is null")
+        } else {
+            navController = navHostFragment.navController
+        }
         
         viewModel = ViewModelProvider(this)[PlaceDetailsViewModel::class.java]
         viewModel.initPlaceClient(this)
         
         viewModel.fetchPlaceDetailsItemList()
         placeDetailsItemList = viewModel.placeDetailsItemList
-        
-        configureUI()
-        configureAutocompleteFragment()
+
         configureTTS()
         configureSTT()
         
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
     
     /**
@@ -134,12 +129,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         viewModel.initSTT()
         
         // if listening: microphone color green, else microphone color white
-        val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            } else {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
-            }
+        val sttIsListeningObserver = Observer<Boolean> {
         }
         
         // observe LiveData change to be notified when the STT system is active(ly listening)
@@ -481,88 +471,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         }
         
     }
-    
-    /**
-     * Sets up all UI elements, i.e. the voiceActivation buttons, their respective
-     * onClick functionality and configures the recycler view.
-     */
-    private fun configureUI() {
-        
-        // set up voice activation button listener
-        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener {
-            onVoiceActivationButtonClick()
-        }
-        
-        // resize Voice Activation Button to 1/3 of display size
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-        
-        configureRecyclerView()
-    }
-    
-    /**
-     * Initializes the PlaceDetailsAdapter and fills the recyclerview with the PlaceDetailsItems on
-     * the Place Details List and configures the swipe to delete functionality in both directions
-     * utilizing ItemTouchHelper
-     */
-    private fun configureRecyclerView() {
-        
-        adapter = PlaceDetailsAdapter(placeDetailsItemList, this)
-        
-        val rvPlaceDetails = findViewById<View>(R.id.place_details_rv) as RecyclerView
-        rvPlaceDetails.adapter = adapter
-        rvPlaceDetails.layoutManager = LinearLayoutManager(this)
-        rvPlaceDetails.itemAnimator?.changeDuration = 0
-        
-        // implements swipe left to delete item functionality
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-            
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                onSwipeToDelete(viewHolder)
-            }
-        }).attachToRecyclerView(rvPlaceDetails)
-        
-        // implements swipe right to delete item functionality
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.RIGHT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-            
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                onSwipeToDelete(viewHolder)
-            }
-        }).attachToRecyclerView(rvPlaceDetails)
-        
-    }
-    
-    /**
-     * Called when user swipes left or right on an item in the recyclerview. The corresponding
-     * PlaceDetailsItem is then removed.
-     *
-     * @param viewHolder: the RecyclerView ViewHolder
-     */
-    private fun onSwipeToDelete(viewHolder: RecyclerView.ViewHolder) {
-        val placeDetailsItem: PlaceDetailsItem =
-            placeDetailsItemList[viewHolder.adapterPosition]
-        
-        deletePlaceDetailsItem(placeDetailsItem, viewHolder.adapterPosition)
-    }
-    
+
     /**
      * Calls the ViewModel to delete a PlaceDetailsItem from the places list and then removes it
      * from the UI and narrates the performed action to the user.
@@ -571,7 +480,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      * @param index: the index of the PlaceDetailsItem to be deleted
      */
     private fun deletePlaceDetailsItem(placeDetailsItem: PlaceDetailsItem, index: Int) {
-        
+
         viewModel.deletePlaceDetailsItem(placeDetailsItem)
         adapter.notifyItemRemoved(index)
         viewModel.say(
@@ -579,7 +488,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
                 R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName
             )
         )
-        
+
     }
     
     /**
@@ -612,7 +521,8 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     private fun findPlaceByName(storeName: String): PlaceDetailsItem? {
         return placeDetailsItemList.find { it.storeName.lowercase() == storeName }
     }
-    
+
+    /*
     /**
      * Sets up the AutocompleteFragment for the places search and sets a PlaceSelectionListener. The
      * search filters for supermarkets and returns the ID of a place. If a place is selected, it is
@@ -662,6 +572,8 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         })
         
     }
+
+     */
     
     /**
      * Called at the end of the activity lifecycle and saves the current PlaceDetailsItem list to

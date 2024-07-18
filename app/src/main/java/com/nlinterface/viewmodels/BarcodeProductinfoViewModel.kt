@@ -150,6 +150,9 @@ class BrowserSearch {
             if(globalParameters.snvState.ordinal == 0) {
                 allInfo += document.select("h4.evaluation__title").text()
             }
+            if(globalParameters.brandsState.ordinal == 0) {
+                allInfo += document.getElementById("field_brands")?.text()
+            }
 
             viewModel.say(allInfo)
         }   catch (e: Exception) {

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/Main1">
+
+    <fragment
+        android:id="@+id/Main1"
+        android:name="com.nlinterface.fragments.MainScreen1"
+        android:label="Main1"
+        tools:layout="@layout/main_screen1">
+        <action
+            android:id="@+id/Main1_to_Main2"
+            app:destination="@id/Main2"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/Main2"
+        android:name="com.nlinterface.fragments.MainScreen2"
+        android:label="Main2"
+        tools:layout="@layout/main_screen2">
+        <action
+            android:id="@+id/Main2_to_Main1"
+            app:destination="@id/Main1"/>
+        <action
+            android:id="@+id/Main2_to_BarcodeScanner"
+            app:destination="@id/BarcodeScanner"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/BarcodeScanner"
+        android:name="com.nlinterface.fragments.BarcodeScannerScreen"
+        android:label="BarcodeScanner"
+        tools:layout="@layout/barcode_scanner">
+        <action
+            android:id="@+id/BarcodeScanner_to_Main2"
+            app:destination="@id/Main2"/>
+    </fragment>
+</navigation>

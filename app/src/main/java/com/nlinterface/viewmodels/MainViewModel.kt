@@ -81,6 +81,20 @@ class MainViewModel(
     }
 
     /**
+     * Reads a given text out loud and waits until the utterance is completed, before resuming. Is
+     * required when performing an action immediately after the utterance is completed.
+     *
+     * @param text: String, the string to be read out loud.
+     * @param queueMode: enum, defining how multiple speech outputs are queued.
+     *                   TextToSpeech.QUEUE_FLUSH (default) overwrites the queue with the current
+     *                   text, thus immediately reading it out loud
+     *                   TextToSpeech.QUEUE_ADD appends the current text to the queue, only reading
+     *                   it once all prior texts have been read out loud
+     *
+     * @param utteranceId: String? identifying the utterance to be made and completed
+     */
+
+    /**
      * Overrides the TextToSpeech.OnInitListener's onInit function. Called, once the TTS engine
      * initialization is completed. If initialization was successful, the TTS engine's locale is
      * set to the user's phone locale and the speed rate is set to default. Finally, the

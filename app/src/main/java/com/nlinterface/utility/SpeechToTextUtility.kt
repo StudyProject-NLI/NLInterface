@@ -15,6 +15,7 @@ class SpeechToTextUtility {
 
     private lateinit var speechRecognizer: SpeechRecognizer
 
+
     /**
      * Calls speechRecognizer to begin listening to voice input.
      *
@@ -70,7 +71,7 @@ class SpeechToTextUtility {
             override fun onEndOfSpeech() {
                 onEndOfSpeech
             }
-        
+
             override fun onError(p0: Int) {
                 onError
             }

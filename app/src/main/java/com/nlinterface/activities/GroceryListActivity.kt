@@ -3,17 +3,15 @@ package com.nlinterface.activities
 import android.content.Intent
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
-import android.view.View
+import android.util.Log
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.nlinterface.R
@@ -24,7 +22,6 @@ import com.nlinterface.interfaces.GroceryListCallback
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.navToActivity
-import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.GroceryListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,11 +60,11 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     private lateinit var groceryItemList: ArrayList<GroceryItem>
 
     private lateinit var adapter: GroceryListAdapter
-
-    private lateinit var voiceActivationButton: ImageButton
     
     private lateinit var lastCommand: String
     private lateinit var lastResponse: String
+
+    private lateinit var navController: NavController
 
     /**
      * The onCreate function initializes the view by binding the Activity and the Layout and
@@ -85,81 +82,20 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewModel.fetchGroceryList()
         groceryItemList = viewModel.groceryList
 
-        configureUI()
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.grocery_list_nav_host_fragment) as NavHostFragment
+        if (navHostFragment == null) {
+            Log.i("SettingsActivity", "NavHostFragment is null")
+        } else {
+            navController = navHostFragment.navController
+        }
+
         configureTTS()
         configureSTT()
     }
 
-    /**
-     * Sets up all UI elements, i.e. the addItem and voiceActivation buttons, their respective
-     * onClick functionality and configures the recycler view.
-     */
-    private fun configureUI() {
-
-        // set up add item button listener
-        val addItemButton: Button = findViewById<View>(R.id.add_item_bt) as Button
-        addItemButton.setOnClickListener {
-            onAddItemButtonClick()
-        }
-
-        // set up voice activation button listener
-        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener {
-            onVoiceActivationButtonClick()
-        }
-
-        // resize Voice Activation Button to 1/3 of display size
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        configureRecyclerView()
-    }
-
-    /**
-     * Initializes the GroceryListAdapter and fills the recyclerview with the GroceryItems on the
-     * GroceryList and configures the swipe to delete functionality in both directions utilizing
-     * ItemTouchHelper
-     */
-    private fun configureRecyclerView() {
-
-        adapter = GroceryListAdapter(groceryItemList, this)
-
-        val rvGroceryList = findViewById<View>(R.id.grocery_list_rv) as RecyclerView
-        rvGroceryList.adapter = adapter
-        rvGroceryList.layoutManager = LinearLayoutManager(this)
-
-        // implements swipe left to delete item functionality
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                onSwipeToDelete(viewHolder)
-            }
-        }).attachToRecyclerView(rvGroceryList)
-
-        // implements swipe right to delete functionality
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.RIGHT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                onSwipeToDelete(viewHolder)
-            }
-        }).attachToRecyclerView(rvGroceryList)
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     /**
@@ -261,12 +197,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewModel.initSTT()
 
         // if listening: microphone color green, else microphone color white
-        val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            } else {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
-            }
+        val sttIsListeningObserver = Observer<Boolean> {
         }
 
         // observe LiveData change to be notified when the STT system is active(ly listening)
@@ -551,20 +482,6 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
         
-    }
-
-    /**
-     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
-     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
-     * listening.
-     */
-    private fun onVoiceActivationButtonClick() {
-        if (viewModel.isListening.value == false) {
-            viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)
-            viewModel.handleSpeechBegin()
-        } else {
-            viewModel.cancelListening()
-        }
     }
 
     /**

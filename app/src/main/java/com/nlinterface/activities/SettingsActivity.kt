@@ -3,22 +3,19 @@ package com.nlinterface.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivitySettingsBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
-import com.nlinterface.utility.GlobalParameters.BarcodeServiceMode
 import com.nlinterface.utility.GlobalParameters.KeepScreenOn
 import com.nlinterface.utility.GlobalParameters.ThemeChoice
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.navToActivity
-import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,22 +47,16 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var viewModel: SettingsViewModel
 
     private lateinit var keepScreenOnOptions: MutableList<String>
-    private lateinit var keepScreenOnButton: Button
 
     private lateinit var themeOptions: MutableList<String>
-    private lateinit var themeButton: Button
 
     private lateinit var barcodeServiceOptions: MutableList<String>
-    private lateinit var barcodeServiceButton : Button
-
-    private lateinit var barcodeSettingsButton: Button
-
-    private lateinit var voiceActivationButton: ImageButton
     
     private lateinit var lastCommand: String
     private lateinit var lastResponse: String
     
     private val globalParameters = GlobalParameters.instance!!
+    private lateinit var navController: NavController
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -79,6 +70,10 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
+
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.settings_nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
         keepScreenOnOptions = mutableListOf()
         resources.getStringArray(R.array.keep_screen_on_options).forEach { option ->
@@ -95,89 +90,13 @@ class SettingsActivity : AppCompatActivity() {
             barcodeServiceOptions.add(option)
         }
 
-        configureUI()
         configureTTS()
         configureSTT()
     }
 
-    /**
-     * Sets up all UI elements, i.e. the voiceActivation/theme/keepScreenOn buttons and their
-     * respective onClickListeners
-     */
-    private fun configureUI() {
-
-        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener { onVoiceActivationButtonClick() }
-        
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        themeButton = findViewById(R.id.settings_theme)
-        themeButton.setOnClickListener { onThemeButtonClick() }
-        themeButton.text = themeOptions[globalParameters.themeChoice.ordinal]
-        
-        keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
-        keepScreenOnButton.setOnClickListener { onKeepScreenOnButtonClick() }
-        keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
-
-        barcodeServiceButton = findViewById(R.id.settings_barcode_mode)
-        barcodeServiceButton.setOnClickListener { onBarcodeServiceButtonClick() }
-        barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-        barcodeSettingsButton = findViewById(R.id.barcode_settings)
-        barcodeSettingsButton.setOnClickListener {_ ->
-            navToActivity(this, ActivityType.BARCODESETTINGS)}
-        barcodeSettingsButton.text =  resources.getString(R.string.barcode_scanner_settings)
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
-
-    /**
-     * Cycle through the options for the Theme settings, when the button is clicked. Narrate the
-     * action.
-     */
-    private fun onThemeButtonClick() {
-
-        if (globalParameters.themeChoice.ordinal == ThemeChoice.values().size - 1) {
-            globalParameters.themeChoice = ThemeChoice.values()[0]
-        } else {
-            globalParameters.themeChoice =
-                ThemeChoice.values()[globalParameters.themeChoice.ordinal + 1]
-        }
-        
-        themeButton.text = themeOptions[globalParameters.themeChoice.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_theme_setting, themeButton.text))
-    }
-
-    /**
-     * Cycles through the options for the Screen On settings, when the button is clicked. Narrates
-     * the action.
-     */
-    private fun onKeepScreenOnButtonClick() {
-
-        if (globalParameters.keepScreenOn.ordinal == KeepScreenOn.values().size - 1) {
-            globalParameters.keepScreenOn = KeepScreenOn.values()[0]
-        } else {
-            globalParameters.keepScreenOn =
-                KeepScreenOn.values()[globalParameters.keepScreenOn.ordinal + 1]
-        }
-        
-        keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton.text))
-    }
-
-    private fun onBarcodeServiceButtonClick() {
-
-        if (globalParameters.barcodeServiceMode.ordinal == BarcodeServiceMode.values().size - 1) {
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
-        } else {
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[globalParameters.barcodeServiceMode.ordinal + 1]
-        }
-
-        barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-        viewModel.say(barcodeServiceButton.text as String)
-    }
-
 
     /**
      *
@@ -255,12 +174,7 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.initSTT()
 
         // if listening: microphone color green, else microphone color white
-        val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            } else {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
-            }
+        val sttIsListeningObserver = Observer<Boolean> {
         }
 
         // observe LiveData change to be notified when the STT system is active(ly listening)
@@ -328,22 +242,6 @@ class SettingsActivity : AppCompatActivity() {
                             resources.getString(R.string.dim_screen_after_a_while)
                 )
             }
-
-        } else if (command == resources.getString(R.string.barcode_service_mode_on)){
-
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
-
-            barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-            viewModel.say(barcodeServiceButton.text as String)
-
-        } else if (command == resources.getString(R.string.barcode_service_mode_off)){
-
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[1]
-
-            barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-            viewModel.say(barcodeServiceButton.text as String)
 
         } else if(command == resources.getString(R.string.stop_speech)) {
 

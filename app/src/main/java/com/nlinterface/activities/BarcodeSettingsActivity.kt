@@ -3,19 +3,18 @@ package com.nlinterface.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
+import android.util.Log
 import android.widget.Button
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityBarcodeSettingsBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
-import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.navToActivity
-import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.BarcodeSettingsViewModel
 
 
@@ -59,11 +58,10 @@ class BarcodeSettingsActivity : AppCompatActivity() {
     private lateinit var shortNutritionalValuesOptions: MutableList<String>
     private lateinit var shortNutritionalValuesButton: Button
 
-    private lateinit var voiceActivationButton: ImageButton
-
     private lateinit var lastCommand: String
 
     private val globalParameters = GlobalParameters.instance!!
+    private lateinit var navController: NavController
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -77,6 +75,14 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[BarcodeSettingsViewModel::class.java]
+
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.barcode_settings_nav_host_fragment) as NavHostFragment
+        if (navHostFragment == null) {
+            Log.i("SettingsActivity", "NavHostFragment is null")
+        } else {
+            navController = navHostFragment.navController
+        }
 
         nameAndVolumeOptions = mutableListOf()
         resources.getStringArray(R.array.settings_name_and_volume).forEach { option ->
@@ -103,132 +109,12 @@ class BarcodeSettingsActivity : AppCompatActivity() {
             shortNutritionalValuesOptions.add(option)
         }
 
-
-        configureUI()
         configureTTS()
         configureSTT()
     }
 
-    /**
-     * Sets up all UI elements, i.e. the voiceActivation/theme/keepScreenOn buttons and their
-     * respective onClickListeners
-     */
-    private fun configureUI() {
-
-        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener { onVoiceActivationButtonClick() }
-
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        nameAndVolumeButton = findViewById<Button>(R.id.settings_name_and_volume)
-        nameAndVolumeButton.setOnClickListener { onProductNameAndVolumeButtonClick() }
-        nameAndVolumeButton.text =
-            nameAndVolumeOptions[globalParameters.navState.ordinal]
-
-        labelsButton = findViewById<Button>(R.id.settings_labels)
-        labelsButton.setOnClickListener { onLabelsClick() }
-        labelsButton.text = labelsOptions[globalParameters.labelsState.ordinal]
-
-        countryOfOriginButton = findViewById<Button>(R.id.settings_country_of_origin)
-        countryOfOriginButton.setOnClickListener { onCountryOfOriginButtonClick() }
-        countryOfOriginButton.text =
-            countryOfOriginOptions[globalParameters.cooState.ordinal]
-
-        ingredientsAndAllergiesButton = findViewById<Button>(R.id.settings_ingredients_and_allergies)
-        ingredientsAndAllergiesButton.setOnClickListener { onIngredientsAndAllergiesButtonClick() }
-        ingredientsAndAllergiesButton.text =
-            ingredientsAndAllergiesOptions[globalParameters.iaaState.ordinal]
-
-        shortNutritionalValuesButton = findViewById<Button>(R.id.settings_short_nutritional_values)
-        shortNutritionalValuesButton.setOnClickListener { onShortNutritionalValuesButtonClick() }
-        shortNutritionalValuesButton.text =
-            shortNutritionalValuesOptions[globalParameters.snvState.ordinal]
-    }
-
-    /**
-     * Turn the option to get information about the products volume and name on or off.
-     * todo:
-     */
-    private fun onProductNameAndVolumeButtonClick() {
-        if (globalParameters.navState.ordinal == GlobalParameters.NavState.values().size - 1) {
-            globalParameters.navState = GlobalParameters.NavState.values()[0]
-        } else {
-            globalParameters.navState =
-                GlobalParameters.NavState.values()[globalParameters.navState.ordinal + 1]
-        }
-
-        changeAndReadButtonName()
-    }
-
-    /**
-     * Turn the option to get information about the products labels on or off.
-     */
-    private fun onLabelsClick() {
-        if (globalParameters.labelsState.ordinal == GlobalParameters.LabelsState.values().size - 1) {
-            globalParameters.labelsState = GlobalParameters.LabelsState.values()[0]
-        } else {
-            globalParameters.labelsState =
-                GlobalParameters.LabelsState.values()[globalParameters.labelsState.ordinal + 1]
-        }
-
-        changeAndReadButtonLabels()
-    }
-
-    /**
-     * Turn the option to get information about the products and name on or off.
-     */
-    private fun onCountryOfOriginButtonClick() {
-        if (globalParameters.cooState.ordinal == GlobalParameters.CooState.values().size - 1) {
-            globalParameters.cooState = GlobalParameters.CooState.values()[0]
-        } else {
-            globalParameters.cooState =
-                GlobalParameters.CooState.values()[globalParameters.cooState.ordinal + 1]
-        }
-
-        changeAndReadButtonCountry()
-    }
-
-    /**
-     * Turn the option to get information about the products and name on or off.
-     */
-    private fun onIngredientsAndAllergiesButtonClick() {
-        if (globalParameters.iaaState.ordinal == GlobalParameters.IaaState.values().size - 1) {
-            globalParameters.iaaState = GlobalParameters.IaaState.values()[0]
-        } else {
-            globalParameters.iaaState =
-                GlobalParameters.IaaState.values()[globalParameters.iaaState.ordinal + 1]
-        }
-
-        changeAndReadButtonIngredients()
-    }
-
-    /**
-     * Turn the option to get information about the products and name on or off.
-     */
-    private fun onShortNutritionalValuesButtonClick() {
-        if (globalParameters.snvState.ordinal == GlobalParameters.SnvState.values().size - 1) {
-            globalParameters.snvState = GlobalParameters.SnvState.values()[0]
-        } else {
-            globalParameters.snvState =
-                GlobalParameters.SnvState.values()[globalParameters.snvState.ordinal + 1]
-        }
-
-        changeAndReadButtonNutritionalValues()
-    }
-
-
-    /**
-     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
-     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
-     * listening.
-     */
-    private fun onVoiceActivationButtonClick() {
-        if (viewModel.isListening.value == false) {
-            viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)
-            viewModel.handleSTTSpeechBegin()
-        } else {
-            viewModel.cancelSTTListening()
-        }
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     override fun onPause() {
@@ -297,12 +183,8 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         viewModel.initSTT()
 
         // if listening: microphone color green, else microphone color white
-        val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            } else {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
-            }
+        val sttIsListeningObserver = Observer<Boolean> {
+
         }
 
         // observe LiveData change to be notified when the STT system is active(ly listening)

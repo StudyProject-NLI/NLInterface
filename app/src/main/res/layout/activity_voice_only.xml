@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include layout="@layout/listening" />
-    <include layout="@layout/processing" />
-    <include layout="@layout/speaking" />
+    <include layout="@layout/mode_listening" />
+    <include layout="@layout/mode_processing" />
+    <include layout="@layout/mode_speaking" />
 </ViewFlipper>

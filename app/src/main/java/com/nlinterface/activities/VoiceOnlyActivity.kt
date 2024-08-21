@@ -111,20 +111,20 @@ class VoiceOnlyActivity: AppCompatActivity() {
     }
 
     private fun showListeningStage() {
-        if (viewFlipper.currentView.id != R.layout.listening) {
+        if (viewFlipper.currentView.id != R.layout.mode_listening) {
             viewFlipper.displayedChild = 0
         }
     }
 
     private fun showProcessingStage() {
-        if (viewFlipper.currentView.id != R.layout.processing) {
+        if (viewFlipper.currentView.id != R.layout.mode_processing) {
             viewFlipper.displayedChild = 1
         }
 
     }
 
     private fun showSpeakingStage() {
-        if (viewFlipper.currentView.id != R.layout.speaking) {
+        if (viewFlipper.currentView.id != R.layout.mode_speaking) {
             viewFlipper.displayedChild = 2
         }
     }

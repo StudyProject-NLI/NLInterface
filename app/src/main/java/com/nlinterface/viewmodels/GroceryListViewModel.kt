@@ -310,4 +310,15 @@ class GroceryListViewModel(
         stt.cancelListening()
         _isListening.value = false
     }
+
+    private val _topButtonText = MutableLiveData<String>()
+    val topButtonText: LiveData<String> get() = _topButtonText
+
+    private val _bottomButtonText = MutableLiveData<String>()
+    val bottomButtonText: LiveData<String> get() = _bottomButtonText
+
+    fun updateButtonTexts(topText: String, bottomText: String) {
+        _topButtonText.value = topText
+        _bottomButtonText.value = bottomText
+    }
 }

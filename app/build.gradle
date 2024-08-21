@@ -93,7 +93,7 @@ dependencies {
     //it.jsoup
     implementation "org.jsoup:jsoup:1.14.3"
 
-    //GPT
-    implementation "com.aallam.openai:openai-client:3.7.2"
-    implementation "io.ktor:ktor-client-android:2.2.4"
+    //viewpager
+    implementation 'androidx.viewpager2:viewpager2:1.1.0'
+
 }

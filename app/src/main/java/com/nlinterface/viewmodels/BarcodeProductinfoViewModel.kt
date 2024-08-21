@@ -75,7 +75,6 @@ class Scanner(
                 .addOnSuccessListener { barcodes ->
                     if (barcodes.isNotEmpty()) {
                         val barcode = barcodes[0]
-                        //if(BoundingBox.match(handBoundingBox, barcode.boundingBox)) {
                         Log.println(
                             Log.INFO,
                             "Scanner",

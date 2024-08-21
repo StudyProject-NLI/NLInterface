@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.nlinterface.R
 import com.nlinterface.activities.ClassificationActivity
-import com.nlinterface.activities.GroceryListActivity
 import com.nlinterface.activities.SettingsActivity
 import com.nlinterface.activities.VoiceOnlyActivity
 import com.nlinterface.utility.SwipeAction
@@ -39,12 +38,12 @@ class MainScreen1 : Fragment(), SwipeAction {
     }
 
     override fun onSwipeLeft() {
-        val intent = Intent(activity, SettingsActivity::class.java)
-        startActivity(intent)
+        findNavController().navigate(R.id.Main1_to_Main2)
     }
 
     override fun onSwipeRight() {
-        findNavController().navigate(R.id.Main1_to_Main2)
+        val intent = Intent(activity, SettingsActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onSwipeUp() {
@@ -53,13 +52,12 @@ class MainScreen1 : Fragment(), SwipeAction {
     }
 
     override fun onSwipeDown() {
-        val intent = Intent(activity, GroceryListActivity::class.java)
+        val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
     override fun onDoubleTap() {
-        val intent = Intent(activity, VoiceOnlyActivity::class.java)
-        startActivity(intent)
+
     }
 
     override fun onLongPress() {

@@ -3,17 +3,22 @@ package com.nlinterface.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.nlinterface.R
+import com.nlinterface.adapters.BarcodeSettingsFragmentAdapter
 import com.nlinterface.databinding.ActivityBarcodeSettingsBinding
+import com.nlinterface.fragments.BarcodeSettingsScreen1
+import com.nlinterface.fragments.BarcodeSettingsScreen2
+import com.nlinterface.fragments.BarcodeSettingsScreen3
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
+import com.nlinterface.utility.OnSwipeTouchInterceptor
+import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.navToActivity
 import com.nlinterface.viewmodels.BarcodeSettingsViewModel
 
@@ -61,7 +66,9 @@ class BarcodeSettingsActivity : AppCompatActivity() {
     private lateinit var lastCommand: String
 
     private val globalParameters = GlobalParameters.instance!!
-    private lateinit var navController: NavController
+
+    private lateinit var viewPager: ViewPager2
+    lateinit var fragmentAdapter: BarcodeSettingsFragmentAdapter
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -75,14 +82,6 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[BarcodeSettingsViewModel::class.java]
-
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.barcode_settings_nav_host_fragment) as NavHostFragment
-        if (navHostFragment == null) {
-            Log.i("SettingsActivity", "NavHostFragment is null")
-        } else {
-            navController = navHostFragment.navController
-        }
 
         nameAndVolumeOptions = mutableListOf()
         resources.getStringArray(R.array.settings_name_and_volume).forEach { option ->
@@ -109,12 +108,10 @@ class BarcodeSettingsActivity : AppCompatActivity() {
             shortNutritionalValuesOptions.add(option)
         }
 
+        viewPagerSetUp()
+
         configureTTS()
         configureSTT()
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     override fun onPause() {
@@ -217,38 +214,38 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         }
 
         else if (command == resources.getString(R.string.product_name_on)){
-            globalParameters.navState = GlobalParameters.NavState.values()[0]
+            globalParameters.navState = GlobalParameters.NavState.entries.toTypedArray()[0]
             changeAndReadButtonName()
         } else if (command == resources.getString(R.string.product_name_off)){
-            globalParameters.navState = GlobalParameters.NavState.values()[1]
+            globalParameters.navState = GlobalParameters.NavState.entries.toTypedArray()[1]
             changeAndReadButtonName()
         }
         else if (command == resources.getString(R.string.labels_on)){
-            globalParameters.labelsState = GlobalParameters.LabelsState.values()[0]
+            globalParameters.labelsState = GlobalParameters.LabelsState.entries.toTypedArray()[0]
             changeAndReadButtonLabels()
         } else if (command == resources.getString(R.string.labels_off)){
-            globalParameters.labelsState = GlobalParameters.LabelsState.values()[1]
+            globalParameters.labelsState = GlobalParameters.LabelsState.entries.toTypedArray()[1]
             changeAndReadButtonLabels()
         }
         else if (command == resources.getString(R.string.country_of_origin_on)){
-            globalParameters.cooState = GlobalParameters.CooState.values()[0]
+            globalParameters.cooState = GlobalParameters.CooState.entries.toTypedArray()[0]
             changeAndReadButtonCountry()
         } else if (command == resources.getString(R.string.country_of_origin_off)){
-            globalParameters.cooState = GlobalParameters.CooState.values()[1]
+            globalParameters.cooState = GlobalParameters.CooState.entries.toTypedArray()[1]
             changeAndReadButtonCountry()
         }
         else if (command == resources.getString(R.string.ingredients_and_allergies_on)){
-            globalParameters.iaaState = GlobalParameters.IaaState.values()[0]
+            globalParameters.iaaState = GlobalParameters.IaaState.entries.toTypedArray()[0]
             changeAndReadButtonIngredients()
         } else if (command == resources.getString(R.string.ingredients_and_allergies_off)){
-            globalParameters.iaaState = GlobalParameters.IaaState.values()[1]
+            globalParameters.iaaState = GlobalParameters.IaaState.entries.toTypedArray()[1]
             changeAndReadButtonIngredients()
         }
         else if (command == resources.getString(R.string.nutritional_values_on)){
-            globalParameters.snvState = GlobalParameters.SnvState.values()[0]
+            globalParameters.snvState = GlobalParameters.SnvState.entries.toTypedArray()[0]
             changeAndReadButtonNutritionalValues()
         } else if (command == resources.getString(R.string.nutritional_values_off)){
-            globalParameters.snvState = GlobalParameters.SnvState.values()[1]
+            globalParameters.snvState = GlobalParameters.SnvState.entries.toTypedArray()[1]
             changeAndReadButtonNutritionalValues()
         }
 
@@ -341,5 +338,54 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         shortNutritionalValuesButton.text = shortNutritionalValuesOptions[globalParameters.snvState.ordinal]
 
         viewModel.say(resources.getString(R.string.new_barcode_setting, shortNutritionalValuesButton.text))
+    }
+
+    private fun viewPagerSetUp(){
+        viewPager = findViewById(R.id.view_pager)
+        fragmentAdapter = BarcodeSettingsFragmentAdapter(this)
+        viewPager.adapter = fragmentAdapter
+
+        val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
+            override fun onSwipeLeft(){}
+            override fun onSwipeRight(){}
+            override fun onSwipeUp(){
+                val currentPosition = viewPager.currentItem
+                val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as BarcodeSettingsScreen1).onSwipeUp()
+                    }
+                    1 -> {
+                        (currentFragment as BarcodeSettingsScreen2).onSwipeUp()
+                    }
+                    2 -> {
+                        (currentFragment as BarcodeSettingsScreen3).onSwipeUp()
+                    }
+                }
+            }
+            override fun onSwipeDown(){
+                val currentPosition = viewPager.currentItem
+                val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as BarcodeSettingsScreen1).onSwipeDown()
+                    }
+                    1 -> {
+                        (currentFragment as BarcodeSettingsScreen2).onSwipeDown()
+                    }
+                    2 -> {
+                        (currentFragment as BarcodeSettingsScreen3).onSwipeDown()
+                    }
+                }
+            }
+            override fun onLongPress(){}
+            override fun onDoubleTap() {}
+        })
+
+        viewPager.getChildAt(0).let { recyclerView ->
+            if (recyclerView is RecyclerView) {
+                recyclerView.addOnItemTouchListener(swipeInterceptor)
+            }
+        }
     }
 }

@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.nlinterface.R
-import com.nlinterface.activities.SettingsActivity
 import com.nlinterface.activities.VoiceOnlyActivity
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.STTInputType
@@ -61,14 +59,8 @@ class BarcodeSettingsScreen1 : Fragment(), SwipeAction {
         }
     }
 
-    override fun onSwipeLeft() {
-        findNavController().navigate(R.id.BarcodeScannerSettings1_to_BarcodeScannerSettings2)
-    }
-
-    override fun onSwipeRight() {
-        val intent = Intent(activity, SettingsActivity::class.java)
-        startActivity(intent)
-    }
+    override fun onSwipeLeft() {}
+    override fun onSwipeRight() {}
 
     override fun onSwipeUp() {
         if (globalParameters.navState.ordinal == GlobalParameters.NavState.values().size - 1) {

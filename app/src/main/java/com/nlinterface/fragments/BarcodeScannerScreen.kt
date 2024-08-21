@@ -56,15 +56,15 @@ class BarcodeScannerScreen : Fragment(), SwipeAction {
     }
 
     override fun onSwipeUp() {
+        activity?.stopService(barcodeService)
+        Log.i("Scanner", "Stopping the Barcode Scanning Service")
+    }
+
+    override fun onSwipeDown() {
         if (activity?.checkCallingOrSelfPermission( Manifest.permission.CAMERA ) ==
             PackageManager.PERMISSION_GRANTED) {
             activity?.startService(barcodeService)
         }
-    }
-
-    override fun onSwipeDown() {
-        activity?.stopService(barcodeService)
-        Log.i("Scanner", "Stopping the Barcode Scanning Service")
     }
 
     override fun onDoubleTap() {

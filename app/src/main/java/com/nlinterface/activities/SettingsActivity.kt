@@ -6,15 +6,21 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.nlinterface.R
+import com.nlinterface.adapters.SettingsFragmentAdapter
 import com.nlinterface.databinding.ActivitySettingsBinding
+import com.nlinterface.fragments.SettingsScreen1
+import com.nlinterface.fragments.SettingsScreen2
+import com.nlinterface.fragments.SettingsScreen3
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.GlobalParameters.KeepScreenOn
 import com.nlinterface.utility.GlobalParameters.ThemeChoice
+import com.nlinterface.utility.OnSwipeTouchInterceptor
 import com.nlinterface.utility.STTInputType
+import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.navToActivity
 import com.nlinterface.viewmodels.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -56,7 +62,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var lastResponse: String
     
     private val globalParameters = GlobalParameters.instance!!
-    private lateinit var navController: NavController
+
+    private lateinit var viewPager: ViewPager2
+    lateinit var fragmentAdapter: SettingsFragmentAdapter
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -71,9 +79,6 @@ class SettingsActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.settings_nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
 
         keepScreenOnOptions = mutableListOf()
         resources.getStringArray(R.array.keep_screen_on_options).forEach { option ->
@@ -90,12 +95,10 @@ class SettingsActivity : AppCompatActivity() {
             barcodeServiceOptions.add(option)
         }
 
+        viewPagerSetUp()
+
         configureTTS()
         configureSTT()
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 
     /**
@@ -126,20 +129,6 @@ class SettingsActivity : AppCompatActivity() {
             )
 
             apply()
-        }
-    }
-
-    /**
-     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
-     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
-     * listening.
-     */
-    private fun onVoiceActivationButtonClick() {
-        if (viewModel.isListening.value == false) {
-            viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)
-            viewModel.handleSTTSpeechBegin()
-        } else {
-            viewModel.cancelSTTListening()
         }
     }
 
@@ -408,6 +397,55 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.sayAndAwait(question)
         viewModel.setSTTSpeechRecognitionListener(STTInputType.ANSWER)
         viewModel.handleSTTSpeechBegin()
+    }
+
+    private fun viewPagerSetUp(){
+        viewPager = findViewById(R.id.view_pager)
+        fragmentAdapter = SettingsFragmentAdapter(this)
+        viewPager.adapter = fragmentAdapter
+
+        val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
+            override fun onSwipeLeft(){}
+            override fun onSwipeRight(){}
+            override fun onSwipeUp(){
+                val currentPosition = viewPager.currentItem
+                val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as SettingsScreen1).onSwipeUp()
+                    }
+                    1 -> {
+                        (currentFragment as SettingsScreen2).onSwipeUp()
+                    }
+                    2 -> {
+                        (currentFragment as SettingsScreen3).onSwipeUp()
+                    }
+                }
+            }
+            override fun onSwipeDown(){
+                val currentPosition = viewPager.currentItem
+                val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as SettingsScreen1).onSwipeDown()
+                    }
+                    1 -> {
+                        (currentFragment as SettingsScreen2).onSwipeDown()
+                    }
+                    2 -> {
+                        (currentFragment as SettingsScreen3).onSwipeDown()
+                    }
+                }
+            }
+            override fun onLongPress(){}
+            override fun onDoubleTap() {}
+        })
+
+        viewPager.getChildAt(0).let { recyclerView ->
+            if (recyclerView is RecyclerView) {
+                recyclerView.addOnItemTouchListener(swipeInterceptor)
+            }
+        }
     }
     
 }

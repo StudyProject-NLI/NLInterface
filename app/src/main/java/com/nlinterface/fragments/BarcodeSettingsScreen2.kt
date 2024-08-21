@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.nlinterface.R
 import com.nlinterface.activities.VoiceOnlyActivity
 import com.nlinterface.utility.GlobalParameters
@@ -52,7 +51,6 @@ class BarcodeSettingsScreen2 : Fragment(), SwipeAction {
         resources.getStringArray(R.array.settings_labels).forEach { option ->
             labelsOptions.add(option)
         }
-
         countryOfOriginButton = view.findViewById(R.id.settings_keep_screen_on)
         countryOfOriginOptions = mutableListOf()
         resources.getStringArray(R.array.settings_country_of_origin).forEach { option ->
@@ -60,13 +58,9 @@ class BarcodeSettingsScreen2 : Fragment(), SwipeAction {
         }
     }
 
-    override fun onSwipeLeft() {
-        findNavController().navigate(R.id.BarcodeScannerSettings2_to_BarcodeScannerSettings3)
-    }
+    override fun onSwipeLeft() {}
 
-    override fun onSwipeRight() {
-        findNavController().navigate(R.id.BarcodeScannerSettings2_to_BarcodeScannerSettings1)
-    }
+    override fun onSwipeRight() {}
 
     override fun onSwipeUp() {
         if (globalParameters.labelsState.ordinal == GlobalParameters.LabelsState.values().size - 1) {

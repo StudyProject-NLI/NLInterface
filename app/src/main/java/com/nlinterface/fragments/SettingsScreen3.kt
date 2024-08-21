@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.nlinterface.R
 import com.nlinterface.activities.VoiceOnlyActivity
 import com.nlinterface.utility.GlobalParameters
@@ -60,13 +59,9 @@ class SettingsScreen3 : Fragment(), SwipeAction {
         }
     }
 
-    override fun onSwipeLeft() {
-        findNavController().navigate(R.id.Settings3_to_Settings1)
-    }
+    override fun onSwipeLeft() {}
 
-    override fun onSwipeRight() {
-        findNavController().navigate(R.id.Settings3_to_Settings2)
-    }
+    override fun onSwipeRight() {}
 
     override fun onSwipeUp() {
         if (globalParameters.narrationAmountChoice.ordinal ==

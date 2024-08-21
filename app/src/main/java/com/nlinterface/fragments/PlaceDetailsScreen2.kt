@@ -38,13 +38,9 @@ class PlaceDetailsScreen2 : Fragment(), SwipeAction {
 
     }
 
-    override fun onSwipeLeft() {
-        findNavController().navigate(R.id.PlaceDetails2_to_PlaceDetails3)
-    }
+    override fun onSwipeLeft() {}
 
-    override fun onSwipeRight() {
-        findNavController().navigate(R.id.BarcodeScannerSettings1_to_BarcodeScannerSettings2)
-    }
+    override fun onSwipeRight() {}
 
     override fun onSwipeUp() {
         findNavController().navigate(R.id.PlaceDetails2_to_PlaceOptions)

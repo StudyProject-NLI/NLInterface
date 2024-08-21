@@ -30,6 +30,7 @@
     <string name="list_all_grocery_items">liste alle artikel auf</string>
     <string name="list_all_items_in_cart">liste alle artikel im einkaufswagen auf</string>
     <string name="list_all_items_not_in_cart">liste alle artikel die noch nicht im einkaufswagen sind auf</string>
+    <string name="all_items_are_removed">alle artikel wurden von der einkaufsliste entfernt</string>
 
     <!--    VOICE COMMANDS: PLACE DETAILS    -->
     <string name="remove_a_place">entferne einen ort</string>
@@ -88,7 +89,7 @@
     <!--    NARRATION: GROCERY LIST    -->
     <string name="grocery_list">Einkaufsliste</string>
     <string name="ITEMNAME_is_not_on_the_list">%1$s steht nicht auf der liste</string>
-    <string name="ITEMNAME_is_on_the_list">%1$s steht auf der liste</string>
+    <string name="ITEMNAME_is_on_the_list">%1$s steht bereits auf der liste</string>
     <string name="ITEMNAME_is_in_the_cart">%1$s ist im korb</string>
     <string name="ITEMNAME_is_not_in_the_cart">%1$s ist nicht im korb</string>
     <string name="deleted_ITEMNAME_from_grocery_list">%1$s wurde von der Einkaufsliste gelöscht.</string>
@@ -195,7 +196,7 @@
     <string-array name="narration_amount_options">
         <item>Standard Schilderung</item>
         <item>Keine Schilderung</item>
-        <item>Asuführliche Schilderung</item>
+        <item>Ausführliche Schilderung</item>
     </string-array>
 
     <string name="settings_narration_speed">Sprechgeschwindigkeit</string>

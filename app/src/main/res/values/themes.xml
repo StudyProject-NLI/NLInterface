@@ -8,6 +8,7 @@
         <item name="colorAccent">@color/grey_light</item>
 
         <item name="android:backgroundTint">@color/white</item>
+        <item name="android:fillColor">@color/white</item>
 
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorPrimaryInverse">@color/black</item>

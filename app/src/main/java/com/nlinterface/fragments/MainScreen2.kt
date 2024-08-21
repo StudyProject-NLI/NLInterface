@@ -39,12 +39,12 @@ class MainScreen2 : Fragment(), SwipeAction {
     }
 
     override fun onSwipeLeft() {
-        findNavController().navigate(R.id.Main2_to_Main1)
+        val intent = Intent(activity, PlaceDetailsActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onSwipeRight() {
-        val intent = Intent(activity, PlaceDetailsActivity::class.java)
-        startActivity(intent)
+        findNavController().navigate(R.id.Main2_to_Main1)
     }
 
     override fun onSwipeUp() {

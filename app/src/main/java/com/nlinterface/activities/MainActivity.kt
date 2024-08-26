@@ -24,8 +24,11 @@ import com.nlinterface.viewmodels.MainViewModel
 /**
  * The MainActivity handles user interaction in the Main Screen / Main Menu.
  *
- * The Main Menu comprises of the Voice Activation Button and a button for each Menu Item (one for
- * each Activity / Feature. The focal task for the Main Menu is to handle navigation to the other
+ *
+ * The Main Menu comprises two screen. They can be navigated by swiping left and right in a
+ * scrolling manner. Both screens comprises three Activities / Features that can be started by
+ * swiping in the corresponding direction.
+ * The focal task for the Main Menu is to handle navigation to the other
  * features, either through touch interaction or voice commands.
  *
  * Possible Voice Commands:
@@ -39,8 +42,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private val globalParameters = GlobalParameters.instance!!
     private lateinit var navController: NavController
-
-
 
     /**
      * Companion Object / Singleton implementation required to handle permissions
@@ -66,6 +67,10 @@ class MainActivity : AppCompatActivity() {
         
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        /**
+         * The supportFragmentManager is used to navigate between the fragments like it is defined
+         * in the corresponding navigation file.
+         */
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.main_nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController

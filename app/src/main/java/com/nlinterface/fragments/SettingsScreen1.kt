@@ -17,6 +17,9 @@ import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.SettingsViewModel
 
+/**
+ * Fragment for the settings activity.
+ */
 class SettingsScreen1 : Fragment(), SwipeAction {
 
     private lateinit var viewModel: SettingsViewModel
@@ -26,6 +29,11 @@ class SettingsScreen1 : Fragment(), SwipeAction {
 
     private val globalParameters = GlobalParameters.instance!!
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation.
+     * On ViewCreated accesses the shared viewmodel, creates the visual buttons and gets the
+     * options for the buttons values.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,17 +59,23 @@ class SettingsScreen1 : Fragment(), SwipeAction {
         }
     }
 
+    /**
+     * Implements functionalities on swipe inputs. onSwipeLeft and onSwipeRight are handled by the
+     * viewPager and therefore are empty.
+     */
     override fun onSwipeLeft() {}
-
     override fun onSwipeRight() {}
 
+    /**
+     * Changes the specified setting.
+     */
     override fun onSwipeUp() {
         if (globalParameters.feedbackChoice.ordinal ==
-            GlobalParameters.FeedbackChoice.values().size - 1) {
-            globalParameters.feedbackChoice = GlobalParameters.FeedbackChoice.values()[0]
+            GlobalParameters.FeedbackChoice.entries.size - 1) {
+            globalParameters.feedbackChoice = GlobalParameters.FeedbackChoice.entries.toTypedArray()[0]
         } else {
             globalParameters.feedbackChoice =
-                GlobalParameters.FeedbackChoice.values()[globalParameters.feedbackChoice.ordinal + 1]
+                GlobalParameters.FeedbackChoice.entries.toTypedArray()[globalParameters.feedbackChoice.ordinal + 1]
         }
 
         feedbackButton.text = feedbackOptions[globalParameters.feedbackChoice.ordinal]
@@ -69,16 +83,25 @@ class SettingsScreen1 : Fragment(), SwipeAction {
         viewModel.say(resources.getString(R.string.new_theme_setting, feedbackButton.text))
     }
 
+    /**
+     * Navigates to the barcode settings activitiy.
+     */
     override fun onSwipeDown() {
         val intent = Intent(activity, BarcodeSettingsActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)

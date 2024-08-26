@@ -16,6 +16,9 @@ import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.GroceryListViewModel
 
+/**
+ * Fragment for the grocery list activity.
+ */
 class GroceryListScreenListView : Fragment(), SwipeAction {
 
     lateinit var viewModel: GroceryListViewModel
@@ -23,6 +26,11 @@ class GroceryListScreenListView : Fragment(), SwipeAction {
     private lateinit var groceryItemList: ArrayList<GroceryItem>
     private lateinit var rvGroceryList: RecyclerView
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation. It also accesses
+     * the grocery list
+     * On ViewCreated accesses the shared viewmodel and displays the grocery list.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,11 +46,14 @@ class GroceryListScreenListView : Fragment(), SwipeAction {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // set up add item button listener
         viewModel.fetchGroceryList()
         groceryItemList = viewModel.groceryList
         configureRecyclerView()
     }
+
+    /**
+     * Does not implement any swipe functionalities. This screen is a mere overview.
+     */
 
     override fun onSwipeLeft() {}
     override fun onSwipeRight() {}
@@ -51,9 +62,11 @@ class GroceryListScreenListView : Fragment(), SwipeAction {
     override fun onDoubleTap() {}
     override fun onLongPress() {}
 
+    /**
+     * Handles the RecyclerView and sets up necessary parameters for displaying the grocery list.
+     */
     private fun configureRecyclerView() {
         adapter = GroceryListAdapter(groceryItemList, activity as GroceryListActivity)
-
         rvGroceryList.adapter = adapter
         rvGroceryList.layoutManager = LinearLayoutManager(activity as GroceryListActivity)
     }

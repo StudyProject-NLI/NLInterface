@@ -7,6 +7,9 @@ import com.nlinterface.fragments.BarcodeSettingsScreen1
 import com.nlinterface.fragments.BarcodeSettingsScreen2
 import com.nlinterface.fragments.BarcodeSettingsScreen3
 
+/**
+ * Fragment Adapter for the Barcode Settings Activity.
+ */
 class BarcodeSettingsFragmentAdapter(
     fragmentActivity: FragmentActivity
 ): FragmentStateAdapter(fragmentActivity) {

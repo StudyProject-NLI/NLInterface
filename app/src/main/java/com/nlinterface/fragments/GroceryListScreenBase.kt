@@ -19,6 +19,9 @@ import com.nlinterface.viewmodels.GroceryListViewModel
 import java.lang.Boolean.FALSE
 import java.lang.Boolean.TRUE
 
+/**
+ * Fragment for the grocery list activity.
+ */
 class GroceryListScreenBase : Fragment(), SwipeAction {
 
     lateinit var viewModel: GroceryListViewModel
@@ -32,7 +35,10 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
     lateinit var itemTop: String
     lateinit var itemBottom: String
 
-
+    /**
+     * Companion object used for fragment creation. Assures a dynamically created fragment comprises
+     * the variables item top and item bottom and handles their initialization.
+     */
     companion object {
         private const val ARG_ITEM_TOP = "item_top"
         private const val ARG_ITEM_BOTTOM = "item_bottom"
@@ -45,6 +51,14 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
             return fragment
         }
     }
+
+    /**
+     * On Create initializes the variables item top and item bottom.
+     * On Create View creates the buttons for item top and item bottom. The buttons are for UI
+     * purposes. (Allowing to change their text.)
+     * On View created maps the variables item Top and item Bottom to their corresponding buttons
+     * and initializes two observers to allow text changes on a UI level.
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,17 +110,25 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
 
     }
 
+    /**
+     * Necessary to save fragment stage, since they are dynamically created.
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(ARG_ITEM_TOP, itemTop)
         outState.putString(ARG_ITEM_BOTTOM, itemBottom)
     }
-    override fun onSwipeLeft() {
-    }
 
-    override fun onSwipeRight() {
-    }
+    /**
+     * Implements functionalities on swipe inputs. onSwipeLeft and onSwipeRight are handled by the
+     * viewPager and therefore are empty.
+     */
+    override fun onSwipeLeft() {}
+    override fun onSwipeRight() {}
 
+    /**
+     * Opens up text input to add Grocery item to this slot. Updates the text in the UI as well.
+     */
     override fun onSwipeUp() {
         if (itemTop == default) {
             (activity as? GroceryListActivity)?.let {
@@ -138,6 +160,9 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
         }
     }
 
+    /**
+     * Opens up text input to add Grocery item to this slot. Updates the text in the UI as well.
+     */
     override fun onSwipeDown() {
         if (itemBottom == default) {
             (activity as? GroceryListActivity)?.let {
@@ -167,11 +192,16 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
         }
     }
 
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
-
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)

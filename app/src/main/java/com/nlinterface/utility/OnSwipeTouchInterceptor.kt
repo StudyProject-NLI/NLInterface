@@ -5,6 +5,12 @@ import android.view.MotionEvent
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
+/**
+ * The Swipe Touch Interceptor allows the app to check for vertical swipes. The viewPager is very
+ * sensitive to horizontal swipes. Therefore is is intercepted to first check for vertical ones.
+ * If the Interceptor detects a vertical swipe, it intercepts the viewPager and delegates to the
+ * Fragments functionalities.
+ */
 class OnSwipeTouchInterceptor(
     private val swipeAction: SwipeAction
 ) : RecyclerView.OnItemTouchListener {

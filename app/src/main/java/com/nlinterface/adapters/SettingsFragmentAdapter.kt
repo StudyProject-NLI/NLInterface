@@ -7,6 +7,9 @@ import com.nlinterface.fragments.SettingsScreen1
 import com.nlinterface.fragments.SettingsScreen2
 import com.nlinterface.fragments.SettingsScreen3
 
+/**
+ * Fragment Adapter for the Settings Activity.
+ */
 class SettingsFragmentAdapter(
     fragmentActivity: FragmentActivity
 ): FragmentStateAdapter(fragmentActivity) {

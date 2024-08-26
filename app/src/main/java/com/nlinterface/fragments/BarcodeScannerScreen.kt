@@ -14,20 +14,27 @@ import androidx.navigation.fragment.findNavController
 import com.nlinterface.R
 import com.nlinterface.activities.BarcodeSettingsActivity
 import com.nlinterface.activities.VoiceOnlyActivity
-import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.ConstantScanning
 import com.nlinterface.viewmodels.MainViewModel
 
+/**
+ * Fragment for the barcode scanner.
+ */
 class BarcodeScannerScreen : Fragment(), SwipeAction {
 
-    private val globalParameters = GlobalParameters.instance!!
+
     private lateinit var barcodeService: Intent
 
     private lateinit var viewModel: MainViewModel
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation.
+     * Creates the barcode service to allow this fragment to start it.
+     * On View Created accesses the viewmodel.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,33 +52,55 @@ class BarcodeScannerScreen : Fragment(), SwipeAction {
         // Access the shared ViewModel
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
     }
+    /**
+     * Implements functionalities on swipe inputs.
+     * Swiping directions matched to usual swiping navigation in other apps.
+     */
 
+    /**
+     * Starts the barcode scanner.
+     */
     override fun onSwipeLeft() {
-        val intent = Intent(activity, BarcodeSettingsActivity::class.java)
-        startActivity(intent)
-    }
-
-    override fun onSwipeRight() {
-        findNavController().navigate(R.id.BarcodeScanner_to_Main2)
-    }
-
-    override fun onSwipeUp() {
         activity?.stopService(barcodeService)
         Log.i("Scanner", "Stopping the Barcode Scanning Service")
     }
 
-    override fun onSwipeDown() {
+    /**
+     * Stops the barcode scanner.
+     */
+    override fun onSwipeRight() {
         if (activity?.checkCallingOrSelfPermission( Manifest.permission.CAMERA ) ==
             PackageManager.PERMISSION_GRANTED) {
             activity?.startService(barcodeService)
         }
     }
 
+    /**
+     * Navigates to the barcode scanner settings.
+     */
+    override fun onSwipeUp() {
+        val intent = Intent(activity, BarcodeSettingsActivity::class.java)
+        startActivity(intent)
+    }
+
+    /**
+     * Navigates to the second screen of the main activity.
+     */
+    override fun onSwipeDown() {
+        findNavController().navigate(R.id.BarcodeScanner_to_Main2)
+    }
+
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)

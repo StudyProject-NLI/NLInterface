@@ -16,11 +16,18 @@ import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.GroceryListViewModel
 
+/**
+ * Fragment for the grocery list activity.
+ */
 class GroceryListScreen2 : Fragment(), SwipeAction {
 
     private lateinit var viewModel: GroceryListViewModel
     private lateinit var nextFragment: Fragment
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation.
+     * On ViewCreated accesses the shared viewmodel.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,10 +45,21 @@ class GroceryListScreen2 : Fragment(), SwipeAction {
         viewModel = ViewModelProvider(requireActivity())[GroceryListViewModel::class.java]
     }
 
+    /**
+     * Implements functionalities on swipe inputs. onSwipeLeft and onSwipeRight are handled by the
+     * viewPager and therefore are empty.
+     */
     override fun onSwipeLeft() {}
 
     override fun onSwipeRight() {    }
 
+    /**
+     * Swiping up opens up a text input allowing to add an item to the grocery list. It is
+     * automatically added to the next open spot in the last fragment. If the last fragments
+     * variables are set, a new fragment is created
+     *
+     * TODO: Add item to the next free slot and not only in the last fragment.
+     */
     override fun onSwipeUp() {
         (activity as? GroceryListActivity)?.let {
             it.onAddItemButtonClick()
@@ -75,6 +93,9 @@ class GroceryListScreen2 : Fragment(), SwipeAction {
         }
     }
 
+    /**
+     * Swiping down makes the app read out all item that are not yet in the cart.
+     */
     override fun onSwipeDown() {
         for ((itemName, _, inCart) in (activity as GroceryListActivity).groceryItemList) {
             if (!inCart) {
@@ -83,11 +104,17 @@ class GroceryListScreen2 : Fragment(), SwipeAction {
         }
     }
 
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)

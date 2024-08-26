@@ -17,6 +17,9 @@ import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.SettingsViewModel
 
+/**
+ * Fragment for the settings activity.
+ */
 class SettingsScreen2 : Fragment(), SwipeAction {
 
     private lateinit var viewModel: SettingsViewModel
@@ -29,6 +32,11 @@ class SettingsScreen2 : Fragment(), SwipeAction {
 
     private val globalParameters = GlobalParameters.instance!!
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation.
+     * On ViewCreated accesses the shared viewmodel, creates the visual buttons and gets the
+     * options for the buttons values.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,17 +68,22 @@ class SettingsScreen2 : Fragment(), SwipeAction {
         }
     }
 
-
+    /**
+     * Implements functionalities on swipe inputs. onSwipeLeft and onSwipeRight are handled by the
+     * viewPager and therefore are empty.
+     */
     override fun onSwipeLeft() {}
-
     override fun onSwipeRight() {}
 
+    /**
+     * Changes the specified setting.
+     */
     override fun onSwipeUp() {
-        if (globalParameters.themeChoice.ordinal == GlobalParameters.ThemeChoice.values().size - 1) {
-            globalParameters.themeChoice = GlobalParameters.ThemeChoice.values()[0]
+        if (globalParameters.themeChoice.ordinal == GlobalParameters.ThemeChoice.entries.size - 1) {
+            globalParameters.themeChoice = GlobalParameters.ThemeChoice.entries.toTypedArray()[0]
         } else {
             globalParameters.themeChoice =
-                GlobalParameters.ThemeChoice.values()[globalParameters.themeChoice.ordinal + 1]
+                GlobalParameters.ThemeChoice.entries.toTypedArray()[globalParameters.themeChoice.ordinal + 1]
         }
 
         themeButton.text = themeOptions[globalParameters.themeChoice.ordinal]
@@ -78,12 +91,15 @@ class SettingsScreen2 : Fragment(), SwipeAction {
         viewModel.say(resources.getString(R.string.new_theme_setting, themeButton.text))
     }
 
+    /**
+     * Changes the specified setting.
+     */
     override fun onSwipeDown() {
-        if (globalParameters.keepScreenOn.ordinal == GlobalParameters.KeepScreenOn.values().size - 1) {
-            globalParameters.keepScreenOn = GlobalParameters.KeepScreenOn.values()[0]
+        if (globalParameters.keepScreenOn.ordinal == GlobalParameters.KeepScreenOn.entries.size - 1) {
+            globalParameters.keepScreenOn = GlobalParameters.KeepScreenOn.entries.toTypedArray()[0]
         } else {
             globalParameters.keepScreenOn =
-                GlobalParameters.KeepScreenOn.values()[globalParameters.keepScreenOn.ordinal + 1]
+                GlobalParameters.KeepScreenOn.entries.toTypedArray()[globalParameters.keepScreenOn.ordinal + 1]
         }
 
         keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
@@ -91,11 +107,17 @@ class SettingsScreen2 : Fragment(), SwipeAction {
         viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton.text))
     }
 
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)

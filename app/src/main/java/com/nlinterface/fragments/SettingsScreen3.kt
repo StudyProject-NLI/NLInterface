@@ -16,6 +16,9 @@ import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.SettingsViewModel
 
+/**
+ * Fragment for the settings activity.
+ */
 class SettingsScreen3 : Fragment(), SwipeAction {
 
     private lateinit var viewModel: SettingsViewModel
@@ -28,6 +31,11 @@ class SettingsScreen3 : Fragment(), SwipeAction {
 
     private val globalParameters = GlobalParameters.instance!!
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation.
+     * On ViewCreated accesses the shared viewmodel, creates the visual buttons and gets the
+     * options for the buttons values.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,17 +67,23 @@ class SettingsScreen3 : Fragment(), SwipeAction {
         }
     }
 
+    /**
+     * Implements functionalities on swipe inputs. onSwipeLeft and onSwipeRight are handled by the
+     * viewPager and therefore are empty.
+     */
     override fun onSwipeLeft() {}
-
     override fun onSwipeRight() {}
 
+    /**
+     * Changes the specified setting.
+     */
     override fun onSwipeUp() {
         if (globalParameters.narrationAmountChoice.ordinal ==
-            GlobalParameters.NarrationAmountChoice.values().size - 1) {
-            globalParameters.narrationAmountChoice = GlobalParameters.NarrationAmountChoice.values()[0]
+            GlobalParameters.NarrationAmountChoice.entries.size - 1) {
+            globalParameters.narrationAmountChoice = GlobalParameters.NarrationAmountChoice.entries.toTypedArray()[0]
         } else {
             globalParameters.narrationAmountChoice =
-                GlobalParameters.NarrationAmountChoice.values()[globalParameters.narrationAmountChoice.ordinal + 1]
+                GlobalParameters.NarrationAmountChoice.entries.toTypedArray()[globalParameters.narrationAmountChoice.ordinal + 1]
         }
 
        narrationAmountButton.text = narrationAmountOptions[globalParameters.narrationAmountChoice.ordinal]
@@ -77,13 +91,16 @@ class SettingsScreen3 : Fragment(), SwipeAction {
         viewModel.say(resources.getString(R.string.new_theme_setting, narrationAmountButton.text))
     }
 
+    /**
+     * Changes the specified setting.
+     */
     override fun onSwipeDown() {
         if (globalParameters.narrationSpeedChoice.ordinal ==
-            GlobalParameters.NarrationSpeedChoice.values().size - 1) {
-            globalParameters.narrationSpeedChoice = GlobalParameters.NarrationSpeedChoice.values()[0]
+            GlobalParameters.NarrationSpeedChoice.entries.size - 1) {
+            globalParameters.narrationSpeedChoice = GlobalParameters.NarrationSpeedChoice.entries.toTypedArray()[0]
         } else {
             globalParameters.narrationSpeedChoice =
-                GlobalParameters.NarrationSpeedChoice.values()[globalParameters.narrationSpeedChoice.ordinal + 1]
+                GlobalParameters.NarrationSpeedChoice.entries.toTypedArray()[globalParameters.narrationSpeedChoice.ordinal + 1]
         }
 
         narrationSpeedButton.text = narrationSpeedOptions[globalParameters.narrationSpeedChoice.ordinal]
@@ -91,11 +108,17 @@ class SettingsScreen3 : Fragment(), SwipeAction {
         viewModel.say(resources.getString(R.string.new_theme_setting, narrationSpeedButton.text))
     }
 
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)

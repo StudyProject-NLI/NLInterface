@@ -16,6 +16,9 @@ import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.BarcodeSettingsViewModel
 
+/**
+ * Fragment for the barcode settings activity.
+ */
 class BarcodeSettingsScreen3 : Fragment(), SwipeAction {
 
     private val globalParameters = GlobalParameters.instance!!
@@ -28,6 +31,11 @@ class BarcodeSettingsScreen3 : Fragment(), SwipeAction {
     private lateinit var brandsOptions: MutableList<String>
     private lateinit var brandsButton: Button
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation.
+     * On ViewCreated accesses the shared viewmodel, creates the visual buttons and gets the
+     * options for the buttons values.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,39 +67,55 @@ class BarcodeSettingsScreen3 : Fragment(), SwipeAction {
         }
     }
 
+    /**
+     * Implements functionalities on swipe inputs. onSwipeLeft and onSwipeRight are handled by the
+     * viewPager and therefore are empty.
+     */
     override fun onSwipeLeft() {}
 
     override fun onSwipeRight() {}
 
+    /**
+     * Activates/Deactivates specified information retrieval.
+     */
     override fun onSwipeUp() {
-        if (globalParameters.snvState.ordinal == GlobalParameters.SnvState.values().size - 1) {
-            globalParameters.snvState = GlobalParameters.SnvState.values()[0]
+        if (globalParameters.snvState.ordinal == GlobalParameters.SnvState.entries.size - 1) {
+            globalParameters.snvState = GlobalParameters.SnvState.entries.toTypedArray()[0]
         } else {
             globalParameters.snvState =
-                GlobalParameters.SnvState.values()[globalParameters.snvState.ordinal + 1]
+                GlobalParameters.SnvState.entries.toTypedArray()[globalParameters.snvState.ordinal + 1]
         }
         shortNutritionalValuesButton.text = shortNutritionalValuesOptions[globalParameters.snvState.ordinal]
 
         viewModel.say(resources.getString(R.string.new_barcode_setting, shortNutritionalValuesButton.text))
     }
 
+    /**
+     * Activates/Deactivates specified information retrieval.
+     */
     override fun onSwipeDown() {
-        if (globalParameters.brandsState.ordinal == GlobalParameters.SnvState.values().size - 1) {
-            globalParameters.brandsState = GlobalParameters.BrandsState.values()[0]
+        if (globalParameters.brandsState.ordinal == GlobalParameters.SnvState.entries.size - 1) {
+            globalParameters.brandsState = GlobalParameters.BrandsState.entries.toTypedArray()[0]
         } else {
             globalParameters.brandsState =
-                GlobalParameters.BrandsState.values()[globalParameters.brandsState.ordinal + 1]
+                GlobalParameters.BrandsState.entries.toTypedArray()[globalParameters.brandsState.ordinal + 1]
         }
         brandsButton.text = brandsOptions[globalParameters.brandsState.ordinal]
 
         viewModel.say(resources.getString(R.string.new_barcode_setting, brandsButton.text))
     }
 
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)

@@ -18,11 +18,24 @@ import com.nlinterface.viewmodels.VoiceOnlyViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/**
+ * The Voice Only activity allows users to use the app solely by voice commands with the help of a
+ * large language Model. The activity consist of three stages representing the three stages:
+ * Listening, Processing and Speaking.
+ *
+ * TODO: Improve and Test
+ */
 class VoiceOnlyActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: VoiceOnlyViewModel
     private lateinit var viewFlipper: ViewFlipper
+
+    /**
+     * The onCreate function sets up the viewFlipper that changes the screens layout based on the
+     * stage the speech system is in. It also sets up the OnTouchListener and starts in listening
+     * mode.
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +49,14 @@ class VoiceOnlyActivity: AppCompatActivity() {
         viewFlipper = findViewById(R.id.viewSwitcher)
 
         val rootView: View = findViewById(android.R.id.content)
+
+        /**
+         * The OnSwipeTouchListener is simplified to two possible inputs.
+         * DoubleTap navigates back to the Main Menu and exists the Voice Only Mode.
+         * Pressing and holding starts listening. (Only necessary when an error occurs. Per default
+         * the system should be listening without any additional input.)
+         */
+
         rootView.setOnTouchListener(object : OnSwipeTouchListener(this) {
             override fun onDoubleTap() {
                 val intent = Intent(this@VoiceOnlyActivity, MainActivity::class.java)
@@ -70,9 +91,9 @@ class VoiceOnlyActivity: AppCompatActivity() {
 
     /**
      * Called by the onCreate function and calls upon the ViewModel to initialize the STT system.
-     * The voiceActivationButton is configured to change it microphone color to green, if the STT
-     * system is active and to change back to white, if it is not. Also retrieves the text output
-     * of the voice input to the STT system, aka the 'command'
+     * It processed and observes the state of the activity to accurately represent it with the
+     * corresponding screen and make sure the next processing state is started only when the prior
+     * is finished.
      */
     private fun configureSTT() {
 
@@ -110,6 +131,9 @@ class VoiceOnlyActivity: AppCompatActivity() {
 
     }
 
+    /**
+     * The following three functions handle the UI.
+     */
     private fun showListeningStage() {
         if (viewFlipper.currentView.id != R.layout.mode_listening) {
             viewFlipper.displayedChild = 0
@@ -131,11 +155,13 @@ class VoiceOnlyActivity: AppCompatActivity() {
 
     private fun startAsynchronously() {
         configureTTS()
-
         firstListeningProcess()
-
     }
 
+    /**
+     * Checks for permission to use audio. If granted start listening. If not ask for permission
+     * again and call itself again.
+     */
     private fun firstListeningProcess(){
         lifecycleScope.launch{
             delay(2500)
@@ -157,6 +183,9 @@ class VoiceOnlyActivity: AppCompatActivity() {
         }
     }
 
+    /**
+     * Handles a received input and starts listening again on completion.
+     */
     private fun processVoiceInput(command: String) {
         lifecycleScope.launch {
             showSpeakingStage()

@@ -16,10 +16,17 @@ import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.SwipeNavigationListener
 import com.nlinterface.viewmodels.MainViewModel
 
+/**
+ * Fragment for the main activity.
+ */
 class MainScreen2 : Fragment(), SwipeAction {
 
     private lateinit var viewModel: MainViewModel
 
+    /**
+     * On Create View creates the layout and sets up the swipe Navigation.
+     * On ViewCreated accesses the shared viewmodel.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -38,28 +45,51 @@ class MainScreen2 : Fragment(), SwipeAction {
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
     }
 
+    /**
+     * Implements functionalities on swipe inputs.
+     * Swiping directions matched to usual swiping navigation in other apps.
+     */
+
+    /**
+     * Navigates to the Place Details Activity.
+     */
     override fun onSwipeLeft() {
         val intent = Intent(activity, PlaceDetailsActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Navigates to the first screen of the main activity.
+     */
     override fun onSwipeRight() {
         findNavController().navigate(R.id.Main2_to_Main1)
     }
 
+    /**
+     * Navigates to the barcode scanner.
+     * (It is included in the navigational framework for simplification purposes.)
+     */
     override fun onSwipeUp() {
-
-    }
-
-    override fun onSwipeDown() {
         findNavController().navigate(R.id.Main2_to_BarcodeScanner)
     }
+    /**
+     *
+     */
+    override fun onSwipeDown() {
 
+    }
+
+    /**
+     * Navigates to the Voice Only Activity.
+     */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Activates the LLM to start listening.
+     */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {
             viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)

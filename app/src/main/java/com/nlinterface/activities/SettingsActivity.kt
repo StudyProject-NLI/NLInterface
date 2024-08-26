@@ -31,13 +31,17 @@ import kotlinx.coroutines.launch
 /**
  * The SettingsActivity handles user interaction in Settings Menu.
  *
- * The Settings Menu comprises the Voice Activation Buttons and a button for each settings
- * functionality. Each click on a settings button will cycle through the available settings,
- * narrating each action. The settings are applied once the MainActivity is selected. Current
- * setting options are:
+ * The Settings Menu comprises of several screens of which each displays two
+ * possible settings.
+ * Scrolling left an right navigates trough the different screens. A swipe up and down
+ * changes the corresponding setting.
  *
- * 1- Screen Always On/Dim Screen after some time
- * 2- Device Theme/Dark Theme/Light Theme
+ * 1- Feedback Auditive/Tactile/Combined
+ * 2- Navigate to the barcode settings
+ * 3- Device Theme/Dark Theme/Light Theme
+ * 4- Screen Always On/Dim Screen after some time
+ * 5- Explanation type
+ * 6- Narration Speed
  *
  * Possible Voice Commands:
  * - 'Read Screen Settings'
@@ -46,6 +50,7 @@ import kotlinx.coroutines.launch
  * - 'Set Theme Settings' --> Default, Light or Dark? --> X
  *
  * TODO: Add TTS Speed Settings
+ * TODO: Implement all settings
  */
 class SettingsActivity : AppCompatActivity() {
 
@@ -399,10 +404,28 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.handleSTTSpeechBegin()
     }
 
+    /**
+     * Function that sets and configures the viewPager2. ViewPager2 is a tool that can take multiple
+     * fragments in a list and allows navigation between those fragments by swiping left and right.
+     * To achieve this the fragmentAdapter is set as the viewpagers adapter.
+     */
+
     private fun viewPagerSetUp(){
         viewPager = findViewById(R.id.view_pager)
         fragmentAdapter = SettingsFragmentAdapter(this)
         viewPager.adapter = fragmentAdapter
+
+        /**
+         * The swipe interceptor makes sure that vertical swipes are recognized more reliably.
+         * In a default state a swipe to the top or bottom with the slightest movement left
+         * or right will be recognized as a horizontal swipe. With the interceptor the app checks
+         * first for a vertical swipe, which makes it more reliable and better to navigate.
+         *
+         * Overriding the onSwipeUp and onSwipeDown functions in the way it is done, is necessary
+         * to assure the correct fragments onSwipe functions are referenced, since the activity is
+         * shared among all the activities Fragment.
+         *
+         */
 
         val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
             override fun onSwipeLeft(){}

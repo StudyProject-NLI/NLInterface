@@ -1,15 +1,21 @@
 package com.nlinterface.utility
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import kotlin.math.abs
 
-
+/**
+ * A class that implements the usage of swipe and touch navigation. It differentiates between a
+ * swipe to the left, right, top, down and a double tap as well as holding.
+ */
 open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
 
     private val gestureDetector = GestureDetector(context, GestureListener())
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View?, event: MotionEvent): Boolean {
         return gestureDetector.onTouchEvent(event)
     }
@@ -29,10 +35,10 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
             velocityX: Float,
             velocityY: Float
         ): Boolean {
-            val diffY = e2!!.y - e1!!.y
+            val diffY = e2.y - e1!!.y
             val diffX = e2.x - e1.x
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > swipeThreshold && Math.abs(velocityX) > swipeVelocityThreshold) {
+            if (abs(diffX) > abs(diffY)) {
+                if (abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
                     if (diffX > 0) {
                         onSwipeRight()
                     } else {
@@ -41,7 +47,7 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
                     return true
                 }
             } else {
-                if (Math.abs(diffY) > swipeThreshold && Math.abs(velocityY) > swipeVelocityThreshold) {
+                if (abs(diffY) > swipeThreshold && abs(velocityY) > swipeVelocityThreshold) {
                     if (diffY > 0) {
                         onSwipeDown()
                     } else {
@@ -63,6 +69,10 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
         }
     }
 
+    /**
+     * Just empty bodies to allow each fragment its own functionalities when receiving the
+     * corresponding inout.
+     */
     open fun onSwipeRight() {}
     open fun onSwipeLeft() {}
     open fun onSwipeUp() {}
@@ -71,6 +81,9 @@ open class OnSwipeTouchListener(context: Context) : View.OnTouchListener {
     open fun onDoubleTap() {}
 }
 
+/**
+ * Interface that is passed in Fragment Creation to implement functionalities in the fragment itself
+ */
 interface SwipeAction {
     fun onSwipeLeft()
     fun onSwipeRight()
@@ -80,6 +93,9 @@ interface SwipeAction {
     fun onDoubleTap()
 }
 
+/**
+ * Class that allows fragment creation with a SwipeNavigationListener class.
+ */
 class SwipeNavigationListener(
     context: Context,
     private var swipeAction: SwipeAction?

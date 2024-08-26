@@ -24,21 +24,19 @@ import com.nlinterface.viewmodels.BarcodeSettingsViewModel
 
 
 /**
- * The SettingsActivity handles user interaction in Settings Menu.
+ * The BarcodeSettingsActivity handles user interaction in Barcode Settings Menu.
  *
- * The Settings Menu comprises the Voice Activation Buttons and a button for each settings
- * functionality. Each click on a settings button will cycle through the available settings,
- * narrating each action. The settings are applied once the MainActivity is selected. Current
- * setting options are:
+ * The Barcode Settings Menu comprises of several screens of which each displays two
+ * possible settings. Those settings set what information about the scanned product are retrieved
+ * and given to the user.
+ * Scrolling left an right navigates trough the different screens. A swipe up and down
+ * activates/deactivates the specific information retrieval.
  *
- * 1- Screen Always On/Dim Screen after some time
- * 2- Device Theme/Dark Theme/Light Theme
- *
- * Possible Voice Commands:
- * - 'Read Screen Settings'
- * - 'Read Theme Settings'
- * - 'Set Screen Settings' --> Always On or Dim? --> X
- * - 'Set Theme Settings' --> Default, Light or Dark? --> X
+ * 1- Name and Volume on/off
+ * 2- Labels on/off
+ * 3- Country of Origin on/off
+ * 4- Ingredients and Allergies on/off
+ * 5- Compromised nutritional values on/off
  *
  * TODO: Add TTS Speed Settings
  */
@@ -72,8 +70,8 @@ class BarcodeSettingsActivity : AppCompatActivity() {
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
-     * retrieving the ViewModel, loading the options for each preference type, configuring the UI
-     * and configuring the TTS/STT systems.
+     * retrieving the ViewModel, loading the options for each preference type, configuring the
+     * viewpager and configuring the TTS/STT systems.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,11 +107,15 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         }
 
         viewPagerSetUp()
-
         configureTTS()
         configureSTT()
     }
 
+    /**
+     * On pause the current state of the settings is saved, so it can be retrieved when the
+     * barcode settings activity is started again.
+     *
+     */
     override fun onPause() {
         super.onPause()
 
@@ -309,6 +311,10 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * The following five functions encode the visual button change on setting change.
+     */
+
     private fun changeAndReadButtonName(){
         nameAndVolumeButton.text =
             nameAndVolumeOptions[globalParameters.navState.ordinal]
@@ -340,10 +346,28 @@ class BarcodeSettingsActivity : AppCompatActivity() {
         viewModel.say(resources.getString(R.string.new_barcode_setting, shortNutritionalValuesButton.text))
     }
 
+    /**
+     * Function that sets and configures the viewPager2. ViewPager2 is a tool that can take multiple
+     * fragments in a list and allows navigation between those fragments by swiping left and right.
+     * To achieve this the fragmentAdapter is set as the viewpagers adapter.
+     */
+
     private fun viewPagerSetUp(){
         viewPager = findViewById(R.id.view_pager)
         fragmentAdapter = BarcodeSettingsFragmentAdapter(this)
         viewPager.adapter = fragmentAdapter
+
+        /**
+         * The swipe interceptor makes sure that vertical swipes are recognized more reliably.
+         * In a default state a swipe to the top or bottom with the slightest movement left
+         * or right will be recognized as a horizontal swipe. With the interceptor the app checks
+         * first for a vertical swipe, which makes it more reliable and better to navigate.
+         *
+         * Overriding the onSwipeUp and onSwipeDown functions in the way it is done, is necessary
+         * to assure the correct fragments onSwipe functions are referenced, since the activity is
+         * shared among all the activities Fragment.
+         *
+         */
 
         val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
             override fun onSwipeLeft(){}

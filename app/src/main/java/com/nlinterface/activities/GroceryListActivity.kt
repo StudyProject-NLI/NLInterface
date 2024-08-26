@@ -45,6 +45,18 @@ import kotlinx.coroutines.launch
 /**
  * The GroceryListActivity handles user interaction for the GroceryList.
  *
+ * The Grocery lists are several screens, that can be navigated via scrolling left and right.
+ * Their are three fixed screens with different functionalities, of which one is a list view of
+ * all grocery items. Filling the grocery list is either possible by using the functionality to
+ * arbitrarily add an item to next free spot on the list. To assure a clean and reduced screen, to
+ * ease navigation, for vision impaired users, their is also a dynamic grocery list attached.
+ *
+ * Following the three fixed screens, their is a number of screens where items can be added. On
+ * first start up there is only one. The screen can encode two grocery items. One on the top and
+ * one on the bottom, that can be added by scrolling up and down. When both item slots are filled
+ * the app automatically attaches another screen with again two item slots.
+ *
+ *
  * The GroceryListActivity is the view of a GroceryList, which displays a list of items and their
  * status. If greyed out, item has been added to the 'shopping cart', else it is still open.
  * Items can be added via a TextEdit interface or removed from the list via a swipe motion, added or
@@ -85,8 +97,8 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
     /**
      * The onCreate function initializes the view by binding the Activity and the Layout and
-     * retrieving the ViewModel. After calling the viewModel to load the grocery list data, the UI
-     * elements and TTS and STT systems are configured.
+     * retrieving the ViewModel. After calling the viewModel to load the grocery list data,
+     * the viewPager and TTS and STT systems are configured.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -104,6 +116,11 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         configureTTS()
         configureSTT()
     }
+
+    /**
+     * The Fragments in the Grocery List activity are created dynamically, on Pause their state
+     * is saved and on Resume they are restored.
+     */
 
     override fun onPause() {
         super.onPause()
@@ -502,6 +519,10 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      * button is clicked, whatever string was entered into the EditText is added as a new
      * GroceryItem to the GroceryList. The alertDialog is closed either when the positive, negative
      * or the background activity is clicked. Every possible action is narrated to the user.
+     *
+     * The process of adding the entered string as a Grocery Item is wrapped in a Handler to make
+     * sure, that processes resulting from this, are only executed when all necessary prior steps
+     * are accurately completed.
      */
     fun onAddItemButtonClick() {
 
@@ -581,21 +602,40 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewModel.say(item.itemName)
     }
 
+    /**
+     * Necessary functions for dynamic fragments.
+     */
+
+    /**
+     * Creates a new GroceryListScreenBase fragment and adds it to the fragment adapter.
+     * Adjusts the viewPagers offScreenPageLimit to trigger the initialization of the new fragment,
+     * so its variables can be accessed and used.
+     */
     fun addNewFragment(itemTop: String, itemBottom: String) {
         viewPager.offscreenPageLimit = fragmentAdapter.itemCount -1
         val newFragment = GroceryListScreenBase.newInstance(itemTop, itemBottom)
         fragmentAdapter.addFragment(newFragment)
     }
 
+    /**
+     * Removes the fragment from the fragmentAdapter and adjusts the offscreenPageLimit.
+     */
+
     fun removeFragment(fragment: GroceryListScreenBase){
         viewPager.offscreenPageLimit = fragmentAdapter.itemCount - 1
         fragmentAdapter.removeFragment(fragment)
     }
+
+    /**
+     * Saves the current state of the fragments. This is necessary to keep the newly created
+     * fragments. The fragments are saved with their itemTop and itemBottom variable mapped onto
+     * each-other. They are put into a json an d saved in the sharedPreferences.
+     */
     private fun saveFragmentsState() {
         val sharedPreferences = getSharedPreferences("fragment_state", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val fragmentData = fragmentAdapter.fragmentList
-            .filterIsInstance<GroceryListScreenBase>() // Only include GroceryListScreenBase fragments
+            .filterIsInstance<GroceryListScreenBase>()
             .map { fragment ->
                 fragment.itemTop to fragment.itemBottom
             }
@@ -606,6 +646,10 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         Log.i("Shared Preferences","FragmentState saved")
     }
 
+    /**
+     * Restores the fragments with their variables saved in the sharedPreferences. If there are
+     * no saved Fragments a new one is created to makes sure, their is always at least one.
+     */
     private fun restoreFragmentsState() {
         val sharedPreferences = getSharedPreferences("fragment_state", Context.MODE_PRIVATE)
         val gson = Gson()
@@ -627,11 +671,29 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         Log.i("Shared Preferences","FragmentState restored")
     }
 
+    /**
+     * Function that sets and configures the viewPager2. ViewPager2 is a tool that can take multiple
+     * fragments in a list and allows navigation between those fragments by swiping left and right.
+     * To achieve this the fragmentAdapter is set as the viewpagers adapter.
+     */
+
     private fun viewPagerSetUp(){
         viewPager = findViewById(R.id.view_pager)
         fragmentAdapter = GroceryListFragmentAdapter(this)
         viewPager.adapter = fragmentAdapter
         viewPager.setCurrentItem(1, false)
+
+        /**
+         * The swipe interceptor makes sure that vertical swipes are recognized more reliably.
+         * In a default state a swipe to the top or bottom with the slightest movement left
+         * or right will be recognized as a horizontal swipe. With the interceptor the app checks
+         * first for a vertical swipe, which makes it more reliable and better to navigate.
+         *
+         * Overriding the onSwipeUp and onSwipeDown functions in the way it is done, is necessary
+         * to assure the correct fragments onSwipe functions are referenced, since the activity is
+         * shared among all the activities Fragment.
+         *
+         */
 
         val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
             override fun onSwipeLeft(){}

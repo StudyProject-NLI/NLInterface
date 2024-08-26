@@ -311,6 +311,10 @@ class GroceryListViewModel(
         _isListening.value = false
     }
 
+    /**
+     * Functionalities to update the UIs text for the top and bottom button
+     */
+
     private val _topButtonText = MutableLiveData<String>()
     val topButtonText: LiveData<String> get() = _topButtonText
 

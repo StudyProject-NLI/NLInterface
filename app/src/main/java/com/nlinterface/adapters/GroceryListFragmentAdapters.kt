@@ -8,6 +8,10 @@ import com.nlinterface.fragments.GroceryListScreen2
 import com.nlinterface.fragments.GroceryListScreenBase
 import com.nlinterface.fragments.GroceryListScreenListView
 
+/**
+ * Fragment Adapter for the Grocery List Activity. On initialization only the fixed Fragments are
+ * added to fragmentList.
+ */
 class GroceryListFragmentAdapter(
     fragmentActivity: FragmentActivity
 ): FragmentStateAdapter(fragmentActivity) {
@@ -40,12 +44,15 @@ class GroceryListFragmentAdapter(
         notifyItemRemoved(position)
     }
 
+    /**
+     * Clears all dynamically created fragments.
+     */
     fun clearFragments(){
-        if (fragmentList.size > 2) {
-            val fragmentsToRemove = fragmentList.size - 2
+        if (fragmentList.size > 3) {
+            val fragmentsToRemove = fragmentList.size - 3
             // Remove all fragments starting from the third one
-            fragmentList.subList(2, fragmentList.size).clear()
-            notifyItemRangeRemoved(2, fragmentsToRemove)
+            fragmentList.subList(3, fragmentList.size).clear()
+            notifyItemRangeRemoved(3, fragmentsToRemove)
         }
     }
 

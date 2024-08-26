@@ -81,7 +81,7 @@ class LocationGetter: Service() {
     /**
      * This method is required by the Service architecture,
      * but not needed because the scanning should be done constantly.
-     * Therefore it just return null
+     * Therefore it just returns null
      */
 
     override fun onBind(intent: Intent?): IBinder? {

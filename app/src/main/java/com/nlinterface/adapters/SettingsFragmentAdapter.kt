@@ -17,12 +17,10 @@ class SettingsFragmentAdapter(
     private val fragmentList = mutableListOf<Fragment>()
 
     override fun getItemCount(): Int {
-        // Return the count of static fragments plus the dynamic ones
         return fragmentList.size
     }
 
     init {
-        // Add static fragments
         fragmentList.add(SettingsScreen1())
         fragmentList.add(SettingsScreen2())
         fragmentList.add(SettingsScreen3())

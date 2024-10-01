@@ -239,8 +239,8 @@
 
     <string name="settings_brand">Marke</string>
     <string-array name="settings_brand">
-        <item>Marke On</item>
-        <item>Marke Off</item>
+        <item>Marke An</item>
+        <item>Marke Aus</item>
     </string-array>
 
     <!--
@@ -272,6 +272,10 @@
     <string name="other_favorites">Mehr Favoriten</string>
     <string name="single_search">Einfache Suche</string>
     <string name="place_details_main">Ort Details Hauptmenü</string>
+    <string name="places_overview">Übersicht Orte</string>
+    <string name="places_list">Liste Orte</string>
+    <string name="STORENAME_address">Bei %1$s</string>
+    <string name="place_on_list">Dieser Ort ist bereits auf der Liste</string>
 
     <!--    Single Place Menu   -->
 
@@ -296,5 +300,7 @@
     <!--   VoiceOnly    -->
     <string name="processing">Verarbeitung</string>
     <string name="speaker">Lautsprecher</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

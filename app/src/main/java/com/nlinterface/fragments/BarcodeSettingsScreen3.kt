@@ -53,6 +53,7 @@ class BarcodeSettingsScreen3 : Fragment(), SwipeAction {
         // Access the shared ViewModel
         viewModel = ViewModelProvider(requireActivity())[BarcodeSettingsViewModel::class.java]
 
+
         // Find the button
         shortNutritionalValuesButton = view.findViewById(R.id.settings_short_nutritional_values)
         shortNutritionalValuesOptions = mutableListOf()
@@ -65,6 +66,8 @@ class BarcodeSettingsScreen3 : Fragment(), SwipeAction {
         resources.getStringArray(R.array.settings_brand).forEach { option ->
             brandsOptions.add(option)
         }
+
+
     }
 
     /**

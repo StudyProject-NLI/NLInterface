@@ -17,12 +17,10 @@ class BarcodeSettingsFragmentAdapter(
     private val fragmentList = mutableListOf<Fragment>()
 
     override fun getItemCount(): Int {
-        // Return the count of static fragments plus the dynamic ones
         return fragmentList.size
     }
 
     init {
-        // Add static fragments
         fragmentList.add(BarcodeSettingsScreen1())
         fragmentList.add(BarcodeSettingsScreen2())
         fragmentList.add(BarcodeSettingsScreen3())

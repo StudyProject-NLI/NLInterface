@@ -111,12 +111,20 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
     }
 
     /**
-     * Necessary to save fragment stage, since they are dynamically created.
+     * Necessary to save fragment state, since they are dynamically created.
      */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putString(ARG_ITEM_TOP, itemTop)
         outState.putString(ARG_ITEM_BOTTOM, itemBottom)
+    }
+
+    override fun onResume(){
+        super.onResume()
+        if ((activity as GroceryListActivity).groceryListFragmentAdapter.fragmentList.last()
+            == this){
+            checkAndCreateNewFragment()
+        }
     }
 
     /**
@@ -128,6 +136,8 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
 
     /**
      * Opens up text input to add Grocery item to this slot. Updates the text in the UI as well.
+     * If there already is an item in that slot, it is added to the cart and deleted from the list
+     * and UI.
      */
     override fun onSwipeUp() {
         if (itemTop == default) {
@@ -147,21 +157,40 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
             }
         }
         else {
-            Log.i("GroceryList", (activity as GroceryListActivity).viewModel.groceryList.toString())
-            (activity as GroceryListActivity).addItemToCart(itemTop)
-            (activity as GroceryListActivity).deleteGroceryItem(itemTop)
-            Log.i("GroceryList", (activity as GroceryListActivity).viewModel.groceryList.toString())
-            itemTop = default
-            viewModel.updateButtonTexts(itemTop, itemBottom)
-            if (itemTop == default  && itemBottom == default
-                        && (activity as GroceryListActivity).fragmentAdapter.itemCount > 3){
-                (activity as GroceryListActivity).fragmentAdapter.removeFragment(this)
+            (activity as? GroceryListActivity)?.let {
+                Log.i(
+                    "GroceryList",
+                    it.viewModel.groceryList.toString()
+                )
+                it.addItemToCart(itemTop)
+                it.deleteGroceryItem(itemTop)
+                Log.i(
+                    "GroceryList",
+                    it.viewModel.groceryList.toString()
+                )
+                itemTop = default
+                viewModel.updateButtonTexts(itemTop, itemBottom)
+                val fragmentList = it.groceryListFragmentAdapter.fragmentList
+                if (itemTop == default && itemBottom == default
+                    && it.groceryListFragmentAdapter.itemCount > 3
+                ) {
+                    if (fragmentList.last() != this) {
+                        it.groceryListFragmentAdapter.removeFragment(this)
+                    }
+                    else if (fragmentList.last() == this){
+                        if (!(fragmentList[fragmentList.size-2] as GroceryListScreenBase).areVariablesSet()){
+                            it.groceryListFragmentAdapter.removeFragment(this)
+                        }
+                    }
+                }
             }
         }
     }
 
     /**
      * Opens up text input to add Grocery item to this slot. Updates the text in the UI as well.
+     * If there already is an item in that slot, it is added to the cart and deleted from the list
+     * and UI.
      */
     override fun onSwipeDown() {
         if (itemBottom == default) {
@@ -179,15 +208,32 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
             }
         }
         else {
-            Log.i("GroceryList", (activity as GroceryListActivity).viewModel.groceryList.toString())
-            (activity as GroceryListActivity).addItemToCart(itemTop)
-            (activity as GroceryListActivity).deleteGroceryItem(itemBottom)
-            Log.i("GroceryList", (activity as GroceryListActivity).viewModel.groceryList.toString())
-            itemBottom = default
-            viewModel.updateButtonTexts(itemTop, itemBottom)
-            if (itemTop == default  && itemBottom == default
-                    && (activity as GroceryListActivity).fragmentAdapter.itemCount > 3){
-                (activity as GroceryListActivity).removeFragment(this)
+            (activity as? GroceryListActivity)?.let {
+                Log.i(
+                    "GroceryList",
+                    it.viewModel.groceryList.toString()
+                )
+                it.addItemToCart(itemBottom)
+                it.deleteGroceryItem(itemBottom)
+                Log.i(
+                    "GroceryList",
+                    it.viewModel.groceryList.toString()
+                )
+                itemBottom = default
+                viewModel.updateButtonTexts(itemTop, itemBottom)
+                val fragmentList = it.groceryListFragmentAdapter.fragmentList
+                if (itemTop == default && itemBottom == default
+                    && it.groceryListFragmentAdapter.itemCount > 3
+                ) {
+                    if (fragmentList.last() != this) {
+                        it.groceryListFragmentAdapter.removeFragment(this)
+                    }
+                    else if (fragmentList.last() == this){
+                        if (!(fragmentList[fragmentList.size-2] as GroceryListScreenBase).areVariablesSet()){
+                            it.groceryListFragmentAdapter.removeFragment(this)
+                        }
+                    }
+                }
             }
         }
     }
@@ -227,5 +273,4 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
             Log.println(Log.INFO, "GroceryFragment", "New Fragment created")
         }
     }
-
 }

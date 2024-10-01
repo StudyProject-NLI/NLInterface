@@ -290,6 +290,7 @@
     <string name="tell_me_all_Items">Tell me all items</string>
     <string name="remove_all_items">Remove all items</string>
     <string name="grocery_items">Grocery items</string>
+    <string name="remove_item">Remove an item</string>
     <string name="more_items">More items</string>
 
     <!--    Place Details   -->
@@ -299,6 +300,10 @@
     <string name="other_favorites">Other favorites</string>
     <string name="single_search">Single search</string>
     <string name="place_details_main">Place details main screen</string>
+    <string name="places_overview">Places overview</string>
+    <string name="places_list">Places list</string>
+    <string name="STORENAME_address">On %1$s</string>
+    <string name="place_on_list">This place is already on the list</string>
 
     <!--    Single Place Menu   -->
 

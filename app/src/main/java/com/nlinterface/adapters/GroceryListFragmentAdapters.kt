@@ -13,18 +13,16 @@ import com.nlinterface.fragments.GroceryListScreenListView
  * added to fragmentList.
  */
 class GroceryListFragmentAdapter(
-    fragmentActivity: FragmentActivity
+    private val fragmentActivity: FragmentActivity
 ): FragmentStateAdapter(fragmentActivity) {
 
     val fragmentList = mutableListOf<Fragment>()
 
     override fun getItemCount(): Int {
-        // Return the count of static fragments plus the dynamic ones
         return fragmentList.size
     }
 
     init {
-        // Add static fragments
         fragmentList.add(GroceryListScreenListView())
         fragmentList.add(GroceryListScreen1())
         fragmentList.add(GroceryListScreen2())
@@ -38,10 +36,26 @@ class GroceryListFragmentAdapter(
         fragmentList.add(fragment)
     }
 
+    /**
+     * Removes a fragment and handles proper notification to all isntances.
+     */
+
     fun removeFragment(fragment: GroceryListScreenBase){
         val position = fragmentList.indexOf(fragment)
         fragmentList.removeAt(position)
+        fragmentActivity.supportFragmentManager.beginTransaction().remove(fragment).commitNowAllowingStateLoss()
         notifyItemRemoved(position)
+        notifyDataSetChanged()
+    }
+
+    override fun getItemId(position: Int): Long {
+        // Return a unique ID for each fragment
+        return fragmentList[position].hashCode().toLong()
+    }
+
+    override fun containsItem(itemId: Long): Boolean {
+        // Ensure that the item is still in the fragment list
+        return fragmentList.any { it.hashCode().toLong() == itemId }
     }
 
     /**

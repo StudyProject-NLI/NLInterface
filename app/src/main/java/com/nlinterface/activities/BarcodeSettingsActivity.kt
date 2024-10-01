@@ -349,7 +349,7 @@ class BarcodeSettingsActivity : AppCompatActivity() {
     /**
      * Function that sets and configures the viewPager2. ViewPager2 is a tool that can take multiple
      * fragments in a list and allows navigation between those fragments by swiping left and right.
-     * To achieve this the fragmentAdapter is set as the viewpagers adapter.
+     * To achieve this the groceryListFragmentAdapter is set as the viewpagers adapter.
      */
 
     private fun viewPagerSetUp(){

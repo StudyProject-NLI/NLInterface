@@ -18,7 +18,7 @@ class OnSwipeTouchInterceptor(
 
     private var initialXValue: Float = 0f
     private var initialYValue: Float = 0f
-    private val horizontalSwipeThreshold = 50
+    private val horizontalSwipeThreshold = 25
     private val verticalSwipeThreshold = 25
 
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {

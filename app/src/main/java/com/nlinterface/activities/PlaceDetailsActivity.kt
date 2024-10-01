@@ -1,20 +1,36 @@
 package com.nlinterface.activities
 
+import android.content.Context
 import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nlinterface.R
 import com.nlinterface.adapters.PlaceDetailsAdapter
+import com.nlinterface.adapters.PlaceDetailsFragmentAdapter
 import com.nlinterface.databinding.ActivityPlaceDetailsBinding
 import com.nlinterface.dataclasses.PlaceDetailsItem
+import com.nlinterface.fragments.PlaceDetailsListOverview
+import com.nlinterface.fragments.PlaceDetailsScreen1
+import com.nlinterface.fragments.PlaceDetailsScreenBase
 import com.nlinterface.interfaces.PlaceDetailsItemCallback
 import com.nlinterface.utility.ActivityType
+import com.nlinterface.utility.OnSwipeTouchInterceptor
 import com.nlinterface.utility.STTInputType
+import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.navToActivity
 import com.nlinterface.viewmodels.PlaceDetailsViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -54,17 +70,22 @@ import java.util.Calendar
 class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     
     private lateinit var binding: ActivityPlaceDetailsBinding
-    private lateinit var viewModel: PlaceDetailsViewModel
+    lateinit var viewModel: PlaceDetailsViewModel
     
     private lateinit var placeDetailsItemList: ArrayList<PlaceDetailsItem>
-    
-    private lateinit var adapter: PlaceDetailsAdapter
+    private lateinit var placeDetailsAdapter: PlaceDetailsAdapter
     
     private lateinit var lastCommand: String
     private lateinit var lastResponse: String
 
-    private lateinit var navController: NavController
-    
+    private lateinit var placeDetailsViewPager: ViewPager2
+    lateinit var placeDetailsFragmentAdapter: PlaceDetailsFragmentAdapter
+
+    val operationCompletedStatus = MutableLiveData<Boolean>()
+    val operationCompleted: LiveData<Boolean> get() = operationCompletedStatus
+
+    private lateinit var onResumeCheck:String
+
     /**
      * The onCreate function initializes the view by binding the Activity and the Layout and
      * retrieving the ViewModel. After calling the viewModel to load the place details list data and
@@ -72,33 +93,46 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+        onResumeCheck = "true"
+
         binding = ActivityPlaceDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.place_details_nav_host_fragment) as NavHostFragment
-        if (navHostFragment == null) {
-            Log.i("SettingsActivity", "NavHostFragment is null")
-        } else {
-            navController = navHostFragment.navController
-        }
-        
         viewModel = ViewModelProvider(this)[PlaceDetailsViewModel::class.java]
         viewModel.initPlaceClient(this)
-        
+
         viewModel.fetchPlaceDetailsItemList()
         placeDetailsItemList = viewModel.placeDetailsItemList
+        placeDetailsAdapter = PlaceDetailsAdapter(placeDetailsItemList, this)
 
+
+        configureAutocompleteFragment()
+        viewPagerSetUp()
         configureTTS()
         configureSTT()
-        
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+
+    /**
+     * The Fragments in the Place Details activity are created dynamically, on Pause their state
+     * is saved and on Resume they are restored. The check is needed to assure the onResume
+     * functionality is only triggered, when it comes from a stoped state.
+     */
+    override fun onStop() {
+        super.onStop()
+        saveFragmentsState()  // Save the fragment state when the activity is paused
+        onResumeCheck = "true"
     }
-    
+
+    override fun onResume() {
+        super.onResume()
+        if (onResumeCheck == "true") {
+            restoreFragmentsState()  // Restore the fragment state when the activity is resumed
+        }
+        onResumeCheck = "false"
+    }
+
+
     /**
      * Called by the onCreate Function and calls upon the ViewModel to initialize the TTS system. On
      * successful initialization, the Activity name is read aloud.
@@ -222,7 +256,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     }
     
     /**
-     * Called when the user has given a response to an item quesion.Depending on the previous
+     * Called when the user has given a response to an item question.Depending on the previous
      * command and the given response, the action is executed.
      *
      * @param command: String, the command preceding the response
@@ -274,7 +308,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
                 viewModel.say(resources.getString(R.string.STORENAME_is_a_favorite, storeName))
             } else {
                 viewModel.changeFavorite(placeDetailsItem)
-                adapter.notifyItemChanged(placeDetailsItemList.indexOf(placeDetailsItem))
+                placeDetailsAdapter.notifyItemChanged(placeDetailsItemList.indexOf(placeDetailsItem))
                 viewModel.say(resources.getString(R.string.added_STORENAME_to_favorites, storeName))
             }
         } else {
@@ -301,7 +335,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
                 viewModel.say(resources.getString(R.string.STORENAME_is_not_a_favorite, storeName))
             } else {
                 viewModel.changeFavorite(placeDetailsItem)
-                adapter.notifyItemChanged(placeDetailsItemList.indexOf(placeDetailsItem))
+                placeDetailsAdapter.notifyItemChanged(placeDetailsItemList.indexOf(placeDetailsItem))
                 viewModel.say(
                     resources.getString(R.string.deleted_STORENAME_from_favorites, storeName)
                 )
@@ -337,7 +371,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
             }
     
             resources.getString(R.string.list_my_favorite_places) -> {
-                for ((_, storeName, _, favorite) in placeDetailsItemList) {
+                for ((_, storeName, _, _, favorite) in placeDetailsItemList) {
                     if (favorite) {
                         viewModel.say(storeName, TextToSpeech.QUEUE_ADD)
                         exists = true
@@ -378,7 +412,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      * Reads today's Opening Hours for a given store name out loud. If the store name does not
      * correspond to a place details item on the list, state this.
      */
-    private fun stateOpeningHours(storeName: String) {
+    fun stateOpeningHours(storeName: String) {
     
         val placeDetailsItem = findPlaceByName(storeName)
     
@@ -389,7 +423,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
             val regexCurrentOpeningHours = "(?<=: \\[?)(\\w:?–? ?ö?)+( ?–?\\d?:?)+".toRegex()
             val currentOpeningHours = regexCurrentOpeningHours.find(openingHours[dayOfWeek])?.value
             
-            viewModel.say(currentOpeningHours.toString())
+            viewModel.say(currentOpeningHours.toString(),TextToSpeech.QUEUE_ADD)
         } else {
             viewModel.say(
                 resources.getString(R.string.STORENAME_is_not_on_the_list, storeName)
@@ -397,7 +431,26 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         }
         
     }
-    
+
+    /**
+     * Reads the address for a given store name out loud. If the store name does not
+     * correspond to a place details item on the list, state this.
+     */
+
+    private fun stateAddress(storeName: String) {
+
+        val placeDetailsItem = findPlaceByName(storeName)
+
+        if (placeDetailsItem != null) {
+            viewModel.say(placeDetailsItem.address,TextToSpeech.QUEUE_ADD)
+        } else {
+            viewModel.say(
+                resources.getString(R.string.STORENAME_is_not_on_the_list, storeName)
+            )
+        }
+
+    }
+
     /**
      * Checks whether a store is currently open, based on its opening Hours and the current time.
      *
@@ -430,14 +483,11 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
             val currentTime = hour * 100 + min
             val maxTime = 2360
             val minTime = 0
-    
-            if ((closeTime < openTime && (
-                        currentTime in openTime until maxTime
-                                || currentTime in minTime until closeTime
-                    )) || (currentTime in openTime until closeTime)){
-                return true
-            }
-            return false
+
+            return (closeTime < openTime && (
+                    currentTime in openTime until maxTime
+                            || currentTime in minTime until closeTime
+                    )) || (currentTime in openTime until closeTime)
         }
         
         return false
@@ -482,7 +532,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     private fun deletePlaceDetailsItem(placeDetailsItem: PlaceDetailsItem, index: Int) {
 
         viewModel.deletePlaceDetailsItem(placeDetailsItem)
-        adapter.notifyItemRemoved(index)
+        placeDetailsAdapter.notifyItemRemoved(index)
         viewModel.say(
             resources.getString(
                 R.string.deleted_ITEMNAME_from_saved_places, placeDetailsItem.storeName
@@ -497,7 +547,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      *
      * @param itemName: name  to be deleted
      */
-    private fun deletePlaceDetailsItem(itemName: String) {
+    fun deletePlaceDetailsItem(itemName: String) {
     
         val placeDetailsItem = findPlaceByName(itemName)
     
@@ -512,40 +562,95 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
     }
     
     /**
-     * Searches the list for a Place Detail Item by its name.
+     * Searches the list for a Place Detail Item by its name/id.
      *
      * @param storeName: String, the name of the place to be deleted
      *
      * @return The Place Details Item if it exists, else null
      */
-    private fun findPlaceByName(storeName: String): PlaceDetailsItem? {
-        return placeDetailsItemList.find { it.storeName.lowercase() == storeName }
+    fun findPlaceByName(storeName: String): PlaceDetailsItem? {
+        return placeDetailsItemList.find { it.storeName == storeName }
     }
 
-    /*
+    private fun findPlaceByID(placeID: String): PlaceDetailsItem? {
+        return placeDetailsItemList.find {it.placeID == placeID}
+    }
+
+    /**
+     * Three functions handling the google maps place search.
+     */
+    /**
+     * Just launches the intent. It wrapped in function to be called from the different fragments.
+     *
+     * TODO: Make country flexible
+     */
+    fun startPlaceSearch(){
+        val autocompleteFragment = supportFragmentManager
+            .findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+        val searchInput = autocompleteFragment.view?.findViewById<View>(
+            resources.getIdentifier("places_autocomplete_search_input", "id", packageName)
+        )
+        searchInput?.requestFocus()
+        searchInput?.performClick()
+    }
+
+    /**
+     * Once a place is selected it calls on the viewmodel to proceed with the onPlaceSelected.
+     * Additionally it notifies the placeDetailsAdapter and gives feedback to the user.
+     */
+
+    private fun handlePlaceSelected(place: Place) {
+        if(findPlaceByID(place.id!!) == null) {
+            viewModel.onPlaceSelected(place) {
+                if (it) {
+                    placeDetailsAdapter.notifyItemInserted(placeDetailsItemList.size - 1)
+                    operationCompletedStatus.value = true
+                    val storeName = placeDetailsItemList.last().storeName
+                    val address = placeDetailsItemList.last().address
+                    viewModel.say(
+                        resources.getString(
+                            R.string.STORENAME_added_to_saved_places,
+                            storeName
+                        ), TextToSpeech.QUEUE_ADD
+                    )
+                    viewModel.say(
+                        resources.getString(
+                            R.string.STORENAME_address,
+                            address
+                        ), TextToSpeech.QUEUE_ADD
+                    )
+                }
+            }
+        }
+        else{
+            viewModel.say(resources.getString(R.string.place_on_list))
+        }
+    }
+
     /**
      * Sets up the AutocompleteFragment for the places search and sets a PlaceSelectionListener. The
      * search filters for supermarkets and returns the ID of a place. If a place is selected, it is
      * added to the saved places and the action is narrated.
      */
     private fun configureAutocompleteFragment() {
-        
+
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment =
             supportFragmentManager.findFragmentById(R.id.autocomplete_fragment)
                     as AutocompleteSupportFragment
-        
+        autocompleteFragment.view?.visibility = View.GONE
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID))
         autocompleteFragment.setTypesFilter(listOf("supermarket"))
-        
+        autocompleteFragment.setCountries(listOf("DE"))
+
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            
+
             override fun onError(status: Status) {
                 viewModel.onError(status)
             }
-            
+
             /**
              * When a place is selected, the ViewModel is called to handle fetching the place
              * details and adding a new PlaceDetailsItem to the list. On Success, the UI is updated
@@ -554,27 +659,13 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
              * @param place: Place, the selected place
              */
             override fun onPlaceSelected(place: Place) {
-                viewModel.onPlaceSelected(place) {
-                    if (it) {
-                        
-                        adapter.notifyItemInserted(placeDetailsItemList.size - 1)
-                        
-                        val storeName = placeDetailsItemList.last().storeName
-                        viewModel.say(
-                            resources.getString(
-                                R.string.STORENAME_added_to_saved_places,
-                                storeName
-                            )
-                        )
-                    }
-                }
+                handlePlaceSelected(place)
             }
         })
-        
+
     }
 
-     */
-    
+
     /**
      * Called at the end of the activity lifecycle and saves the current PlaceDetailsItem list to
      * local storage.
@@ -583,26 +674,29 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         super.onDestroy()
         viewModel.storePlaceDetailsItemList()
     }
-    
+
     /**
      * Reads the respective store name out loud, if a card is clicked.
      *
      * @param item: PlaceDetailsItem, the item whose name is to be read out loud
      */
     override fun onCardClick(item: PlaceDetailsItem) {
+
         viewModel.say(item.storeName)
+        stateOpeningHours(item.storeName)
+        stateAddress(item.storeName)
     }
-    
+
     /**
      * When the favorite icon of a PlaceDetailsItem is clicked, it is added to or removed from the
      * favorites list, depending on the current state. If favorited, it is removed, else it is
      * added.
      */
     override fun onFavoriteClick(item: PlaceDetailsItem) {
-        
+
         val favorite = viewModel.changeFavorite(item)
-        adapter.notifyItemChanged(placeDetailsItemList.indexOf(item))
-        
+        placeDetailsAdapter.notifyItemChanged(placeDetailsItemList.indexOf(item))
+
         if (favorite) {
             viewModel.say(
                 resources.getString(
@@ -619,18 +713,135 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
             )
         }
     }
-    
+
     /**
-     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
-     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
-     * listening.
+     * Necessary functions for dynamic fragments.
      */
-    private fun onVoiceActivationButtonClick() {
-        if (viewModel.isListening.value == false) {
-            viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)
-            viewModel.handleSpeechBegin()
-        } else {
-            viewModel.cancelListening()
+
+    /**
+     * Creates a new PlaceDetailsScreenBase fragment and adds it to the fragment placeDetailsAdapter.
+     * Adjusts the viewPagers offScreenPageLimit to trigger the initialization of the new fragment,
+     * so its variables can be accessed and used.
+     */
+    fun addNewFragment(placeTop: String, placeBottom: String) {
+        placeDetailsViewPager.offscreenPageLimit = placeDetailsFragmentAdapter.itemCount -1
+        val newFragment = PlaceDetailsScreenBase.newInstance(placeTop, placeBottom)
+        placeDetailsFragmentAdapter.addFragment(newFragment)
+    }
+
+    /**
+     * Saves the current state of the fragments. This is necessary to keep the newly created
+     * fragments. The fragments are saved with their itemTop and itemBottom variable mapped onto
+     * each-other. They are put into a json an d saved in the sharedPreferences.
+     */
+    private fun saveFragmentsState() {
+        val sharedPreferences = getSharedPreferences(
+            "place_details_fragment_state", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val fragmentData = placeDetailsFragmentAdapter.fragmentList
+            .filterIsInstance<PlaceDetailsScreenBase>()
+            .map { fragment ->
+                fragment.placeTop to fragment.placeBottom
+            }
+        val gson = Gson()
+        val json = gson.toJson(fragmentData)
+        editor.putString("place_details_fragments", json)
+        editor.apply()
+        Log.i("Shared Preferences","FragmentState saved")
+    }
+
+    /**
+     * Restores the fragments with their variables saved in the sharedPreferences. If there are
+     * no saved Fragments a new one is created to makes sure, their is always at least one.
+     */
+    private fun restoreFragmentsState() {
+        val sharedPreferences = getSharedPreferences(
+            "place_details_fragment_state", Context.MODE_PRIVATE)
+        val gson = Gson()
+        val json = sharedPreferences.getString("place_details_fragments", null)
+
+        if (json != null) {
+            val fragmentData: List<Pair<String, String>> = gson.fromJson(json, object :
+                TypeToken<List<Pair<String, String>>>() {}.type)
+            fragmentData.forEach { (placeTop, placeBottom) ->
+                val fragment = PlaceDetailsScreenBase.newInstance(placeTop, placeBottom)
+                placeDetailsFragmentAdapter.addFragment(fragment)
+            }
+        }
+        else{
+            addNewFragment(
+                resources.getString(R.string.add_a_place),
+                resources.getString(R.string.add_a_place)
+            )
+        }
+        Log.i("Shared Preferences","FragmentState restored")
+    }
+
+    /**
+     * Function that sets and configures the viewPager2. ViewPager2 is a tool that can take multiple
+     * fragments in a list and allows navigation between those fragments by swiping left and right.
+     * To achieve this the placeDetailsFragmentAdapter is set as the viewpagers placeDetailsAdapter.
+     */
+
+    private fun viewPagerSetUp(){
+        placeDetailsViewPager = findViewById(R.id.place_details_view_pager)
+        placeDetailsFragmentAdapter = PlaceDetailsFragmentAdapter(this)
+        placeDetailsViewPager.adapter = placeDetailsFragmentAdapter
+        placeDetailsViewPager.setCurrentItem(1, false)
+        /**
+         * The swipe interceptor makes sure that vertical swipes are recognized more reliably.
+         * In a default state a swipe to the top or bottom with the slightest movement left
+         * or right will be recognized as a horizontal swipe. With the interceptor the app checks
+         * first for a vertical swipe, which makes it more reliable and better to navigate.
+         *
+         * Overriding the onSwipeUp and onSwipeDown functions in the way it is done, is necessary
+         * to assure the correct fragments onSwipe functions are referenced, since the activity is
+         * shared among all the activities Fragment.
+         *
+         */
+
+        val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
+            override fun onSwipeLeft(){}
+            override fun onSwipeRight(){}
+            override fun onSwipeUp(){
+                val currentPosition = placeDetailsViewPager.currentItem
+                val currentFragment = placeDetailsFragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as PlaceDetailsListOverview).onSwipeUp()
+                    }
+                    1 -> {
+                        (currentFragment as PlaceDetailsScreen1).onSwipeUp()
+                    }
+                    else -> {
+                        (currentFragment as PlaceDetailsScreenBase).onSwipeUp()
+                    }
+                }
+            }
+            override fun onSwipeDown(){
+                val currentPosition = placeDetailsViewPager.currentItem
+                val currentFragment = placeDetailsFragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as PlaceDetailsListOverview).onSwipeDown()
+                    }
+                    1 -> {
+                        (currentFragment as PlaceDetailsScreen1).onSwipeDown()
+                    }
+                    else -> {
+                        (currentFragment as PlaceDetailsScreenBase).onSwipeDown()
+                    }
+                }
+            }
+            override fun onLongPress(){}
+            override fun onDoubleTap() {}
+
+        })
+
+        placeDetailsViewPager.getChildAt(0).let { recyclerView ->
+            if (recyclerView is RecyclerView) {
+                recyclerView.addOnItemTouchListener(swipeInterceptor)
+            }
         }
     }
     

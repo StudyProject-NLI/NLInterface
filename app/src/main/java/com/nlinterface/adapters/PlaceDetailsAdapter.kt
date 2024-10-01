@@ -18,7 +18,7 @@ import java.util.Calendar
  */
 class PlaceDetailsAdapter(
     private val data: ArrayList<PlaceDetailsItem>,
-    private val placeDetailsItemCallback: PlaceDetailsItemCallback
+    private val placeDetailsItemCallback: PlaceDetailsItemCallback,
 ) : RecyclerView.Adapter<PlaceDetailsAdapter.ViewHolder>() {
 
     /**

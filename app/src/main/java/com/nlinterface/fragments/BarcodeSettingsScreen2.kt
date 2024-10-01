@@ -59,7 +59,7 @@ class BarcodeSettingsScreen2 : Fragment(), SwipeAction {
         resources.getStringArray(R.array.settings_labels).forEach { option ->
             labelsOptions.add(option)
         }
-        countryOfOriginButton = view.findViewById(R.id.settings_keep_screen_on)
+        countryOfOriginButton = view.findViewById(R.id.settings_country_of_origin)
         countryOfOriginOptions = mutableListOf()
         resources.getStringArray(R.array.settings_country_of_origin).forEach { option ->
             countryOfOriginOptions.add(option)

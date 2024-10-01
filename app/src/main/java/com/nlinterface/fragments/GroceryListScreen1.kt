@@ -2,10 +2,7 @@ package com.nlinterface.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.speech.tts.TextToSpeech
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -58,30 +55,9 @@ class GroceryListScreen1 : Fragment(), SwipeAction {
     override fun onSwipeRight() {}
 
     /**
-     * Swiping up clears the grocery list and removes all corresponding fragments.
-     */
-    override fun onSwipeUp() {
-        (activity as? GroceryListActivity)?.let {
-            Log.println(Log.DEBUG, "FragmentList", it.fragmentAdapter.fragmentList.toString())
-            it.fragmentAdapter.clearFragments()
-            Log.println(Log.DEBUG, "FragmentList", it.fragmentAdapter.fragmentList.toString())
-            val time = it.viewModel.groceryList.size
-            it.viewModel.groceryList.clear()
-            it.viewModel.say(resources.getString(R.string.all_items_are_removed))
-            Handler(Looper.getMainLooper()).postDelayed({
-                it.addNewFragment(
-                    resources.getString(R.string.add_an_item),
-                    resources.getString(R.string.add_an_item)
-                )
-                Log.println(Log.INFO, "GroceryFragment", "New Fragment created")
-            }, (time * 10).toLong())//necessary to assure the new fragment is created when grocery list is empty
-        }
-    }
-
-    /**
      * Swiping down makes the app read out the current grocery list.
      */
-    override fun onSwipeDown() {
+    override fun onSwipeUp() {
         val activityViewmodel = (activity as GroceryListActivity).viewModel
         if (activityViewmodel.groceryList.isEmpty()){
             activityViewmodel.say(resources.getString(R.string.there_are_no_items_on_the_list))
@@ -89,6 +65,17 @@ class GroceryListScreen1 : Fragment(), SwipeAction {
         else {
             for ((itemName) in activityViewmodel.groceryList) {
                 (activity as GroceryListActivity).viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
+            }
+        }
+    }
+
+    /**
+     * Swiping up clears the grocery list and removes all corresponding fragments.
+     */
+    override fun onSwipeDown() {
+        for ((itemName, _, inCart) in (activity as GroceryListActivity).groceryItemList) {
+            if (!inCart) {
+                viewModel.say(itemName, TextToSpeech.QUEUE_ADD)
             }
         }
     }

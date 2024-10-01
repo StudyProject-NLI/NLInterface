@@ -51,6 +51,13 @@ class GroceryListScreenListView : Fragment(), SwipeAction {
         configureRecyclerView()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.fetchGroceryList()
+        groceryItemList = viewModel.groceryList
+        configureRecyclerView()
+    }
+
     /**
      * Does not implement any swipe functionalities. This screen is a mere overview.
      */

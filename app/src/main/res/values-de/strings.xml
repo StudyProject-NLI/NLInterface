@@ -201,9 +201,9 @@
 
     <string name="settings_narration_speed">Sprechgeschwindigkeit</string>
     <string-array name="narration_speed_options">
-        <item>Normale Sprechgeschwindigekit</item>
+        <item>Normale Sprechgeschwindigkeit</item>
         <item>Schnelle Sprechgeschwindigkeit</item>
-        <item>Langsame Sprechgeschwindigekit</item>
+        <item>Langsame Sprechgeschwindigkeit</item>
     </string-array>
 
     <!--    LABELS: BARCODE SCANNER SETTINGS    -->

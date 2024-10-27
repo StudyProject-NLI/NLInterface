@@ -279,6 +279,8 @@
     <!--    General     -->
     <string name="microphone">Microphone</string>
     <string name="placeholder">Placeholder</string>
+    <string name="nothing_to_the_left">There is nothing to to the left</string>
+    <string name="nothing_to_the_right">There is nothing to to the right</string>
 
     <!--    Main Screen    -->
 

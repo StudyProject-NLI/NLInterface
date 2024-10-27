@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.nlinterface.R
+import com.nlinterface.activities.BarcodeSettingsActivity
 import com.nlinterface.activities.PlaceDetailsActivity
 import com.nlinterface.activities.VoiceOnlyActivity
 import com.nlinterface.utility.STTInputType
@@ -70,7 +71,8 @@ class MainScreen2 : Fragment(), SwipeAction {
      * (It is included in the navigational framework for simplification purposes.)
      */
     override fun onSwipeUp() {
-        findNavController().navigate(R.id.Main2_to_BarcodeScanner)
+        val intent = Intent(activity,BarcodeSettingsActivity::class.java)
+        startActivity(intent)
     }
     /**
      *

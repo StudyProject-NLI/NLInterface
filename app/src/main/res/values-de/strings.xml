@@ -251,6 +251,8 @@
     <!--    General -->
     <string name="microphone">Mikrofon</string>
     <string name="placeholder">Platzhalter</string>
+    <string name="nothing_to_the_left">Keine Optionen links</string>
+    <string name="nothing_to_the_right">Keine Optionen rechts</string>
 
     <!--    Main Screen    -->
 

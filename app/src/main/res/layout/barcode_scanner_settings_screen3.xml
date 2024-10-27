@@ -153,7 +153,7 @@
         android:id="@+id/option_right"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:text="@string/more_options"
+        android:text="@string/nothing_to_the_right"
         android:backgroundTint="?colorPrimary"
         android:textColor="?android:textColorPrimary"
         app:autoSizeMaxTextSize="100sp"

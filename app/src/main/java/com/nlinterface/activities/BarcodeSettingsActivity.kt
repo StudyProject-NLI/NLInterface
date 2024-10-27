@@ -12,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.nlinterface.R
 import com.nlinterface.adapters.BarcodeSettingsFragmentAdapter
 import com.nlinterface.databinding.ActivityBarcodeSettingsBinding
+import com.nlinterface.fragments.BarcodeScannerScreen
 import com.nlinterface.fragments.BarcodeSettingsScreen1
 import com.nlinterface.fragments.BarcodeSettingsScreen2
 import com.nlinterface.fragments.BarcodeSettingsScreen3
@@ -377,12 +378,15 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                 val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
                 when (currentPosition) {
                     0 -> {
-                        (currentFragment as BarcodeSettingsScreen1).onSwipeUp()
+                        (currentFragment as BarcodeScannerScreen).onSwipeUp()
                     }
                     1 -> {
-                        (currentFragment as BarcodeSettingsScreen2).onSwipeUp()
+                        (currentFragment as BarcodeSettingsScreen1).onSwipeUp()
                     }
                     2 -> {
+                        (currentFragment as BarcodeSettingsScreen2).onSwipeUp()
+                    }
+                    3 -> {
                         (currentFragment as BarcodeSettingsScreen3).onSwipeUp()
                     }
                 }
@@ -392,13 +396,16 @@ class BarcodeSettingsActivity : AppCompatActivity() {
                 val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
                 when (currentPosition) {
                     0 -> {
-                        (currentFragment as BarcodeSettingsScreen1).onSwipeDown()
+                        (currentFragment as BarcodeScannerScreen).onSwipeUp()
                     }
                     1 -> {
-                        (currentFragment as BarcodeSettingsScreen2).onSwipeDown()
+                        (currentFragment as BarcodeSettingsScreen1).onSwipeUp()
                     }
                     2 -> {
-                        (currentFragment as BarcodeSettingsScreen3).onSwipeDown()
+                        (currentFragment as BarcodeSettingsScreen2).onSwipeUp()
+                    }
+                    3 -> {
+                        (currentFragment as BarcodeSettingsScreen3).onSwipeUp()
                     }
                 }
             }

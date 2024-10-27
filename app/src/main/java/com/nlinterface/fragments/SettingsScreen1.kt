@@ -9,7 +9,6 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.nlinterface.R
-import com.nlinterface.activities.BarcodeSettingsActivity
 import com.nlinterface.activities.VoiceOnlyActivity
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.STTInputType
@@ -84,11 +83,9 @@ class SettingsScreen1 : Fragment(), SwipeAction {
     }
 
     /**
-     * Navigates to the barcode settings activitiy.
+     *
      */
     override fun onSwipeDown() {
-        val intent = Intent(activity, BarcodeSettingsActivity::class.java)
-        startActivity(intent)
     }
 
     /**

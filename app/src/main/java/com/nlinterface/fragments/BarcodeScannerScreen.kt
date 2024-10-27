@@ -10,9 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.nlinterface.R
-import com.nlinterface.activities.BarcodeSettingsActivity
 import com.nlinterface.activities.VoiceOnlyActivity
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SwipeAction
@@ -61,14 +59,20 @@ class BarcodeScannerScreen : Fragment(), SwipeAction {
      * Starts the barcode scanner.
      */
     override fun onSwipeLeft() {
-        activity?.stopService(barcodeService)
-        Log.i("Scanner", "Stopping the Barcode Scanning Service")
+
     }
 
     /**
      * Stops the barcode scanner.
      */
     override fun onSwipeRight() {
+
+    }
+
+    /**
+     * Navigates to the barcode scanner settings.
+     */
+    override fun onSwipeUp() {
         if (activity?.checkCallingOrSelfPermission( Manifest.permission.CAMERA ) ==
             PackageManager.PERMISSION_GRANTED) {
             activity?.startService(barcodeService)
@@ -76,18 +80,11 @@ class BarcodeScannerScreen : Fragment(), SwipeAction {
     }
 
     /**
-     * Navigates to the barcode scanner settings.
-     */
-    override fun onSwipeUp() {
-        val intent = Intent(activity, BarcodeSettingsActivity::class.java)
-        startActivity(intent)
-    }
-
-    /**
      * Navigates to the second screen of the main activity.
      */
     override fun onSwipeDown() {
-        findNavController().navigate(R.id.BarcodeScanner_to_Main2)
+        activity?.stopService(barcodeService)
+        Log.i("Scanner", "Stopping the Barcode Scanning Service")
     }
 
     /**

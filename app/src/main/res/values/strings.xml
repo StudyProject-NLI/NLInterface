@@ -292,6 +292,7 @@
     <string name="grocery_items">Grocery items</string>
     <string name="remove_item">Remove an item</string>
     <string name="more_items">More items</string>
+    <string name="list_view">List view</string>
 
     <!--    Place Details   -->
 

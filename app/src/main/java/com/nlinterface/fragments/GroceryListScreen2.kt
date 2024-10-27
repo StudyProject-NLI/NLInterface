@@ -90,7 +90,7 @@ class GroceryListScreen2 : Fragment(), SwipeAction {
     }
 
     /**
-     * Swiping down makes the app read out all item that are not yet in the cart.
+     * Swiping up clears the grocery list and removes all corresponding fragments.
      */
     override fun onSwipeDown() {
         (activity as? GroceryListActivity)?.let {

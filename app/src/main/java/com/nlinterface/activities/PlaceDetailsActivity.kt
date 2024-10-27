@@ -580,7 +580,7 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
      * Three functions handling the google maps place search.
      */
     /**
-     * Just launches the intent. It wrapped in function to be called from the different fragments.
+     * Just launches the intent. It is  wrapped in function to be called from the different fragments.
      *
      * TODO: Make country flexible
      */

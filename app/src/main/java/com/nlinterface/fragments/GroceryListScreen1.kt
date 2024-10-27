@@ -55,7 +55,8 @@ class GroceryListScreen1 : Fragment(), SwipeAction {
     override fun onSwipeRight() {}
 
     /**
-     * Swiping down makes the app read out the current grocery list.
+     * Swiping down makes the app read out the current grocery list and the items in the cart.
+     *
      */
     override fun onSwipeUp() {
         val activityViewmodel = (activity as GroceryListActivity).viewModel
@@ -70,7 +71,8 @@ class GroceryListScreen1 : Fragment(), SwipeAction {
     }
 
     /**
-     * Swiping up clears the grocery list and removes all corresponding fragments.
+     *
+     * Swiping down makes the app read out all item that are not yet in the cart.
      */
     override fun onSwipeDown() {
         for ((itemName, _, inCart) in (activity as GroceryListActivity).groceryItemList) {

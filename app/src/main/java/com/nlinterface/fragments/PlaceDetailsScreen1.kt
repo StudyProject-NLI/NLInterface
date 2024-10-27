@@ -92,7 +92,8 @@ class PlaceDetailsScreen1 : Fragment(), SwipeAction {
         }
         else {
             for (place in activityViewmodel.placeDetailsItemList) {
-                (activity as PlaceDetailsActivity).viewModel.say(place.storeName, TextToSpeech.QUEUE_ADD)
+                (activity as PlaceDetailsActivity).viewModel.say(
+                    place.storeName + place.address, TextToSpeech.QUEUE_ADD)
             }
         }
     }

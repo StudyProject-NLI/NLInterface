@@ -158,16 +158,7 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
         }
         else {
             (activity as? GroceryListActivity)?.let {
-                Log.i(
-                    "GroceryList",
-                    it.viewModel.groceryList.toString()
-                )
                 it.addItemToCart(itemTop)
-                it.deleteGroceryItem(itemTop)
-                Log.i(
-                    "GroceryList",
-                    it.viewModel.groceryList.toString()
-                )
                 itemTop = default
                 viewModel.updateButtonTexts(itemTop, itemBottom)
                 val fragmentList = it.groceryListFragmentAdapter.fragmentList
@@ -209,16 +200,7 @@ class GroceryListScreenBase : Fragment(), SwipeAction {
         }
         else {
             (activity as? GroceryListActivity)?.let {
-                Log.i(
-                    "GroceryList",
-                    it.viewModel.groceryList.toString()
-                )
                 it.addItemToCart(itemBottom)
-                it.deleteGroceryItem(itemBottom)
-                Log.i(
-                    "GroceryList",
-                    it.viewModel.groceryList.toString()
-                )
                 itemBottom = default
                 viewModel.updateButtonTexts(itemTop, itemBottom)
                 val fragmentList = it.groceryListFragmentAdapter.fragmentList

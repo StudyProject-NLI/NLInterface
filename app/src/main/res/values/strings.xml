@@ -1,9 +1,18 @@
 <resources>
     <string name="app_name" translatable="false">NL Interface</string>
 
-    <string name="settings_preferences_key" translatable="false">SETTINGS_KEY</string>
-    <string name="settings_keep_screen_on_key" translatable="false">KEEP_SCREEN_ON_KEY</string>
-    <string name="settings_theme_key" translatable="false">THEME_KEY</string>
+    <string name="settings_preferences_key" translatable="false">
+        SETTINGS_KEY</string>
+    <string name="settings_keep_screen_on_key" translatable="false">
+        KEEP_SCREEN_ON_KEY</string>
+    <string name="settings_theme_key" translatable="false">
+        THEME_KEY</string>
+    <string name="settings_feedback_key" translatable="false">
+        FEEDBACK_KEY</string>
+    <string name="settings_narration_speed_key" translatable="false">
+        NARRATION_SPEED_KEY</string>
+    <string name="settings_narration_amount_key" translatable="false">
+        NARRATION_AMOUNT_KEY</string>
     <string name="barcode_service_mode_key" translatable="false">
         BARCODE_SERVICE_MODE_KEY</string>
     <string name="barcode_settings_preferences_key" translatable="false">
@@ -18,6 +27,8 @@
         INGREDIENTS_KEY</string>
     <string name="settings_short_nutritional_values_key" translatable="false">
         NUTRITIONAL_VALUES_KEY</string>
+    <string name="brands_key" translatable="false">
+        BRANDS_KEY</string>
 
 
     <!--
@@ -48,11 +59,12 @@
     <string name="list_all_grocery_items">list all grocery items</string>
     <string name="list_all_items_in_cart">list all items in the cart</string>
     <string name="list_all_items_not_in_cart">list all items not in the cart</string>
+    <string name="all_items_are_removed">all items have been removed from the grocery list</string>
 
     <!--    VOICE COMMANDS: PLACE DETAILS    -->
     <string name="remove_a_place">remove a place</string>
     <string name="tell_me_the_opening_hours_of_a_place">tell me the opening hours of a place</string>
-    <string name="add_a_place">add a place</string>
+    <string name="add_a_place">Add a place</string>
     <string name="list_all_saved_places">list all saved places</string>
     <string name="list_my_favorite_places">list my favorite places</string>
     <string name="list_all_open_places">list all open places</string>
@@ -81,7 +93,7 @@
     <string name="ingredients_and_allergies_off">ingredients and allergies off</string>
     <string name="nutritional_values_on">nutritional values on</string>
     <string name="nutritional_values_off">nutritional values off</string>
-<!--
+    <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     NARRATION
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -105,7 +117,7 @@
     <!--    NARRATION: GROCERY LIST    -->
     <string name="grocery_list">Grocery List</string>
     <string name="ITEMNAME_is_not_on_the_list">%1$s is not on the list</string>
-    <string name="ITEMNAME_is_on_the_list">%1$s is on the list</string>
+    <string name="ITEMNAME_is_on_the_list">%1$s is already on the list</string>
     <string name="ITEMNAME_is_in_the_cart">%1$s is in the cart</string>
     <string name="ITEMNAME_is_not_in_the_cart">%1$s is not in the cart</string>
     <string name="deleted_ITEMNAME_from_grocery_list">Deleted %1$s from grocery list.</string>
@@ -145,7 +157,10 @@
     <string name="barcode_scanner_settings">Barcode Scanner Settings</string>
     <string name="new_barcode_setting">New barcode scanner setting is %1$s.</string>
 
-<!--
+    <!--    NARRATION: VOICE ONLY MODE  -->
+    <string name="voice_only_mode">Voice only Mode</string>
+
+    <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     FOLLOW-UP QUESTIONS
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -161,7 +176,7 @@
 
     <!--    FOLLOW-UP-QUESTIONS: SETTINGS    -->
 
-<!--
+    <!--
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     LABELS
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -197,6 +212,28 @@
         <item>Barcode Scanner Off</item>
     </string-array>
 
+    <string name="settings_feedback">Feedback</string>
+    <string-array name="feedback_options">
+        <item>Tactile Feedback</item>
+        <item>Auditory Feedback</item>
+        <item>Tactile and Auditory Feedback</item>
+        <item>No Feedback</item>
+    </string-array>
+
+    <string name="settings_narration_amount">Narration Amount</string>
+    <string-array name="narration_amount_options">
+        <item>Standard Narration</item>
+        <item>No Narration</item>
+        <item>Extensive Narration</item>
+    </string-array>
+
+    <string name="settings_narration_speed">Narration Speed</string>
+    <string-array name="narration_speed_options">
+        <item>Normal Narration Speed</item>
+        <item>Fast Narration Speed</item>
+        <item>Slow Narration Speed</item>
+    </string-array>
+
     <!--    LABELS: BARCODE SCANNER SETTINGS    -->
     <string name="settings_name_and_volume">Name and Volume</string>
     <string-array name="settings_name_and_volume">
@@ -227,5 +264,74 @@
         <item>Nutritional Values On</item>
         <item>Nutritional Values Off</item>
     </string-array>
+
+    <string name="settings_brand">Brand</string>
+    <string-array name="settings_brand">
+        <item>Brand On</item>
+        <item>Brand Off</item>
+    </string-array>
+
+    <!--
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    New UI
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+    <!--    General     -->
+    <string name="microphone">Microphone</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="nothing_to_the_left">There is nothing to to the left</string>
+    <string name="nothing_to_the_right">There is nothing to to the right</string>
+
+    <!--    Main Screen    -->
+
+    <string name="more_activities">More activities</string>
+    <string name="barcode_scanner">Barcode scanner</string>
+
+    <!--    Grocery List    -->
+
+    <string name="tell_me_all_Items">Tell me all items</string>
+    <string name="remove_all_items">Remove all items</string>
+    <string name="grocery_items">Grocery items</string>
+    <string name="remove_item">Remove an item</string>
+    <string name="more_items">More items</string>
+    <string name="list_view">List view</string>
+
+    <!--    Place Details   -->
+
+    <string name="get_to_favorites">Get to favorites</string>
+    <string name="add_new_place">Add new place</string>
+    <string name="other_favorites">Other favorites</string>
+    <string name="single_search">Single search</string>
+    <string name="place_details_main">Place details main screen</string>
+    <string name="places_overview">Places overview</string>
+    <string name="places_list">Places list</string>
+    <string name="STORENAME_address">On %1$s</string>
+    <string name="place_on_list">This place is already on the list</string>
+
+    <!--    Single Place Menu   -->
+
+    <string name="back_to_favorites">Back to favorites</string>
+    <string name="opening_hours_bustle">Opening hours and bustle</string>
+    <string name="guide">Guide me</string>
+    <string name="remove_favorite">Remove favorite</string>
+
+    <!--    Barcode Scanner     -->
+
+    <string name="start_the_barcode_scanner">Start the barcode scanner</string>
+    <string name="stop_the_barcode_scanner">Stop the barcode scanner</string>
+    <string name="more_options">More options</string>
+
+    <!--    Settings    -->
+
+    <string name="feedback">Feedback</string>
+    <string name="more_settings">More Settings</string>
+    <string name="narration">Narration</string>
+    <string name="narration_speed">Narration speed</string>
+
+    <!--   VoiceOnly    -->
+    <string name="processing">Processing</string>
+    <string name="speaker">Speaker</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

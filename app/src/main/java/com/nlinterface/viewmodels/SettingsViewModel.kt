@@ -160,6 +160,7 @@ class SettingsViewModel(
         stt.createSpeechRecognizer(getApplication<Application>().applicationContext)
         setSTTSpeechRecognitionListener(STTInputType.COMMAND)
     }
+
     
     /**
      * Defines the functionality of the SpeechRecognitionListener, aka how to handle STT calls.
@@ -246,15 +247,5 @@ class SettingsViewModel(
     fun setScreenSettings(newScreenSetting: GlobalParameters.KeepScreenOn) {
         val globalParamsInstance = GlobalParameters.instance!!
         globalParamsInstance.keepScreenOn = newScreenSetting
-    }
-
-    /**
-     * Changes the keep screen on settings.
-     *
-     * @param newBarcodeServiceMode: GlobalParameters.BarcodeServiceMode, the barcode service status to be set
-     */
-    fun setBarcodeServiceMode(newBarcodeServiceMode: GlobalParameters.BarcodeServiceMode) {
-        val globalParamsInstance = GlobalParameters.instance!!
-        globalParamsInstance.barcodeServiceMode = newBarcodeServiceMode
     }
 }

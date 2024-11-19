@@ -81,6 +81,9 @@ class GroceryListViewModel(
     val response: LiveData<String>
         get() = _response
 
+    private val _myState = MutableLiveData<Boolean>()
+    val myState: LiveData<Boolean> = _myState
+
     /**
      * Retrieves the stored grocery list from local phone storage, if available, and loads it into
      * the GroceryList ArrayList. Alternatively, creates a new file to which to later store the
@@ -286,7 +289,6 @@ class GroceryListViewModel(
         }
     
         Log.println(Log.DEBUG, inputType.toString(), s)
-        
     }
 
     /**
@@ -309,5 +311,20 @@ class GroceryListViewModel(
     fun cancelListening() {
         stt.cancelListening()
         _isListening.value = false
+    }
+
+    /**
+     * Functionalities to update the UIs text for the top and bottom button
+     */
+
+    private val _topButtonText = MutableLiveData<String>()
+    val topButtonText: LiveData<String> get() = _topButtonText
+
+    private val _bottomButtonText = MutableLiveData<String>()
+    val bottomButtonText: LiveData<String> get() = _bottomButtonText
+
+    fun updateButtonTexts(topText: String, bottomText: String) {
+        _topButtonText.value = topText
+        _bottomButtonText.value = bottomText
     }
 }

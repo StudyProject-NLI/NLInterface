@@ -30,6 +30,7 @@
     <string name="list_all_grocery_items">liste alle artikel auf</string>
     <string name="list_all_items_in_cart">liste alle artikel im einkaufswagen auf</string>
     <string name="list_all_items_not_in_cart">liste alle artikel die noch nicht im einkaufswagen sind auf</string>
+    <string name="all_items_are_removed">alle artikel wurden von der einkaufsliste entfernt</string>
 
     <!--    VOICE COMMANDS: PLACE DETAILS    -->
     <string name="remove_a_place">entferne einen ort</string>
@@ -88,7 +89,7 @@
     <!--    NARRATION: GROCERY LIST    -->
     <string name="grocery_list">Einkaufsliste</string>
     <string name="ITEMNAME_is_not_on_the_list">%1$s steht nicht auf der liste</string>
-    <string name="ITEMNAME_is_on_the_list">%1$s steht auf der liste</string>
+    <string name="ITEMNAME_is_on_the_list">%1$s steht bereits auf der liste</string>
     <string name="ITEMNAME_is_in_the_cart">%1$s ist im korb</string>
     <string name="ITEMNAME_is_not_in_the_cart">%1$s ist nicht im korb</string>
     <string name="deleted_ITEMNAME_from_grocery_list">%1$s wurde von der Einkaufsliste gelöscht.</string>
@@ -126,6 +127,9 @@
     <!--    NARRATION: BARCODE SCANNER SETTINGS    -->
     <string name="barcode_scanner_settings">Barcodescanner Einstellungen</string>
     <string name="new_barcode_setting">Neue Barcodescanner Einstellung ist %1$s.</string>
+
+    <!--    NARRATION: VOICE ONLY MODE  -->
+    <string name="voice_only_mode">Nur Sprachsteuerung Modus</string>
 
 
 <!--
@@ -166,16 +170,40 @@
         <item>Bildschirm Immer Anlasssen</item>
         <item>Bildschirm Nicht Immer Anlassen</item>
     </string-array>
+
     <string name="settings_theme">Design</string>
     <string-array name="theme_options">
         <item>Standard Design</item>
         <item>Helles Design</item>
         <item>Dunkeles Design</item>
     </string-array>
+
     <string name="settings_barcode_mode">Barcode Scanner</string>
     <string-array name="barcode_mode_options">
         <item>Barcode Scanner An</item>
         <item>Barcode Scanner Aus</item>
+    </string-array>
+
+    <string name="settings_feedback">Feedback</string>
+    <string-array name="feedback_options">
+        <item>Haptisches Feedback</item>
+        <item>Auditives Feedback</item>
+        <item>Haptisches und Auditives Feedback</item>
+        <item>Kein Feedback</item>
+    </string-array>
+
+    <string name="settings_narration_amount">Schilderung</string>
+    <string-array name="narration_amount_options">
+        <item>Standard Schilderung</item>
+        <item>Keine Schilderung</item>
+        <item>Ausführliche Schilderung</item>
+    </string-array>
+
+    <string name="settings_narration_speed">Sprechgeschwindigkeit</string>
+    <string-array name="narration_speed_options">
+        <item>Normale Sprechgeschwindigkeit</item>
+        <item>Schnelle Sprechgeschwindigkeit</item>
+        <item>Langsame Sprechgeschwindigkeit</item>
     </string-array>
 
     <!--    LABELS: BARCODE SCANNER SETTINGS    -->
@@ -208,4 +236,74 @@
         <item>Nährwerte An</item>
         <item>Nährwerte Aus</item>
     </string-array>
+
+    <string name="settings_brand">Marke</string>
+    <string-array name="settings_brand">
+        <item>Marke An</item>
+        <item>Marke Aus</item>
+    </string-array>
+
+    <!--
+        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        New UI
+        ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    -->
+    <!--    General -->
+    <string name="microphone">Mikrofon</string>
+    <string name="placeholder">Platzhalter</string>
+    <string name="nothing_to_the_left">Keine Optionen links</string>
+    <string name="nothing_to_the_right">Keine Optionen rechts</string>
+
+    <!--    Main Screen    -->
+
+    <string name="more_activities">Mehr Funktionen</string>
+    <string name="barcode_scanner">Barcode Scanner</string>
+
+    <!--    Grocery List    -->
+
+    <string name="tell_me_all_Items">Nenne mir alle Artikel</string>
+    <string name="remove_all_items">Entferne alle Artikel</string>
+    <string name="grocery_items">Artikel</string>
+    <string name="remove_item">Entferne einen Artikel</string>
+    <string name="more_items">Weitere Artikel</string>
+    <string name="list_view">Listen Ansicht</string>
+
+    <!--    Place Details   -->
+
+    <string name="get_to_favorites">Zu den Favoriten</string>
+    <string name="add_new_place">Füge neuen Ort hinzu</string>
+    <string name="other_favorites">Mehr Favoriten</string>
+    <string name="single_search">Einfache Suche</string>
+    <string name="place_details_main">Ort Details Hauptmenü</string>
+    <string name="places_overview">Übersicht Orte</string>
+    <string name="places_list">Liste Orte</string>
+    <string name="STORENAME_address">Bei %1$s</string>
+    <string name="place_on_list">Dieser Ort ist bereits auf der Liste</string>
+
+    <!--    Single Place Menu   -->
+
+    <string name="back_to_favorites">Zurück zu den Favoriten</string>
+    <string name="opening_hours_bustle">Öffnungszeiten und Belebtheit</string>
+    <string name="guide">Navigiere mich</string>
+    <string name="remove_favorite">Entferne Favoriten</string>
+
+    <!-- Barcode Scanner -->
+
+    <string name="start_the_barcode_scanner">Starte den Barcode Scanner</string>
+    <string name="stop_the_barcode_scanner">Stoppe den Barcode Scanner</string>
+    <string name="more_options">Mehr Optionen</string>
+
+    <!-- Settings -->
+
+    <string name="feedback">Feedback</string>
+    <string name="more_settings">Mehr Einstellungen</string>
+    <string name="narration">Narration</string>
+    <string name="narration_speed">Narration Geschwindigkeit</string>
+
+    <!--   VoiceOnly    -->
+    <string name="processing">Verarbeitung</string>
+    <string name="speaker">Lautsprecher</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

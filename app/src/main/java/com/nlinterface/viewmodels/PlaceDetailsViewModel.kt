@@ -24,7 +24,6 @@ import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.utility.STTInputType
 import com.nlinterface.utility.SpeechToTextUtility
 import com.nlinterface.utility.TextToSpeechUtility
-import com.nlinterface.utility.VoiceCommandUtilityOld
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.BufferedReader
 import java.io.File
@@ -42,7 +41,6 @@ import kotlin.coroutines.resume
 class PlaceDetailsViewModel(
     application: Application
 ) : AndroidViewModel(application), OnInitListener {
-
     private lateinit var placesClient: PlacesClient
 
     private lateinit var placeDetailsItemListFile: File
@@ -134,9 +132,10 @@ class PlaceDetailsViewModel(
     private fun addPlaceDetailsItem(
         placeID: String,
         storeName: String,
-        openingHours: List<String>
+        openingHours: List<String>,
+        address: String
     ) {
-        placeDetailsItemList.add(PlaceDetailsItem(placeID, storeName, openingHours, false))
+        placeDetailsItemList.add(PlaceDetailsItem(placeID, storeName, openingHours, address,false))
         storePlaceDetailsItemList()
     }
 
@@ -145,8 +144,12 @@ class PlaceDetailsViewModel(
      *
      * @param context: Context
      */
+
     fun initPlaceClient(context: Context) {
-        Places.initialize(context, BuildConfig.MAPS_API_KEY)
+        Log.d("Places","Initialization")
+        if(!Places.isInitialized()) {
+            Places.initialize(context, BuildConfig.MAPS_API_KEY)
+        }
         placesClient = Places.createClient(context)
     }
 
@@ -188,8 +191,9 @@ class PlaceDetailsViewModel(
                 .addOnSuccessListener { response: FetchPlaceResponse ->
                     addPlaceDetailsItem(
                         placeID,
-                        response.place.name,
-                        response.place.openingHours.weekdayText
+                        response.place.name!!,
+                        response.place.openingHours!!.weekdayText,
+                        response.place.address!!
                     )
                     completion(true)
                 }.addOnFailureListener { exception: Exception ->
@@ -396,5 +400,20 @@ class PlaceDetailsViewModel(
     fun cancelListening() {
         stt.cancelListening()
         _isListening.value = false
+    }
+
+    /**
+     * Functionalities to update the UIs text for the top and bottom button
+     */
+
+    private val _topButtonText = MutableLiveData<String>()
+    val topButtonText: LiveData<String> get() = _topButtonText
+
+    private val _bottomButtonText = MutableLiveData<String>()
+    val bottomButtonText: LiveData<String> get() = _bottomButtonText
+
+    fun updateButtonTexts(topText: String, bottomText: String) {
+        _topButtonText.value = topText
+        _bottomButtonText.value = bottomText
     }
 }

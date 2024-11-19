@@ -5,30 +5,30 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
 import com.nlinterface.utility.LocationGetter
 import com.nlinterface.utility.navToActivity
-import com.nlinterface.utility.setViewRelativeSize
-import com.nlinterface.viewmodels.ConstantScanning
 import com.nlinterface.viewmodels.MainViewModel
 
 /**
  * The MainActivity handles user interaction in the Main Screen / Main Menu.
  *
- * The Main Menu comprises of the Voice Activation Button and a button for each Menu Item (one for
- * each Activity / Feature. The focal task for the Main Menu is to handle navigation to the other
+ *
+ * The Main Menu comprises two screen. They can be navigated by swiping left and right in a
+ * scrolling manner. Both screens comprises three Activities / Features that can be started by
+ * swiping in the corresponding direction.
+ * The focal task for the Main Menu is to handle navigation to the other
  * features, either through touch interaction or voice commands.
  *
  * Possible Voice Commands:
@@ -40,18 +40,15 @@ class MainActivity : AppCompatActivity() {
     
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
-    private lateinit var voiceActivationButton: ImageButton
     private val globalParameters = GlobalParameters.instance!!
-
-
-
+    private lateinit var navController: NavController
 
     /**
-     * Companion Object / Singleton implementation required to handle audio permissions
+     * Companion Object / Singleton implementation required to handle permissions
      */
     companion object {
-        // needed to verify the audio permission result
-        private const val STT_PERMISSION_REQUEST_CODE = 0
+        // needed to verify the audio, camera and location permission result
+        const val STT_PERMISSION_REQUEST_CODE = 0
         private const val CAMERA_PERMISSION_REQUEST_CODE = 1
         private const val LOCATION_PERMISSION_REQUEST_CODE = 2
     }
@@ -69,16 +66,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        /**
+         * The supportFragmentManager is used to navigate between the fragments like it is defined
+         * in the corresponding navigation file.
+         */
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.main_nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
         
         globalParameters.loadSettingsPreferences(this)
         globalParameters.loadBarcodePreferences(this)
 
         verifyAudioPermissions()
-        configureUI()
         configureTTS()
         configureSTT()
     }
-    
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
     /**
      * Called when the activity is started. It reads out the name of the activity and processes
      * the theme and keep screen on settings. It also starts the camera and location tracking if
@@ -106,21 +114,6 @@ class MainActivity : AppCompatActivity() {
             startService(locationService)
             Log.i("Location", "Service for location tracking started.")
         }
-
-        val barcodeService = Intent(this, ConstantScanning()::class.java)
-        if (globalParameters.barcodeServiceMode ==
-            GlobalParameters.BarcodeServiceMode.ON) {
-            verifyCameraPermissions()
-            if (checkCallingOrSelfPermission( Manifest.permission.CAMERA ) ==
-                PackageManager.PERMISSION_GRANTED) {
-                startService(barcodeService)
-        }
-        } else {
-            stopService(barcodeService)
-            Log.i("Scanner", "Stopping the Barcode Scanning Service")
-        }
-
-
     }
     
     /**
@@ -151,14 +144,10 @@ class MainActivity : AppCompatActivity() {
     private fun configureSTT() {
 
         viewModel.initSTT()
-        
+
         // if listening: microphone color green, else microphone color white
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            } else {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
-            }
+
         }
         
         // observe LiveData change to be notified when the STT system is active(ly listening)
@@ -211,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         }
         
     }
-    
+
     /**
      * Handles Navigation commands of the format "go to X". If the command is valid, navigate to
      * the desired activity.
@@ -219,68 +208,26 @@ class MainActivity : AppCompatActivity() {
      * @param command: String, the command to be executed
      */
     private fun executeNavigationCommand(command: String) {
-    
+
         when (command) {
             resources.getString(R.string.navigate_to_grocery_list) ->
                 navToActivity(this, ActivityType.GROCERYLIST)
-        
+
             resources.getString(R.string.navigate_to_place_details) ->
                 navToActivity(this, ActivityType.PLACEDETAILS)
-        
+
             resources.getString(R.string.navigate_to_settings) ->
                 navToActivity(this, ActivityType.SETTINGS)
-        
+
             resources.getString(R.string.navigate_to_main_menu) ->
                 navToActivity(this, ActivityType.MAIN)
 
             resources.getString(R.string.navigate_to_barcode_scanner_settings) ->
                 navToActivity(this, ActivityType.BARCODESETTINGS)
-        
+
             else -> viewModel.say(resources.getString(R.string.invalid_command))
         }
-        
-    }
 
-
-    /**
-     * Sets up all UI elements, i.e. the groceryList/placeDetails/settingsActivity/voiceActivation
-     * buttons and their respective onClickListeners
-     */
-    private fun configureUI() {
-        
-        // set up button to navigate to GroceryListActivity
-        val groceryListButton: Button = findViewById<View>(R.id.grocery_list_bt) as Button
-        groceryListButton.setOnClickListener { _ ->
-            navToActivity(this, ActivityType.GROCERYLIST)
-        }
-        
-        // set up button to navigate to PlaceDetailsActivity
-        val placeDetailsButton: Button = findViewById<View>(R.id.place_details_bt) as Button
-        placeDetailsButton.setOnClickListener { _ ->
-            navToActivity(this, ActivityType.PLACEDETAILS)
-        }
-        
-        // set up button to navigate to ClassificationActivity
-        val classificationButton: Button = findViewById<View>(R.id.classification_bt) as Button
-        classificationButton.setOnClickListener { _ -> 
-            navToActivity(this, ActivityType.CLASSIFICATION)
-        }
-        
-        // set up button to navigate to SettingsActivity
-        val settingsActivityButton: Button = findViewById<View>(R.id.settings_bt) as Button
-        settingsActivityButton.setOnClickListener { _ ->
-            navToActivity(this, ActivityType.SETTINGS)
-        }
-        
-        // set up voice Activation Button listener
-        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener {
-            onVoiceActivationButtonClick()
-        }
-        
-        // resize Voice Activation Button to 1/3 of display size
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-        
     }
     
     /**
@@ -333,30 +280,10 @@ class MainActivity : AppCompatActivity() {
                 LOCATION_PERMISSION_REQUEST_CODE
             )
         }
+        else { verifyCameraPermissions()}
 
     }
 
-    /*
-    /**
-     * Request the user to grant access to current location permissions, if not already granted.
-     *
-     */
-    private fun verifyBackgroundLocationPermissions(){
-        if (checkCallingOrSelfPermission(
-                Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
-                LOCATION_PERMISSION_REQUEST_CODE
-            )
-        }
-
-    }
-
-     */
-    
     /**
      * Called when the permissions request is answered by the user and processes the result. If
      * record audio permissions are granted, confirm that it was granted to the user. If not
@@ -394,6 +321,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(
                     this, R.string.location_permission_granted, Toast.LENGTH_LONG
                 ).show()
+                verifyCameraPermissions()
             } else {
                 Toast.makeText(
                     this, R.string.location_permission_denied,
@@ -401,20 +329,17 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         }
-    }
-    
-    /**
-     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
-     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
-     * listening.
-     */
-    private fun onVoiceActivationButtonClick() {
-        if (viewModel.isListening.value == false) {
-            viewModel.handleSpeechBegin()
-        } else {
-            viewModel.cancelListening()
+        else if(requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (requestCode == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(
+                    this, R.string.camera_permission_granted, Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    this, R.string.camera_permission_denied,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
-
-
 }

@@ -3,22 +3,25 @@ package com.nlinterface.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.nlinterface.R
+import com.nlinterface.adapters.SettingsFragmentAdapter
 import com.nlinterface.databinding.ActivitySettingsBinding
+import com.nlinterface.fragments.SettingsScreen1
+import com.nlinterface.fragments.SettingsScreen2
+import com.nlinterface.fragments.SettingsScreen3
 import com.nlinterface.utility.ActivityType
 import com.nlinterface.utility.GlobalParameters
-import com.nlinterface.utility.GlobalParameters.BarcodeServiceMode
 import com.nlinterface.utility.GlobalParameters.KeepScreenOn
 import com.nlinterface.utility.GlobalParameters.ThemeChoice
+import com.nlinterface.utility.OnSwipeTouchInterceptor
 import com.nlinterface.utility.STTInputType
+import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.navToActivity
-import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.SettingsViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,13 +31,17 @@ import kotlinx.coroutines.launch
 /**
  * The SettingsActivity handles user interaction in Settings Menu.
  *
- * The Settings Menu comprises the Voice Activation Buttons and a button for each settings
- * functionality. Each click on a settings button will cycle through the available settings,
- * narrating each action. The settings are applied once the MainActivity is selected. Current
- * setting options are:
+ * The Settings Menu comprises of several screens of which each displays two
+ * possible settings.
+ * Scrolling left an right navigates trough the different screens. A swipe up and down
+ * changes the corresponding setting.
  *
- * 1- Screen Always On/Dim Screen after some time
- * 2- Device Theme/Dark Theme/Light Theme
+ * 1- Feedback Auditive/Tactile/Combined
+ * 2- Navigate to the barcode settings
+ * 3- Device Theme/Dark Theme/Light Theme
+ * 4- Screen Always On/Dim Screen after some time
+ * 5- Explanation type
+ * 6- Narration Speed
  *
  * Possible Voice Commands:
  * - 'Read Screen Settings'
@@ -43,6 +50,7 @@ import kotlinx.coroutines.launch
  * - 'Set Theme Settings' --> Default, Light or Dark? --> X
  *
  * TODO: Add TTS Speed Settings
+ * TODO: Implement all settings
  */
 class SettingsActivity : AppCompatActivity() {
 
@@ -50,22 +58,18 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var viewModel: SettingsViewModel
 
     private lateinit var keepScreenOnOptions: MutableList<String>
-    private lateinit var keepScreenOnButton: Button
 
     private lateinit var themeOptions: MutableList<String>
-    private lateinit var themeButton: Button
 
     private lateinit var barcodeServiceOptions: MutableList<String>
-    private lateinit var barcodeServiceButton : Button
-
-    private lateinit var barcodeSettingsButton: Button
-
-    private lateinit var voiceActivationButton: ImageButton
     
     private lateinit var lastCommand: String
     private lateinit var lastResponse: String
     
     private val globalParameters = GlobalParameters.instance!!
+
+    private lateinit var viewPager: ViewPager2
+    lateinit var fragmentAdapter: SettingsFragmentAdapter
 
     /**
      * The onCreate Function initializes the view by binding the Activity and the Layout,
@@ -79,6 +83,7 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[SettingsViewModel::class.java]
+
 
         keepScreenOnOptions = mutableListOf()
         resources.getStringArray(R.array.keep_screen_on_options).forEach { option ->
@@ -95,89 +100,11 @@ class SettingsActivity : AppCompatActivity() {
             barcodeServiceOptions.add(option)
         }
 
-        configureUI()
+        viewPagerSetUp()
+
         configureTTS()
         configureSTT()
     }
-
-    /**
-     * Sets up all UI elements, i.e. the voiceActivation/theme/keepScreenOn buttons and their
-     * respective onClickListeners
-     */
-    private fun configureUI() {
-
-        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener { onVoiceActivationButtonClick() }
-        
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        themeButton = findViewById(R.id.settings_theme)
-        themeButton.setOnClickListener { onThemeButtonClick() }
-        themeButton.text = themeOptions[globalParameters.themeChoice.ordinal]
-        
-        keepScreenOnButton = findViewById(R.id.settings_keep_screen_on)
-        keepScreenOnButton.setOnClickListener { onKeepScreenOnButtonClick() }
-        keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
-
-        barcodeServiceButton = findViewById(R.id.settings_barcode_mode)
-        barcodeServiceButton.setOnClickListener { onBarcodeServiceButtonClick() }
-        barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-        barcodeSettingsButton = findViewById(R.id.barcode_settings)
-        barcodeSettingsButton.setOnClickListener {_ ->
-            navToActivity(this, ActivityType.BARCODESETTINGS)}
-        barcodeSettingsButton.text =  resources.getString(R.string.barcode_scanner_settings)
-    }
-
-    /**
-     * Cycle through the options for the Theme settings, when the button is clicked. Narrate the
-     * action.
-     */
-    private fun onThemeButtonClick() {
-
-        if (globalParameters.themeChoice.ordinal == ThemeChoice.values().size - 1) {
-            globalParameters.themeChoice = ThemeChoice.values()[0]
-        } else {
-            globalParameters.themeChoice =
-                ThemeChoice.values()[globalParameters.themeChoice.ordinal + 1]
-        }
-        
-        themeButton.text = themeOptions[globalParameters.themeChoice.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_theme_setting, themeButton.text))
-    }
-
-    /**
-     * Cycles through the options for the Screen On settings, when the button is clicked. Narrates
-     * the action.
-     */
-    private fun onKeepScreenOnButtonClick() {
-
-        if (globalParameters.keepScreenOn.ordinal == KeepScreenOn.values().size - 1) {
-            globalParameters.keepScreenOn = KeepScreenOn.values()[0]
-        } else {
-            globalParameters.keepScreenOn =
-                KeepScreenOn.values()[globalParameters.keepScreenOn.ordinal + 1]
-        }
-        
-        keepScreenOnButton.text = keepScreenOnOptions[globalParameters.keepScreenOn.ordinal]
-
-        viewModel.say(resources.getString(R.string.new_screen_setting, keepScreenOnButton.text))
-    }
-
-    private fun onBarcodeServiceButtonClick() {
-
-        if (globalParameters.barcodeServiceMode.ordinal == BarcodeServiceMode.values().size - 1) {
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
-        } else {
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[globalParameters.barcodeServiceMode.ordinal + 1]
-        }
-
-        barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-        viewModel.say(barcodeServiceButton.text as String)
-    }
-
 
     /**
      *
@@ -207,20 +134,6 @@ class SettingsActivity : AppCompatActivity() {
             )
 
             apply()
-        }
-    }
-
-    /**
-     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
-     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
-     * listening.
-     */
-    private fun onVoiceActivationButtonClick() {
-        if (viewModel.isListening.value == false) {
-            viewModel.setSTTSpeechRecognitionListener(STTInputType.COMMAND)
-            viewModel.handleSTTSpeechBegin()
-        } else {
-            viewModel.cancelSTTListening()
         }
     }
 
@@ -255,12 +168,7 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.initSTT()
 
         // if listening: microphone color green, else microphone color white
-        val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            } else {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
-            }
+        val sttIsListeningObserver = Observer<Boolean> {
         }
 
         // observe LiveData change to be notified when the STT system is active(ly listening)
@@ -328,22 +236,6 @@ class SettingsActivity : AppCompatActivity() {
                             resources.getString(R.string.dim_screen_after_a_while)
                 )
             }
-
-        } else if (command == resources.getString(R.string.barcode_service_mode_on)){
-
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[0]
-
-            barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-            viewModel.say(barcodeServiceButton.text as String)
-
-        } else if (command == resources.getString(R.string.barcode_service_mode_off)){
-
-            globalParameters.barcodeServiceMode = BarcodeServiceMode.values()[1]
-
-            barcodeServiceButton.text = barcodeServiceOptions[globalParameters.barcodeServiceMode.ordinal]
-
-            viewModel.say(barcodeServiceButton.text as String)
 
         } else if(command == resources.getString(R.string.stop_speech)) {
 
@@ -510,6 +402,73 @@ class SettingsActivity : AppCompatActivity() {
         viewModel.sayAndAwait(question)
         viewModel.setSTTSpeechRecognitionListener(STTInputType.ANSWER)
         viewModel.handleSTTSpeechBegin()
+    }
+
+    /**
+     * Function that sets and configures the viewPager2. ViewPager2 is a tool that can take multiple
+     * fragments in a list and allows navigation between those fragments by swiping left and right.
+     * To achieve this the groceryListFragmentAdapter is set as the viewpagers adapter.
+     */
+
+    private fun viewPagerSetUp(){
+        viewPager = findViewById(R.id.view_pager)
+        fragmentAdapter = SettingsFragmentAdapter(this)
+        viewPager.adapter = fragmentAdapter
+
+        /**
+         * The swipe interceptor makes sure that vertical swipes are recognized more reliably.
+         * In a default state a swipe to the top or bottom with the slightest movement left
+         * or right will be recognized as a horizontal swipe. With the interceptor the app checks
+         * first for a vertical swipe, which makes it more reliable and better to navigate.
+         *
+         * Overriding the onSwipeUp and onSwipeDown functions in the way it is done, is necessary
+         * to assure the correct fragments onSwipe functions are referenced, since the activity is
+         * shared among all the activities Fragment.
+         *
+         */
+
+        val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
+            override fun onSwipeLeft(){}
+            override fun onSwipeRight(){}
+            override fun onSwipeUp(){
+                val currentPosition = viewPager.currentItem
+                val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as SettingsScreen1).onSwipeUp()
+                    }
+                    1 -> {
+                        (currentFragment as SettingsScreen2).onSwipeUp()
+                    }
+                    2 -> {
+                        (currentFragment as SettingsScreen3).onSwipeUp()
+                    }
+                }
+            }
+            override fun onSwipeDown(){
+                val currentPosition = viewPager.currentItem
+                val currentFragment = fragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as SettingsScreen1).onSwipeDown()
+                    }
+                    1 -> {
+                        (currentFragment as SettingsScreen2).onSwipeDown()
+                    }
+                    2 -> {
+                        (currentFragment as SettingsScreen3).onSwipeDown()
+                    }
+                }
+            }
+            override fun onLongPress(){}
+            override fun onDoubleTap() {}
+        })
+
+        viewPager.getChildAt(0).let { recyclerView ->
+            if (recyclerView is RecyclerView) {
+                recyclerView.addOnItemTouchListener(swipeInterceptor)
+            }
+        }
     }
     
 }

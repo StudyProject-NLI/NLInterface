@@ -1,30 +1,40 @@
 package com.nlinterface.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.speech.tts.TextToSpeech
-import android.view.View
+import android.util.Log
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nlinterface.R
 import com.nlinterface.adapters.GroceryListAdapter
+import com.nlinterface.adapters.GroceryListFragmentAdapter
 import com.nlinterface.databinding.ActivityGroceryListBinding
 import com.nlinterface.dataclasses.GroceryItem
+import com.nlinterface.fragments.GroceryListScreen1
+import com.nlinterface.fragments.GroceryListScreen2
+import com.nlinterface.fragments.GroceryListScreenBase
+import com.nlinterface.fragments.GroceryListScreenListView
 import com.nlinterface.interfaces.GroceryListCallback
 import com.nlinterface.utility.ActivityType
+import com.nlinterface.utility.OnSwipeTouchInterceptor
 import com.nlinterface.utility.STTInputType
+import com.nlinterface.utility.SwipeAction
 import com.nlinterface.utility.navToActivity
-import com.nlinterface.utility.setViewRelativeSize
 import com.nlinterface.viewmodels.GroceryListViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +44,18 @@ import kotlinx.coroutines.launch
 
 /**
  * The GroceryListActivity handles user interaction for the GroceryList.
+ *
+ * The Grocery lists are several screens, that can be navigated via scrolling left and right.
+ * Their are three fixed screens with different functionalities, of which one is a list view of
+ * all grocery items. Filling the grocery list is either possible by using the functionality to
+ * arbitrarily add an item to next free spot on the list. To assure a clean and reduced screen, to
+ * ease navigation, for vision impaired users, their is also a dynamic grocery list attached.
+ *
+ * Following the three fixed screens, their is a number of screens where items can be added. On
+ * first start up there is only one. The screen can encode two grocery items. One on the top and
+ * one on the bottom, that can be added by scrolling up and down. When both item slots are filled
+ * the app automatically attaches another screen with again two item slots.
+ *
  *
  * The GroceryListActivity is the view of a GroceryList, which displays a list of items and their
  * status. If greyed out, item has been added to the 'shopping cart', else it is still open.
@@ -58,21 +80,25 @@ import kotlinx.coroutines.launch
 class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
 
     private lateinit var binding: ActivityGroceryListBinding
-    private lateinit var viewModel: GroceryListViewModel
+    lateinit var viewModel: GroceryListViewModel
 
-    private lateinit var groceryItemList: ArrayList<GroceryItem>
+    lateinit var groceryItemList: ArrayList<GroceryItem>
 
-    private lateinit var adapter: GroceryListAdapter
-
-    private lateinit var voiceActivationButton: ImageButton
+    private lateinit var groceryListAdapter: GroceryListAdapter
     
     private lateinit var lastCommand: String
     private lateinit var lastResponse: String
 
+    lateinit var groceryListViewPager: ViewPager2
+    lateinit var groceryListFragmentAdapter: GroceryListFragmentAdapter
+
+    val operationCompletedStatus = MutableLiveData<Boolean>()
+    val operationCompleted: LiveData<Boolean> get() = operationCompletedStatus
+
     /**
      * The onCreate function initializes the view by binding the Activity and the Layout and
-     * retrieving the ViewModel. After calling the viewModel to load the grocery list data, the UI
-     * elements and TTS and STT systems are configured.
+     * retrieving the ViewModel. After calling the viewModel to load the grocery list data,
+     * the groceryListViewPager and TTS and STT systems are configured.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,98 +107,28 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[GroceryListViewModel::class.java]
-
         viewModel.fetchGroceryList()
         groceryItemList = viewModel.groceryList
+        groceryListAdapter = GroceryListAdapter(groceryItemList, this)
 
-        configureUI()
+        viewPagerSetUp()
         configureTTS()
         configureSTT()
     }
 
     /**
-     * Sets up all UI elements, i.e. the addItem and voiceActivation buttons, their respective
-     * onClick functionality and configures the recycler view.
+     * The Fragments in the Grocery List activity are created dynamically, on Pause their state
+     * is saved and on Resume they are restored.
      */
-    private fun configureUI() {
 
-        // set up add item button listener
-        val addItemButton: Button = findViewById<View>(R.id.add_item_bt) as Button
-        addItemButton.setOnClickListener {
-            onAddItemButtonClick()
-        }
-
-        // set up voice activation button listener
-        voiceActivationButton = findViewById<View>(R.id.voice_activation_bt) as ImageButton
-        voiceActivationButton.setOnClickListener {
-            onVoiceActivationButtonClick()
-        }
-
-        // resize Voice Activation Button to 1/3 of display size
-        setViewRelativeSize(voiceActivationButton, 1.0, 0.33)
-
-        configureRecyclerView()
+    override fun onPause() {
+        super.onPause()
+        saveFragmentsState()  // Save the fragment state when the activity is paused
     }
 
-    /**
-     * Initializes the GroceryListAdapter and fills the recyclerview with the GroceryItems on the
-     * GroceryList and configures the swipe to delete functionality in both directions utilizing
-     * ItemTouchHelper
-     */
-    private fun configureRecyclerView() {
-
-        adapter = GroceryListAdapter(groceryItemList, this)
-
-        val rvGroceryList = findViewById<View>(R.id.grocery_list_rv) as RecyclerView
-        rvGroceryList.adapter = adapter
-        rvGroceryList.layoutManager = LinearLayoutManager(this)
-
-        // implements swipe left to delete item functionality
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.LEFT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                onSwipeToDelete(viewHolder)
-            }
-        }).attachToRecyclerView(rvGroceryList)
-
-        // implements swipe right to delete functionality
-        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
-            0, ItemTouchHelper.RIGHT
-        ) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                return false
-            }
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                onSwipeToDelete(viewHolder)
-            }
-        }).attachToRecyclerView(rvGroceryList)
-    }
-
-    /**
-     * Called when user swipes left or right on an item in the recyclerview. The corresponding
-     * GroceryItem is then removed.
-     *
-     * @param viewHolder: the RecyclerView ViewHolder
-     */
-    private fun onSwipeToDelete(viewHolder: RecyclerView.ViewHolder) {
-        val groceryItem: GroceryItem =
-            groceryItemList[viewHolder.adapterPosition]
-
-        deleteGroceryItem(groceryItem, viewHolder.adapterPosition)
+    override fun onResume() {
+        super.onResume()
+        restoreFragmentsState()  // Restore the fragment state when the activity is resumed
     }
 
     /**
@@ -185,7 +141,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     private fun deleteGroceryItem(groceryItem: GroceryItem, index: Int) {
 
         viewModel.deleteGroceryItem(groceryItem)
-        adapter.notifyItemRemoved(index)
+        groceryListAdapter.notifyItemRemoved(index)
         viewModel.say(
             resources.getString(R.string.deleted_ITEMNAME_from_grocery_list, groceryItem.itemName)
         )
@@ -198,7 +154,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      *
      * @param groceryItemName: String, the name of the Grocery Item to be deleted.
      */
-    private fun deleteGroceryItem(groceryItemName: String) {
+    fun deleteGroceryItem(groceryItemName: String) {
         
         val groceryItem = findGroceryItemByName(groceryItemName)
         
@@ -218,7 +174,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      * @return the found Grocery Item or null if it does not exists
      */
     private fun findGroceryItemByName(groceryItemName: String): GroceryItem? {
-        return groceryItemList.find { it.itemName.lowercase() == groceryItemName }
+        return groceryItemList.find { it.itemName == groceryItemName }
     }
 
     /**
@@ -261,12 +217,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewModel.initSTT()
 
         // if listening: microphone color green, else microphone color white
-        val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_green)
-            } else {
-                voiceActivationButton.setImageResource(R.drawable.ic_mic_white)
-            }
+        val sttIsListeningObserver = Observer<Boolean> {
         }
 
         // observe LiveData change to be notified when the STT system is active(ly listening)
@@ -446,7 +397,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      *
      * @param itemName: String, the name of the item to be added to the cart
      */
-    private fun addItemToCart(itemName: String) {
+    fun addItemToCart(itemName: String) {
         
         val groceryItem = findGroceryItemByName(itemName)
         
@@ -456,7 +407,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
                 viewModel.say(resources.getString(R.string.ITEMNAME_is_in_the_cart, itemName))
             } else {
                 viewModel.placeGroceryItemInCart(groceryItem)
-                adapter.notifyItemChanged(groceryItemList.indexOf(groceryItem))
+                groceryListAdapter.notifyItemChanged(groceryItemList.indexOf(groceryItem))
                 viewModel.say(resources.getString(R.string.placed_ITEMNAME_into_cart, itemName))
             }
             
@@ -482,7 +433,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
                 viewModel.say(resources.getString(R.string.ITEMNAME_is_not_in_the_cart, itemName))
             } else {
                 viewModel.placeGroceryItemInCart(groceryItem)
-                adapter.notifyItemChanged(groceryItemList.indexOf(groceryItem))
+                groceryListAdapter.notifyItemChanged(groceryItemList.indexOf(groceryItem))
                 viewModel.say(resources.getString(R.string.removed_ITEMNAME_from_cart, itemName))
             }
         
@@ -497,7 +448,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      *
      * @param itemName: String, the item name to check the list for
      */
-    private fun checkItemOnList(itemName: String) {
+    private fun checkItemOnList(itemName: String){
     
         val groceryItem = findGroceryItemByName(itemName)
     
@@ -522,6 +473,14 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             )
         }
     
+    }
+
+    private fun checkItemOnListBoolean(itemName: String):Boolean{
+
+        val groceryItem = findGroceryItemByName(itemName)
+
+        return groceryItem != null
+
     }
     
     /**
@@ -554,27 +513,17 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     }
 
     /**
-     * Called when voiceActivationButton is clicked and handles the result. If clicked while the
-     * STT system is listening, call to viewModel to cancel listening. Else, call viewModel to begin
-     * listening.
-     */
-    private fun onVoiceActivationButtonClick() {
-        if (viewModel.isListening.value == false) {
-            viewModel.setSpeechRecognitionListener(STTInputType.COMMAND)
-            viewModel.handleSpeechBegin()
-        } else {
-            viewModel.cancelListening()
-        }
-    }
-
-    /**
      * Implements an alertDialog that opens when the addItemButton is clicked. The alertDialog
      * consists of an EditText, an 'Add' positive and a 'Cancel' negative button. If the positive
      * button is clicked, whatever string was entered into the EditText is added as a new
      * GroceryItem to the GroceryList. The alertDialog is closed either when the positive, negative
      * or the background activity is clicked. Every possible action is narrated to the user.
+     *
+     * The process of adding the entered string as a Grocery Item is wrapped in a Handler to make
+     * sure, that processes resulting from this, are only executed when all necessary prior steps
+     * are accurately completed.
      */
-    private fun onAddItemButtonClick() {
+    fun onAddItemButtonClick() {
 
         val alertDialog: AlertDialog = this.let {
             val builder = MaterialAlertDialogBuilder(
@@ -586,10 +535,10 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
             builder.setView(view)
             builder.apply {
                 setPositiveButton(R.string.add) { _, _ ->
-
-                    val addItemEt = view.findViewById<EditText>(R.id.et)
-
-                    addGroceryItem(addItemEt.text.toString())
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        val addItemEt = view.findViewById<EditText>(R.id.et)
+                        addGroceryItem(addItemEt.text.toString().trimEnd())
+                    }, 1000)
                 }
 
                 setNegativeButton(R.string.cancel_cap) { _, _ ->
@@ -614,11 +563,14 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
      */
     private fun addGroceryItem(newItemName: String) {
 
-        viewModel.addGroceryItem(newItemName)
-        adapter.notifyItemInserted(groceryItemList.size - 1)
-
-        viewModel.say(resources.getString(R.string.added_ITEMNAME_to_list, newItemName))
-
+        if (!checkItemOnListBoolean(newItemName)) {
+            viewModel.addGroceryItem(newItemName)
+            viewModel.say(resources.getString(R.string.added_ITEMNAME_to_list, newItemName))
+            operationCompletedStatus.value = true
+        }
+        else{
+            viewModel.say(resources.getString(R.string.ITEMNAME_is_on_the_list, newItemName))
+        }
     }
 
     /**
@@ -631,7 +583,7 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         val index = groceryItemList.indexOf(item)
         val inCart = viewModel.placeGroceryItemInCart(item)
 
-        adapter.notifyItemChanged(index)
+        groceryListAdapter.notifyItemChanged(index)
 
         if (inCart) {
             viewModel.say(resources.getString(R.string.placed_ITEMNAME_into_cart, item.itemName))
@@ -648,5 +600,142 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
     override fun onClick(item: GroceryItem) {
         viewModel.say(item.itemName)
     }
-    
+
+    /**
+     * Necessary functions for dynamic fragments.
+     */
+
+    /**
+     * Creates a new GroceryListScreenBase fragment and adds it to the fragment groceryListAdapter.
+     * Adjusts the viewPagers offScreenPageLimit to trigger the initialization of the new fragment,
+     * so its variables can be accessed and used.
+     */
+    fun addNewFragment(itemTop: String, itemBottom: String) {
+        groceryListViewPager.offscreenPageLimit = groceryListFragmentAdapter.itemCount -1
+        val newFragment = GroceryListScreenBase.newInstance(itemTop, itemBottom)
+        groceryListFragmentAdapter.addFragment(newFragment)
+    }
+
+    /**
+     * Saves the current state of the fragments. This is necessary to keep the newly created
+     * fragments. The fragments are saved with their itemTop and itemBottom variable mapped onto
+     * each-other. They are put into a json an d saved in the sharedPreferences.
+     */
+    private fun saveFragmentsState() {
+        val sharedPreferences = getSharedPreferences(
+            "grocery_list_fragment_state", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val fragmentData = groceryListFragmentAdapter.fragmentList
+            .filterIsInstance<GroceryListScreenBase>()
+            .map { fragment ->
+                fragment.itemTop to fragment.itemBottom
+            }
+        val gson = Gson()
+        val json = gson.toJson(fragmentData)
+        editor.putString("grocery_list_fragments", json)
+        editor.apply()
+        Log.i("Shared Preferences","FragmentState saved")
+    }
+
+    /**
+     * Restores the fragments with their variables saved in the sharedPreferences. If there are
+     * no saved Fragments a new one is created to makes sure, their is always at least one.
+     */
+    private fun restoreFragmentsState() {
+        val sharedPreferences = getSharedPreferences(
+            "grocery_list_fragment_state", Context.MODE_PRIVATE)
+        val gson = Gson()
+        val json = sharedPreferences.getString("grocery_list_fragments", null)
+
+        if (json != null) {
+            val fragmentData: List<Pair<String, String>> = gson.fromJson(json,
+                object : TypeToken<List<Pair<String, String>>>() {}.type)
+            fragmentData.forEach { (itemTop, itemBottom) ->
+                val fragment = GroceryListScreenBase.newInstance(itemTop, itemBottom)
+                groceryListFragmentAdapter.addFragment(fragment)
+            }
+        }
+        else{
+            addNewFragment(
+                resources.getString(R.string.add_an_item),
+                resources.getString(R.string.add_an_item)
+            )
+        }
+        Log.i("Shared Preferences","FragmentState restored")
+    }
+
+    /**
+     * Function that sets and configures the viewPager2. ViewPager2 is a tool that can take multiple
+     * fragments in a list and allows navigation between those fragments by swiping left and right.
+     * To achieve this the groceryListFragmentAdapter is set as the viewpagers groceryListAdapter.
+     */
+
+    private fun viewPagerSetUp(){
+        groceryListViewPager = findViewById(R.id.grocery_list_view_pager)
+        groceryListFragmentAdapter = GroceryListFragmentAdapter(this)
+        groceryListViewPager.adapter = groceryListFragmentAdapter
+        groceryListViewPager.setCurrentItem(1, false)
+
+        /**
+         * The swipe interceptor makes sure that vertical swipes are recognized more reliably.
+         * In a default state a swipe to the top or bottom with the slightest movement left
+         * or right will be recognized as a horizontal swipe. With the interceptor the app checks
+         * first for a vertical swipe, which makes it more reliable and better to navigate.
+         *
+         * Overriding the onSwipeUp and onSwipeDown functions in the way it is done, is necessary
+         * to assure the correct fragments onSwipe functions are referenced, since the activity is
+         * shared among all the activities Fragment.
+         *
+         */
+
+        val swipeInterceptor = OnSwipeTouchInterceptor(object : SwipeAction {
+            override fun onSwipeLeft(){}
+            override fun onSwipeRight(){}
+            override fun onSwipeUp(){
+                val currentPosition = groceryListViewPager.currentItem
+                val currentFragment = groceryListFragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as GroceryListScreenListView).onSwipeUp()
+                    }
+                    1 -> {
+                        (currentFragment as GroceryListScreen1).onSwipeUp()
+                    }
+                    2 -> {
+                        (currentFragment as GroceryListScreen2).onSwipeUp()
+                    }
+                    else -> {
+                        (currentFragment as GroceryListScreenBase).onSwipeUp()
+                    }
+                }
+            }
+            override fun onSwipeDown(){
+                val currentPosition = groceryListViewPager.currentItem
+                val currentFragment = groceryListFragmentAdapter.getCurrentFragment(currentPosition)
+                when (currentPosition) {
+                    0 -> {
+                        (currentFragment as GroceryListScreenListView).onSwipeUp()
+                    }
+                    1 -> {
+                        (currentFragment as GroceryListScreen1).onSwipeDown()
+                    }
+                    2 -> {
+                        (currentFragment as GroceryListScreen2).onSwipeDown()
+                    }
+                    else -> {
+                        (currentFragment as GroceryListScreenBase).onSwipeDown()
+                    }
+                }
+            }
+            override fun onLongPress(){}
+            override fun onDoubleTap() {}
+
+        })
+
+        groceryListViewPager.getChildAt(0).let { recyclerView ->
+            if (recyclerView is RecyclerView) {
+                recyclerView.addOnItemTouchListener(swipeInterceptor)
+            }
+        }
+    }
 }

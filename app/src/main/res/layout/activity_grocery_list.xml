@@ -4,53 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/activity_grocery_list_cl">
+    tools:context=".activities.GroceryListActivity">
 
-    <include
-        android:id="@+id/include"
-        layout="@layout/voice_activation_button" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/grocery_list_rv"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/grocery_list_view_pager"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        app:layout_constraintBottom_toTopOf="@+id/add_item_bt"
-        app:layout_constraintEnd_toEndOf="@id/v_guide2"
-        app:layout_constraintStart_toStartOf="@id/v_guide1"
-        app:layout_constraintTop_toBottomOf="@+id/include" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/add_item_bt"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="?colorTertiary"
-        android:insetBottom="0dp"
-        android:insetTop="0dp"
-        android:textSize="35dp"
-        android:text="@string/add"
-        android:textColor="?android:textColorSecondary"
-        app:cornerRadius="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1"
-        app:layout_constraintHorizontal_bias="1"/>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/v_guide1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.05" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/v_guide2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.95" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

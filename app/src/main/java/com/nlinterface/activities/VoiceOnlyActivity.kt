@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
+import com.nlinterface.utility.LLMAppConnector
 import com.nlinterface.utility.OnSwipeTouchListener
 import com.nlinterface.viewmodels.VoiceOnlyViewModel
 import kotlinx.coroutines.delay
@@ -183,21 +184,77 @@ class VoiceOnlyActivity: AppCompatActivity() {
         }
     }
 
-    /**
-     * Handles a received input and starts listening again on completion.
-     */
     private fun processVoiceInput(command: String) {
         lifecycleScope.launch {
             showSpeakingStage()
-            viewModel.sayAndAwait(command)
-            showListeningStage()
-            startListening()
+
+            try {
+                val llmConnector = LLMAppConnector.getInstance
+
+                // Authenticate with the API
+                val token = llmConnector.authenticate()
+
+                // Send command to the LLM API
+                val apiResponse = llmConnector.sendCommandToLLM(command, token)
+
+                // Parse the response and get label and additional data requirement
+                val (label, needsAdditionalData) = llmConnector.parseResponse(apiResponse)
+
+                if (label != null) {
+                    // If the label is found in the supported commands, execute it
+                    if (isValidCommand(label)) {
+                        executeCommand(label, needsAdditionalData)
+                    } else {
+                        // No valid command found, just say the response
+                        viewModel.sayAndAwait(label)
+                    }
+                } else {
+                    viewModel.sayAndAwait("I heard: $command, but couldn't process it.")
+                }
+            } catch (e: Exception) {
+                viewModel.sayAndAwait("Sorry, I encountered an error: ${e.message}")
+                e.printStackTrace()
+            }
+
+            // Automatically start listening again after processing
+            //showListeningStage()
+            //startListening()
+        }
+    }
+
+    /**
+     * Checks if the given label is a valid command that the app can handle
+     */
+    private fun isValidCommand(label: String): Boolean {
+        val supportedCommands = listOf(
+            "grocery-list",
+        )
+        return supportedCommands.contains(label)
+    }
+
+    /**
+     * Executes the appropriate action based on the label from the LLM API.
+     */
+    private suspend fun executeCommand(label: String, needsAdditionalData: Boolean) {
+        when (label) {
+            "grocery-list" -> {
+                if (needsAdditionalData) {
+                    viewModel.sayAndAwait(getString(R.string.which_item))
+                    // Next voice input will be processed in context of grocery list
+                } else {
+                    viewModel.sayAndAwait(getString(R.string.navigate_to_grocery_list))
+                    val intent = Intent(this@VoiceOnlyActivity, GroceryListActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+            // Add more commands as needed based on strings.xml and support of the LLM
+            else -> {
+                viewModel.sayAndAwait("I don't know how to handle: $label")
+            }
         }
     }
 
     private fun startListening() {
         viewModel.handleSTTSpeechBegin()
     }
-
-
 }

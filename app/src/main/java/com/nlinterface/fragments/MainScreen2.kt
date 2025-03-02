@@ -82,7 +82,7 @@ class MainScreen2 : Fragment(), SwipeAction {
     }
 
     /**
-     * Navigates to the Voice Only Activity.
+     * Navigates to the Voice Only Activity (for LLM processing).
      */
     override fun onDoubleTap() {
         val intent = Intent(activity, VoiceOnlyActivity::class.java)
@@ -90,7 +90,7 @@ class MainScreen2 : Fragment(), SwipeAction {
     }
 
     /**
-     * Activates the LLM to start listening.
+     * Activates listening to facilitate executing hard-coded commands.
      */
     override fun onLongPress() {
         if (viewModel.isListening.value == false) {

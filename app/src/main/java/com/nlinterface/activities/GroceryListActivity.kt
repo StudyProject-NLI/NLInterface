@@ -114,6 +114,21 @@ class GroceryListActivity : AppCompatActivity(), GroceryListCallback {
         viewPagerSetUp()
         configureTTS()
         configureSTT()
+
+        // Check if we were launched from an LLM voice command
+        if (intent.getBooleanExtra("FROM_VOICE_COMMAND", false)) {
+            // Process items to add
+            val itemsToAdd = intent.getStringArrayListExtra("ITEMS_TO_ADD")
+            itemsToAdd?.forEach { itemName ->
+                addGroceryItem(itemName)
+            }
+
+            // Process items to remove
+            val itemsToRemove = intent.getStringArrayListExtra("ITEMS_TO_REMOVE")
+            itemsToRemove?.forEach { itemName ->
+                deleteGroceryItem(itemName)
+            }
+        }
     }
 
     /**

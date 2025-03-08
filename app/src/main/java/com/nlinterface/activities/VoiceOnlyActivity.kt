@@ -1,6 +1,7 @@
 package com.nlinterface.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -184,6 +185,16 @@ class VoiceOnlyActivity: AppCompatActivity() {
         }
     }
 
+    private fun isValidCommand(label: String): Boolean {
+        val supportedCommands = listOf(
+            "grocery-list",
+            "barcode-scanner",
+            "navigation",
+            "object-and-hand-recognition"
+        )
+        return supportedCommands.contains(label)
+    }
+
     private fun processVoiceInput(command: String) {
         lifecycleScope.launch {
             showSpeakingStage()
@@ -194,8 +205,11 @@ class VoiceOnlyActivity: AppCompatActivity() {
                 // Authenticate with the API
                 val token = llmConnector.authenticate()
 
+                // Add <User> prefix to the command
+                val prefixedCommand = "<User>$command"
+
                 // Send command to the LLM API
-                val apiResponse = llmConnector.sendCommandToLLM(command, token)
+                val apiResponse = llmConnector.sendCommandToLLM(prefixedCommand, token)
 
                 // Parse the response and get label and additional data requirement
                 val (label, needsAdditionalData) = llmConnector.parseResponse(apiResponse)
@@ -215,21 +229,40 @@ class VoiceOnlyActivity: AppCompatActivity() {
                 viewModel.sayAndAwait("Sorry, I encountered an error: ${e.message}")
                 e.printStackTrace()
             }
-
-            // Automatically start listening again after processing
-            //showListeningStage()
-            //startListening()
         }
     }
 
     /**
-     * Checks if the given label is a valid command that the app can handle
+     * Gets the current grocery list formatted as a string.
+     * Format: "[quantity]Item; [quantity]Item2; ..."
+     * If the list is empty, returns "No items on the grocery list"
      */
-    private fun isValidCommand(label: String): Boolean {
-        val supportedCommands = listOf(
-            "grocery-list",
-        )
-        return supportedCommands.contains(label)
+    private fun getCurrentGroceryList(): String {
+        // Load grocery list from shared preferences
+        val sharedPreferences = getSharedPreferences("grocery_list", Context.MODE_PRIVATE)
+        val json = sharedPreferences.getString("grocery_list", null)
+
+        if (json.isNullOrEmpty()) {
+            return "No items on the grocery list"
+        }
+
+        try {
+            val gson = com.google.gson.Gson()
+            val type = object : com.google.gson.reflect.TypeToken<ArrayList<com.nlinterface.dataclasses.GroceryItem>>() {}.type
+            val groceryList: ArrayList<com.nlinterface.dataclasses.GroceryItem> = gson.fromJson(json, type)
+
+            if (groceryList.isEmpty()) {
+                return "No items on the grocery list"
+            }
+
+            // Format as "[1]Item; [1]Item2; ..." (assuming quantity is 1 for all items)
+            return groceryList.joinToString("; ") { item ->
+                "[1]${item.itemName}"
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return "No items on the grocery list"
+        }
     }
 
     /**
@@ -239,19 +272,98 @@ class VoiceOnlyActivity: AppCompatActivity() {
         when (label) {
             "grocery-list" -> {
                 if (needsAdditionalData) {
-                    viewModel.sayAndAwait(getString(R.string.which_item))
-                    // Next voice input will be processed in context of grocery list
+                    // Get the current grocery list
+                    val groceryList = getCurrentGroceryList()
+                    viewModel.say("Checking your grocery list...")
+
+                    // Send the grocery list to the LLM with <App> prefix
+                    val token = LLMAppConnector.getInstance.authenticate()
+                    val prefixedData = "<App>$groceryList"
+                    val apiResponse = LLMAppConnector.getInstance.sendCommandToLLM(prefixedData, token)
+
+                    // Parse the response
+                    val (response, _) = LLMAppConnector.getInstance.parseResponse(apiResponse)
+
+                    if (response != null) {
+                        // Process grocery list updates
+                        processGroceryListUpdates(response)
+                    } else {
+                        viewModel.sayAndAwait("Sorry, I couldn't process your request.")
+                    }
                 } else {
                     viewModel.sayAndAwait(getString(R.string.navigate_to_grocery_list))
                     val intent = Intent(this@VoiceOnlyActivity, GroceryListActivity::class.java)
                     startActivity(intent)
                 }
             }
-            // Add more commands as needed based on strings.xml and support of the LLM
+            "barcode-scanner" -> {
+                viewModel.sayAndAwait(getString(R.string.barcode_scanner))
+                val intent = Intent(this@VoiceOnlyActivity, BarcodeSettingsActivity::class.java)
+                startActivity(intent)
+            }
+            "navigation" -> {
+                viewModel.sayAndAwait(getString(R.string.place_details))
+                val intent = Intent(this@VoiceOnlyActivity, PlaceDetailsActivity::class.java)
+                startActivity(intent)
+            }
+            "object-and-hand-recognition" -> {
+                viewModel.sayAndAwait(getString(R.string.classification))
+                val intent = Intent(this@VoiceOnlyActivity, ClassificationActivity::class.java)
+                startActivity(intent)
+            }
             else -> {
-                viewModel.sayAndAwait("I don't know how to handle: $label")
+                viewModel.sayAndAwait("I don't know how to handle: $label; additional-data-required=$needsAdditionalData")
             }
         }
+    }
+
+    /**
+     * Process grocery list updates from LLM response
+     * Expected format: "[+/-quantity]Item; [quantity]Item2; [-quantity]Item3"
+     */
+    private suspend fun processGroceryListUpdates(response: String) {
+        viewModel.sayAndAwait("Updating your grocery list...")
+
+        val itemsToProcess = response.split(";")
+        val itemsToAdd = mutableListOf<String>()
+        val itemsToRemove = mutableListOf<String>()
+
+        // Parse the response to identify items to add or remove
+        for (item in itemsToProcess) {
+            val trimmedItem = item.trim()
+            if (trimmedItem.isNotEmpty()) {
+                // Parse the format [+/-quantity]Item
+                val regex = """^\[([+\-]?\d+)](.+)$""".toRegex()
+                val matchResult = regex.find(trimmedItem)
+
+                if (matchResult != null) {
+                    val (quantityStr, itemName) = matchResult.destructured
+
+                    if (quantityStr.startsWith("+") || !quantityStr.startsWith("-")) {
+                        // Add item
+                        itemsToAdd.add(itemName.trim())
+                    } else if (quantityStr.startsWith("-")) {
+                        // Remove item
+                        itemsToRemove.add(itemName.trim())
+                    }
+                }
+            }
+        }
+
+        // Launch GroceryListActivity and pass the items to add/remove
+        val intent = Intent(this, GroceryListActivity::class.java)
+        intent.putExtra("ITEMS_TO_ADD", ArrayList(itemsToAdd))
+        intent.putExtra("ITEMS_TO_REMOVE", ArrayList(itemsToRemove))
+        intent.putExtra("FROM_VOICE_COMMAND", true)
+        startActivity(intent)
+
+        // Give feedback to user
+        val addMessage = if (itemsToAdd.isNotEmpty())
+            "Adding ${itemsToAdd.joinToString(", ")} to your grocery list. " else ""
+        val removeMessage = if (itemsToRemove.isNotEmpty())
+            "Removing ${itemsToRemove.joinToString(", ")} from your grocery list." else ""
+
+        viewModel.sayAndAwait("$addMessage$removeMessage")
     }
 
     private fun startListening() {

@@ -1,7 +1,10 @@
 package com.nlinterface.activities
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.nlinterface.dataclasses.GroceryItem
+import java.io.File
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -28,7 +31,7 @@ import kotlinx.coroutines.launch
  * TODO: Improve and Test
  */
 class VoiceOnlyActivity: AppCompatActivity() {
-
+    private var isProcessingCommand = false // State tracking
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: VoiceOnlyViewModel
     private lateinit var viewFlipper: ViewFlipper
@@ -98,14 +101,13 @@ class VoiceOnlyActivity: AppCompatActivity() {
      * is finished.
      */
     private fun configureSTT() {
-
         viewModel.initSTT()
 
         val sttIsListeningObserver = Observer<Boolean> { isListening ->
-            if (isListening) {
+            if (isListening && !isProcessingCommand) {
                 showListeningStage()
             }
-            else {
+            else if (!isListening && !isProcessingCommand) {
                 viewModel.handleSTTSpeechBegin()
             }
         }
@@ -113,8 +115,9 @@ class VoiceOnlyActivity: AppCompatActivity() {
         // observe LiveData change to be notified when the STT system is active(ly listening)
         viewModel.isListening.observe(this, sttIsListeningObserver)
 
-        val processObserver = Observer<Boolean> {isProcessing ->
-            if(isProcessing){
+        val processObserver = Observer<Boolean> { isProcessing ->
+            if(isProcessing) {
+                isProcessingCommand = true
                 showProcessingStage()
             }
         }
@@ -228,6 +231,10 @@ class VoiceOnlyActivity: AppCompatActivity() {
             } catch (e: Exception) {
                 viewModel.sayAndAwait("Sorry, I encountered an error: ${e.message}")
                 e.printStackTrace()
+            } finally {
+                // Reset processing state after command completion
+                isProcessingCommand = false
+                //startListening()
             }
         }
     }
@@ -238,30 +245,22 @@ class VoiceOnlyActivity: AppCompatActivity() {
      * If the list is empty, returns "No items on the grocery list"
      */
     private fun getCurrentGroceryList(): String {
-        // Load grocery list from shared preferences
-        val sharedPreferences = getSharedPreferences("grocery_list", Context.MODE_PRIVATE)
-        val json = sharedPreferences.getString("grocery_list", null)
-
-        if (json.isNullOrEmpty()) {
+        val groceryListFile = File(applicationContext.filesDir, "GroceryList.json")
+        if (!groceryListFile.exists() || groceryListFile.length() == 0L) {
             return "No items on the grocery list"
         }
-
-        try {
-            val gson = com.google.gson.Gson()
-            val type = object : com.google.gson.reflect.TypeToken<ArrayList<com.nlinterface.dataclasses.GroceryItem>>() {}.type
-            val groceryList: ArrayList<com.nlinterface.dataclasses.GroceryItem> = gson.fromJson(json, type)
-
+        return try {
+            val json = groceryListFile.readText()
+            val type = object : TypeToken<ArrayList<GroceryItem>>() {}.type
+            val groceryList: ArrayList<GroceryItem> = Gson().fromJson(json, type)
             if (groceryList.isEmpty()) {
-                return "No items on the grocery list"
-            }
-
-            // Format as "[1]Item; [1]Item2; ..." (assuming quantity is 1 for all items)
-            return groceryList.joinToString("; ") { item ->
-                "[1]${item.itemName}"
+                "No items on the grocery list"
+            } else {
+                groceryList.joinToString("; ") { "[1]\\${it.itemName}" }
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            return "No items on the grocery list"
+            "No items on the grocery list"
         }
     }
 
@@ -274,7 +273,6 @@ class VoiceOnlyActivity: AppCompatActivity() {
                 if (needsAdditionalData) {
                     // Get the current grocery list
                     val groceryList = getCurrentGroceryList()
-                    viewModel.say("Checking your grocery list...")
 
                     // Send the grocery list to the LLM with <App> prefix
                     val token = LLMAppConnector.getInstance.authenticate()
@@ -318,13 +316,18 @@ class VoiceOnlyActivity: AppCompatActivity() {
     }
 
     /**
-     * Process grocery list updates from LLM response
-     * Expected format: "[+/-quantity]Item; [quantity]Item2; [-quantity]Item3"
-     */
+    * Process grocery list updates from LLM response
+    * Expected format: "[+/-quantity]Item; [quantity]Item2; [-quantity]Item3"
+    */
     private suspend fun processGroceryListUpdates(response: String) {
-        viewModel.sayAndAwait("Updating your grocery list...")
+        // Find the first occurrence of '[' to ignore irrelevant prefixed text
+        val startIndex = response.indexOf('[')
+        if (startIndex == -1) {
+            viewModel.sayAndAwait(response) // No valid grocery list format found, so print what the LLM said
+            return
+        }
 
-        val itemsToProcess = response.split(";")
+        val itemsToProcess = response.substring(startIndex).split(";")
         val itemsToAdd = mutableListOf<String>()
         val itemsToRemove = mutableListOf<String>()
 
@@ -365,7 +368,6 @@ class VoiceOnlyActivity: AppCompatActivity() {
 
         viewModel.sayAndAwait("$addMessage$removeMessage")
     }
-
     private fun startListening() {
         viewModel.handleSTTSpeechBegin()
     }

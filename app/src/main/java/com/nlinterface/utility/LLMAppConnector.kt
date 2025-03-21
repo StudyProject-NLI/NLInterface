@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
  */
 class LLMAppConnector {
     private val TAG = "LLMAppConnector"
-    private val API_URL = "http://192.168.50.20:8001"
+    private val API_URL = "http://192.168.50.21:8001"
     private val USERNAME = "johndoe"
     private val PASSWORD = "secret"
 
@@ -73,8 +73,6 @@ class LLMAppConnector {
     suspend fun sendCommandToLLM(command: String, token: String): String {
         return withContext(Dispatchers.IO) {
             try {
-                val client = OkHttpClient()
-
                 val jsonObject = JSONObject()
                 val inputObject = JSONObject()
                 inputObject.put("messages", command)

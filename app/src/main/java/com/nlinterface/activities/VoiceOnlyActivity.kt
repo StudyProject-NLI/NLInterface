@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.nlinterface.R
 import com.nlinterface.databinding.ActivityMainBinding
+import com.nlinterface.dataclasses.PlaceDetailsItem
 import com.nlinterface.utility.LLMAppConnector
 import com.nlinterface.utility.OnSwipeTouchListener
 import com.nlinterface.viewmodels.VoiceOnlyViewModel
@@ -300,9 +301,23 @@ class VoiceOnlyActivity: AppCompatActivity() {
                 startActivity(intent)
             }
             "navigation" -> {
-                viewModel.sayAndAwait(getString(R.string.place_details))
-                val intent = Intent(this@VoiceOnlyActivity, PlaceDetailsActivity::class.java)
-                startActivity(intent)
+                if (needsAdditionalData) {
+                    // Retrieve current place details list as additional data (JSON)
+                    val placeList = getCurrentPlaceList()
+                    val token = LLMAppConnector.getInstance.authenticate()
+                    val prefixedData = "<App>$placeList"
+                    val apiResponse = LLMAppConnector.getInstance.sendCommandToLLM(prefixedData, token)
+                    val (response, _) = LLMAppConnector.getInstance.parseResponse(apiResponse)
+                    if (response != null) {
+                        processNavigationUpdates(response)
+                    } else {
+                        viewModel.sayAndAwait("Sorry, I couldn't process your navigation request.")
+                    }
+                } else {
+                    viewModel.sayAndAwait(getString(R.string.place_details))
+                    val intent = Intent(this@VoiceOnlyActivity, PlaceDetailsActivity::class.java)
+                    startActivity(intent)
+                }
             }
             "object-and-hand-recognition" -> {
                 viewModel.sayAndAwait(getString(R.string.classification))
@@ -368,6 +383,59 @@ class VoiceOnlyActivity: AppCompatActivity() {
 
         viewModel.sayAndAwait("$addMessage$removeMessage")
     }
+
+    // Helper to get the current place list from the saved PlaceDetailsItem JSON file.
+    private fun getCurrentPlaceList(): String {
+        val placeListFile = File(applicationContext.filesDir, "PlaceDetailsItemList.json")
+        if (!placeListFile.exists() || placeListFile.length() == 0L) {
+            return "{}"
+        }
+        return try {
+            placeListFile.readText()
+        } catch (e: Exception) {
+            "{}"
+        }
+    }
+
+    private suspend fun processNavigationUpdates(response: String) {
+        // Process only the content after the <LLM> tag if it exists.
+        val processedResponse = if (response.contains("<LLM>")) {
+            response.substringAfter("<LLM>")
+        } else {
+            response
+        }
+
+        // Regex to capture removals of the format: [-1]PlaceID
+        val removalPattern = "\\[-1\\](\\S+)".toRegex()
+        val removals = removalPattern.findAll(processedResponse).map { it.groupValues[1] }.toList()
+
+        if (removals.isNotEmpty()) {
+            // Start PlaceDetailsActivity with the removal IDs passed in the intent.
+            val intent = Intent(this@VoiceOnlyActivity, PlaceDetailsActivity::class.java)
+            intent.putStringArrayListExtra("PLACE_IDS_TO_REMOVE", ArrayList(removals))
+            startActivity(intent)
+
+            // Retrieve the currently stored PlaceDetailsItem list from JSON.
+            val placeListJson = getCurrentPlaceList()
+            val placeNames = try {
+                // Using the PlaceDetailsItem list from PlaceDetailsActivity.
+                val type = object : com.google.gson.reflect.TypeToken<List<PlaceDetailsItem>>() {}.type
+                val places: List<PlaceDetailsItem> = com.google.gson.Gson().fromJson(placeListJson, type)
+                // Map each removal ID to its corresponding store name (or fallback to the removal ID).
+                removals.map { removalId ->
+                    places.find { it.placeID == removalId }?.storeName ?: removalId
+                }
+            } catch (e: Exception) {
+                removals // Fallback if JSON parsing fails.
+            }
+
+            // Announce removal by speaking only the supermarket names.
+            viewModel.sayAndAwait("Removing supermarkets with names: ${placeNames.joinToString(", ")}.")
+        } else {
+            viewModel.sayAndAwait(response)
+        }
+    }
+
     private fun startListening() {
         viewModel.handleSTTSpeechBegin()
     }

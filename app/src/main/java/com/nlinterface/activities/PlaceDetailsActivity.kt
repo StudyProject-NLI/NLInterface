@@ -105,11 +105,29 @@ class PlaceDetailsActivity : AppCompatActivity(), PlaceDetailsItemCallback {
         placeDetailsItemList = viewModel.placeDetailsItemList
         placeDetailsAdapter = PlaceDetailsAdapter(placeDetailsItemList, this)
 
-
         configureAutocompleteFragment()
         viewPagerSetUp()
         configureTTS()
         configureSTT()
+
+        val removalIds = intent.getStringArrayListExtra("PLACE_IDS_TO_REMOVE")
+        if (!removalIds.isNullOrEmpty()) {
+            val removedNames = mutableListOf<String>()
+            removalIds.forEach { removalId ->
+                val itemToRemove = placeDetailsItemList.find { it.placeID == removalId }
+                if (itemToRemove != null) {
+                    // Delete the item from the ViewModel list and update storage
+                    viewModel.deletePlaceDetailsItem(itemToRemove)
+                    // Also remove it from the local list and notify the adapter
+                    val index = placeDetailsItemList.indexOf(itemToRemove)
+                    if (index != -1) {
+                        placeDetailsItemList.removeAt(index)
+                        placeDetailsAdapter.notifyItemRemoved(index)
+                    }
+                    removedNames.add(itemToRemove.storeName)
+                }
+            }
+        }
     }
 
 

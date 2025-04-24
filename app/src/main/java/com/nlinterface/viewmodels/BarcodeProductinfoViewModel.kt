@@ -180,7 +180,6 @@ class ScanningProcess{
      *
      */
     fun activateScanning(viewModel: MainViewModel, vibrator: Vibrator, context: Context) {
-
         val selector = CameraSelector.Builder()
             .requireLensFacing(CameraSelector.LENS_FACING_BACK)
             .build()
@@ -192,6 +191,9 @@ class ScanningProcess{
             Scanner(viewModel, vibrator)
         )
         cameraProvider = ProcessCameraProvider.getInstance(context).get()
+
+        // Unbind previous use cases to avoid exceeding supported surfaces
+        cameraProvider.unbindAll()
         try {
             cameraProvider.bindToLifecycle(
                 ProcessLifecycleOwner.get(),
@@ -199,7 +201,6 @@ class ScanningProcess{
                 imageAnalysis
             )
             Log.println(Log.INFO, "Camera", "Camera binding successful")
-
         } catch (e: Exception) {
             e.printStackTrace().toString()
         }
